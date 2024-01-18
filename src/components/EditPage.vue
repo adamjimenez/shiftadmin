@@ -14,6 +14,13 @@
                             :error-messages="errors[key]" :multiple="value.type === 'files'"></v-file-input>
                         <v-textarea v-else-if="value.type === 'textarea'" :label="key" v-model="data[key]"
                             :error-messages="errors[key]"></v-textarea>
+                        <editor v-else-if="value.type === 'editor'"
+                            v-model="data[key]"
+                            :init="{
+                            toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+                            branding: false,
+                            promotion: false
+                        }" />
                         <div v-else-if="value.type === 'rating'">
                             <div class="px-3">{{ key }}</div>
                             <v-rating v-model="data[key]" :error-messages="errors[key]" hover :length="5" :size="32">
@@ -36,7 +43,36 @@
 import api from "../services/api";
 import util from "../services/util";
 
+import 'tinymce'
+import Editor from '@tinymce/tinymce-vue';
+/* Required TinyMCE components */
+import 'tinymce/icons/default/icons.min.js';
+import 'tinymce/themes/silver/theme.min.js';
+import 'tinymce/models/dom/model.min.js';
+
+/* Import a skin (can be a custom skin instead of the default) */
+import 'tinymce/skins/ui/oxide/skin.js';
+import 'tinymce/skins/ui/oxide/content.min.css';
+
+/* Import plugins */
+import 'tinymce/plugins/advlist';
+import 'tinymce/plugins/code';
+import 'tinymce/plugins/emoticons';
+import 'tinymce/plugins/emoticons/js/emojis';
+import 'tinymce/plugins/link';
+import 'tinymce/plugins/lists';
+import 'tinymce/plugins/table';
+
+/* content UI CSS is required */
+import 'tinymce/skins/ui/oxide/content.js';
+
+/* The default content CSS can be changed or replaced with appropriate CSS for the editor content. */
+import 'tinymce/skins/content/default/content.js';
+
 export default {
+    components: {
+        'editor': Editor // <- Important part
+    },
     props: {
         vars: null,
     },

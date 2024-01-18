@@ -10,10 +10,12 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.1",
     "@mdi/font": "5.9.55",
+    "@tinymce/tinymce-vue": "^5.1.1",
     "axios-cache-adapter": "^2.7.3",
     "core-js": "^3.8.3",
     "qs": "^6.11.2",
     "roboto-fontface": "*",
+    "tinymce": "^6.8.2",
     "vue": "^3.2.13",
     "vue-router": "^4.2.5",
     "vuetify": "^3.0.0-beta.0",

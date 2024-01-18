@@ -1046,6 +1046,13 @@
   "resolved" "https://registry.npmjs.org/@soda/get-current-script/-/get-current-script-1.0.2.tgz"
   "version" "1.0.2"
 
+"@tinymce/tinymce-vue@^5.1.1":
+  "integrity" "sha512-iO57HOWesFOhsaqjA5Ea6sDvQBmJJH3/dq00Uvg7metlct2kLF+ctRgoDsetLt6gmeZ7COPftr814/XzqnJ/dg=="
+  "resolved" "https://registry.npmjs.org/@tinymce/tinymce-vue/-/tinymce-vue-5.1.1.tgz"
+  "version" "5.1.1"
+  dependencies:
+    "tinymce" "^6.0.0 || ^5.5.1"
+
 "@trysound/sax@0.2.0":
   "resolved" "https://registry.npmjs.org/@trysound/sax/-/sax-0.2.0.tgz"
   "version" "0.2.0"
@@ -5146,6 +5153,11 @@
 "thunky@^1.0.2":
   "resolved" "https://registry.npmjs.org/thunky/-/thunky-1.1.0.tgz"
   "version" "1.1.0"
+
+"tinymce@^6.0.0 || ^5.5.1", "tinymce@^6.8.2":
+  "integrity" "sha512-Lho79o2Y1Yn+XdlTEkHTEkEmzwYWTXz7IUsvPwxJF3VTtgHUIAAuBab29kik+f2KED3rZvQavr9D7sHVMJ9x4A=="
+  "resolved" "https://registry.npmjs.org/tinymce/-/tinymce-6.8.2.tgz"
+  "version" "6.8.2"
 
 "to-fast-properties@^2.0.0":
   "resolved" "https://registry.npmjs.org/to-fast-properties/-/to-fast-properties-2.0.0.tgz"

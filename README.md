@@ -9,7 +9,6 @@
 - phpupload, browse, upload, tinymce
 - combo EDIT VIEW FIND
 - coords EDIT VIEW
-- editor EDIT
 - file EDIT
 - files EDIT VIEW
 - select-multiple EDIT VIEW FIND

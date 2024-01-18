@@ -8,7 +8,7 @@
 - sortable
 - phpupload, browse, upload, tinymce
 - combo EDIT VIEW FIND
-- coords EDIT VIEW
+- coords EDIT
 - file EDIT
 - files EDIT VIEW
 - select-multiple EDIT VIEW FIND

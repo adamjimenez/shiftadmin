@@ -40,12 +40,13 @@
                         <a v-if="value.type === 'email'" :href="'mailto:' + data[key]">{{ data[key] }}</a>
                         <a v-else-if="value.type === 'tel'" :href="'tel:' + data[key]">{{ data[key] }}</a>
                         <a v-else-if="value.type === 'url'" :href="data[key]" target="_blank">{{ data[key] }}</a>
+                        <a v-else-if="value.type === 'coords'" :href="'https://www.google.com/maps/search/?api=1&query=' + data[key]" target="_blank">{{ data[key] }}</a>
                         <v-btn v-else-if="value.type === 'select'" :to="getSelectLink(key)" variant="text">{{ data[key + '_label'] }}</v-btn>
                         <span v-else-if="value.type === 'rating'">
                             <v-rating v-model="data[key]" :length="5" :size="32" readonly></v-rating>
                         </span>
-                        <img  v-else-if="value.type === 'file'" :src="apiRoot + '?cmd=file&f=' + data[key] + '&w=320&h=240'" />
-                        <div v-else-if="value.type" v-html="data[key]" class="mx-5"></div>
+                        <img v-else-if="value.type === 'file'" :src="apiRoot + '?cmd=file&f=' + data[key] + '&w=320&h=240'" />
+                        <div v-else-if="value.type === 'editor'" v-html="data[key]" class="mx-5"></div>
                         <span v-else>
                             <span v-if="['checkbox', 'deleted'].includes(value.type)">{{ data[key] > 0 ? 'Yes' : 'No'
                             }}</span>

@@ -77,9 +77,14 @@
             <v-card title="Privileges" :loading="loadingPrivileges">
                 <v-list>
                     <v-card-item>
-                        {{ privileges }}
+                        <template v-for="section in sections" :key="section">
+                            <v-select :label="section" v-model="privileges[section]['access']" :items="accessOptions"></v-select>
+                        </template>
                     </v-card-item>
                 </v-list>
+                <v-card-actions>
+                    <v-btn @click="savePrivileges" color="primary" variant="flat">Save</v-btn>
+                </v-card-actions>
             </v-card>
         </v-dialog>
     </v-card>
@@ -111,9 +116,11 @@ export default {
             privilegesDialog: false,
             loadingPrivileges: false,
             privileges: {},
+            sections: [],
             selected: [],
             headers: [],
             activeHeaders: [],
+            accessOptions: [{value: 0, title: 'None'}, {value: 1, title: 'Read'}, {value: 2, title: 'Write'}, {value: 3, title: 'Full'}],
         };
     },
     methods: {
@@ -131,7 +138,7 @@ export default {
 
             this.data = result.data.data;
             this.fields = result.data.fields;
-            
+
             document.title = 'ADMIN | ' + this.section + ' | ' + this.id;
         },
         openLogs: async function () {
@@ -156,7 +163,13 @@ export default {
                 return false;
             }
 
-            this.logs = result.data.data;
+            this.privileges = result.data.privileges;
+            this.sections = result.data.sections;
+        },
+        savePrivileges: async function () {
+            this.loadingPrivileges = true;
+            await api.post('?cmd=privileges&user_id=' + this.id, {privileges: this.privileges});
+            this.privilegesDialog = false;
         },
         restoreItem: async function () {
             if (!confirm('Are you sure?')) {

@@ -1,24 +1,25 @@
-# shiftadmin
+- privileges dialog
 
-## Project setup
-```
-yarn install
-```
+- list page custom buttons
+- view page custom buttons
+- configure area
+- login, handle logged out
+- import
+- filters load, save, delete
+- search urls
+- sortable
+- phpupload, browse, upload, tinymce
+- combo EDIT VIEW FIND
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+- coords EDIT VIEW
+- editor EDIT
+- file EDIT VIEW
+- files EDIT VIEW
 
-### Compiles and minifies for production
-```
-yarn build
-```
+- select-multiple EDIT VIEW FIND
+- select-parent EDIT VIEW
+- upload EDIT VIEW FIND
+- uploads EDIT VIEW
 
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+?date FIND [NEED RANGE]
+?datetime FIND [NEED RANGE]

@@ -44,6 +44,7 @@
                         <span v-else-if="value.type === 'rating'">
                             <v-rating v-model="data[key]" :length="5" :size="32" readonly></v-rating>
                         </span>
+                        <img  v-else-if="value.type === 'file'" :src="apiRoot + '?cmd=file&f=' + data[key] + '&w=320&h=240'" />
                         <div v-else-if="value.type" v-html="data[key]" class="mx-5"></div>
                         <span v-else>
                             <span v-if="['checkbox', 'deleted'].includes(value.type)">{{ data[key] > 0 ? 'Yes' : 'No'
@@ -121,6 +122,7 @@ export default {
             headers: [],
             activeHeaders: [],
             accessOptions: [{value: 0, title: 'None'}, {value: 1, title: 'Read'}, {value: 2, title: 'Write'}, {value: 3, title: 'Full'}],
+            apiRoot: '',
         };
     },
     methods: {
@@ -255,6 +257,8 @@ export default {
         this.section = this.$route.params.section;
         this.id = this.$route.params.id;
         this.fetchData();
+
+        this.apiRoot = api.getApiRoot()
     }
 };
 </script>

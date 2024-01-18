@@ -10,7 +10,7 @@
 - combo EDIT VIEW FIND
 - coords EDIT VIEW
 - editor EDIT
-- file EDIT VIEW
+- file EDIT
 - files EDIT VIEW
 - select-multiple EDIT VIEW FIND
 - select-parent EDIT VIEW

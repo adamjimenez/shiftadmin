@@ -7,7 +7,7 @@
 - search urls
 - sortable
 - phpupload, browse, upload, tinymce
-- combo EDIT VIEW FIND
+- combo EDIT FIND
 - coords EDIT
 - file EDIT
 - files EDIT VIEW

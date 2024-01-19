@@ -1,11 +1,10 @@
-- search urls
 - file EDIT
 
 - login, handle logged out
 - filters open, save, delete
 - configure area
 - select-multiple EDIT VIEW FIND
-- select-parent EDIT VIEW
+- select-parent EDIT VIEWj
 
 - files EDIT VIEW
 - phpupload, browse, upload, tinymce

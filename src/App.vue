@@ -142,7 +142,7 @@ export default {
 			var data = {
 				term: term
 			};
-			const result = await api.post('?cmd=search&section=' + this.section + '&beta=1', data);
+			const result = await api.post('?cmd=search&section=' + this.section, data);
 
 			this.searchItems = result.data.data;
 		},
@@ -221,7 +221,21 @@ export default {
         }
 	},
 
+	watch: {
+		searchParams: function (searchParams) {
+			this.$router.push({ path: this.$route.path, query: searchParams })
+		}
+	},
+
 	async mounted() {
+		await this.$router.isReady()
+
+		// get params from qs
+		let query = this.$route.query
+		if (query) {
+			this.searchParams = query;
+		}
+
 		this.fetchData();
 	}
 }

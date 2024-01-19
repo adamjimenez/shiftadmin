@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import { createRouter, createWebHistory } from 'vue-router'
+import qs from 'qs';
 
 // Vuetify
 import 'vuetify/styles'
@@ -35,7 +36,15 @@ const router = createRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   history: createWebHistory(),
-  routes: routes
+  routes: routes,
+  // set custom query resolver
+  parseQuery(query) {
+      return qs.parse(query);
+  },
+  stringifyQuery(query) {
+      var result = qs.stringify(query);
+      return result ? result : '';
+  }
 })
 
 createApp(App)

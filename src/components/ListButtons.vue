@@ -5,19 +5,25 @@
         <v-btn title="Delete" icon="mdi-delete" v-if="selected.length" @click="doAction('delete')"></v-btn>
         <v-btn title="Import" icon="mdi-import" @click="importDialog = true"></v-btn>
         <v-btn title="Export" icon="mdi-export" @click="exportItems"></v-btn>
+        <v-btn title="Sort" icon="mdi-sort" v-if="sortable"></v-btn>
 
         <v-menu v-if="buttons.length">
             <template v-slot:activator="{ props }">
                 <v-btn v-bind="props" icon="mdi-dots-vertical"></v-btn>
             </template>
             <v-list>
-                <v-list-item v-for="(item, index) in buttons" :key="index" :value="index">
+                <v-list-item v-for="(item, index) in buttons" :key="index" :value="index" @click="customButton(item)">
                     <v-list-item-title>{{ item.label }}</v-list-item-title>
                 </v-list-item>
             </v-list>
         </v-menu>
 
         <v-dialog v-model="importDialog" max-width="600" scrollable>
+            <v-card title="Not yet implemented">
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="sortDialog" max-width="600" scrollable>
             <v-card title="Not yet implemented">
             </v-card>
         </v-dialog>
@@ -39,6 +45,7 @@ export default {
         selected: null,
         data: null,
         headers: null,
+        sortable: Boolean,
     },
     data: function () {
         return {
@@ -47,6 +54,7 @@ export default {
             internalSection: '',
             loading: false,
             importDialog: false,
+            sortDialog: false,
         };
     },
     methods: {
@@ -87,6 +95,9 @@ export default {
         },
         changeFields: function () {
             this.$emit('changeFields')
+        },
+        customButton: function (button) {
+            this.$emit('custombutton', button);
         }
     },
 
@@ -99,10 +110,10 @@ export default {
     computed: {
         buttons: function () {
             var buttons = [];
-            var self = this;
 
-            this.vars?.buttons?.forEach(function (item) {
-                if (item.page === 'list' && item.section === self.internalSection) {
+            this.vars?.buttons?.forEach((item, index) => {
+                if (item.page === 'list' && item.section === this.internalSection) {
+                    item.id = index;
                     buttons.push(item);
                 }
             })

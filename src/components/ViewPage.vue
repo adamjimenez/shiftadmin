@@ -14,7 +14,7 @@
                         <v-btn v-bind="props" icon="mdi-dots-vertical"></v-btn>
                     </template>
                     <v-list>
-                        <v-list-item v-for="(item, index) in buttons" :key="index" :value="index">
+                        <v-list-item v-for="(item, index) in buttons" :key="index" :value="index" @click="customButton(item)">
                             <v-list-item-title>{{ item.label }}</v-list-item-title>
                         </v-list-item>
                     </v-list>
@@ -26,7 +26,7 @@
 
         <v-tabs v-model="tab" bg-color="primary">
             <v-tab value="summary">Summary</v-tab>
-            <v-tab v-for="subsection in vars.subsections[section]" :key="subsection" :value="subsection">{{ subsection
+            <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection" :value="subsection">{{ subsection
             }}</v-tab>
         </v-tabs>
 
@@ -229,16 +229,42 @@ export default {
             if (typeof option === 'string') {
                 return '/section/' + option + '/' + this.data[field];
             }
+        },
+        customButton: async function (button) {
+            var data = {
+                cmd: 'button',
+                button: button.id,
+                section: this.section,
+                ids: [this.id],
+            };
+
+            this.loading = true;
+            const result = await api.post('?cmd=button&section=' + this.section, data);
+            this.loading = false;
+
+            if (result.data.error) {
+                alert(result.data.error);
+            }
+
+            if (result.data.result?.redirect) {
+                if (button.target) {
+                    window.open(result.data.result.redirect);
+                } else {
+                    location.href = result.data.result.redirect;
+                }
+            } else {
+                await this.fetchData();
+            }
         }
     },
 
     computed: {
         buttons: function () {
             var buttons = [];
-            var self = this;
 
-            this.vars?.buttons?.forEach(function (item) {
-                if (item.page === 'view' && item.section === self.section) {
+            this.vars?.buttons?.forEach((item, index) => {
+                if (item.page === 'view' && item.section === this.section) {
+                    item.id = index;
                     buttons.push(item);
                 }
             })

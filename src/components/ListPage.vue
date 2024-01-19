@@ -9,7 +9,7 @@
                 <v-container color="secondary" fluid v-if="!hidebuttons">
                     <v-row>
                         <v-col class="py-0">
-                            <ListButtons :selected="selected" :section="internalSection" @changeFields="dialog = true">
+                            <ListButtons :selected="selected" :section="internalSection" @changeFields="dialog = true" @custombutton="customButton" :vars="vars">
                             </ListButtons>
                         </v-col>
                     </v-row>
@@ -146,6 +146,32 @@ export default {
             this.selected = [];
             this.search = String(Date.now())
         },
+        customButton: async function (button) {
+            var data = {
+                cmd: 'button',
+                button: button.id,
+                section: this.internalSection,
+                ids: this.selected,
+            };
+
+            this.loading = true;
+            const result = await api.post('?cmd=button&section=' + this.internalSection, data);
+            this.loading = false;
+
+            if (result.data.error) {
+                alert(result.data.error);
+            }
+
+            if (result.data.result?.redirect) {
+                if (button.target) {
+                    window.open(result.data.result.redirect);
+                } else {
+                    location.href = result.data.result.redirect;
+                }
+            } else {
+                this.search = String(Date.now())
+            }
+        }
     },
 
     watch: {
@@ -174,18 +200,6 @@ export default {
     },
 
     computed: {
-        buttons: function () {
-            var buttons = [];
-            var self = this;
-
-            this.vars?.buttons?.forEach(function (item) {
-                if (item.page === 'list' && item.section === self.internalSection) {
-                    buttons.push(item);
-                }
-            })
-
-            return buttons;
-        },
         activeHeaders: function () {
             var activeHeaders = [];
             this.selectedHeaders.forEach(function (item) {

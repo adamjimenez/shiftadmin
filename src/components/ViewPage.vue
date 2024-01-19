@@ -26,8 +26,11 @@
 
         <v-tabs v-model="tab" bg-color="primary">
             <v-tab value="summary">Summary</v-tab>
-            <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection" :value="subsection">{{ subsection
-            }}</v-tab>
+            <template v-if="vars.subsections && vars.subsections[section]?.length">
+                <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection" :value="subsection">
+                    {{ subsection}}
+                </v-tab>
+            </template>
         </v-tabs>
 
         <v-card v-if="tab === 'summary'" min-width="600">
@@ -41,7 +44,7 @@
                         <a v-else-if="value.type === 'tel'" :href="'tel:' + data[key]">{{ data[key] }}</a>
                         <a v-else-if="value.type === 'url'" :href="data[key]" target="_blank">{{ data[key] }}</a>
                         <a v-else-if="value.type === 'coords'" :href="'https://www.google.com/maps/search/?api=1&query=' + data[key]" target="_blank">{{ data[key] }}</a>
-                        <v-btn v-else-if="['selected', 'combo'].includes(value.type)" :to="getSelectLink(key)" variant="text">{{ data[key + '_label'] }}</v-btn>
+                        <v-btn v-else-if="['select', 'select_parent', 'combo'].includes(value.type)" :to="getSelectLink(key, value.type)" variant="text">{{ data[key + '_label'] ? data[key + '_label'] : data[key] }}</v-btn>
                         <span v-else-if="value.type === 'rating'">
                             <v-rating v-model="data[key]" :length="5" :size="32" readonly></v-rating>
                         </span>
@@ -226,8 +229,8 @@ export default {
 
             return yearDiff;
         },
-        getSelectLink: function (field) {
-            var option = this.vars.options[field.replaceAll(' ', '_')];
+        getSelectLink: function (field, type) {
+            let option = (type === 'select_parent') ? this.section : this.vars.options[field.replaceAll(' ', '_')];
 
             if (typeof option === 'string') {
                 return '/section/' + option + '/' + this.data[field];

@@ -25,7 +25,7 @@
                             <div class="px-3">{{ key }}</div>
                             <v-rating v-model="data[key]" :error-messages="errors[key]" hover :length="5" :size="32" />
                         </div>
-                        <v-select v-else-if="value.type === 'select'" :label="key" v-model="data[key]"
+                        <v-select v-else-if="['select', 'select_parent'].includes(value.type)" :label="key" v-model="data[key]"
                             :error-messages="errors[key]" :items="options[key]" />
                         <v-autocomplete v-else-if="value.type === 'combo'" :label="key" v-model="data[key]"
                             :error-messages="errors[key]" :items="options[key]" @update:search="updateCombo($event, key)" />
@@ -123,8 +123,8 @@ export default {
                     }
 
                     // get options
-                    if (field.type === 'select') {
-                        let option = this.vars.options[field.column.replaceAll('_', ' ')];
+                    if (['select', 'select_parent'].includes(field.type)) {
+                        let option = (field.type === 'select_parent') ? this.section : this.vars.options[field.column.replaceAll(' ', '_')];
                         this.options[name] = await util.getOptions(option);
                     }
 

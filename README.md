@@ -1,11 +1,9 @@
-- file EDIT
-
 - login, handle logged out
 - filters open, save, delete
 - configure area
 - select-multiple EDIT VIEW FIND
-- select-parent EDIT VIEWj
 
+- file EDIT
 - files EDIT VIEW
 - phpupload, browse, upload, tinymce
 - upload EDIT VIEW

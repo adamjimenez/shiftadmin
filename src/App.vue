@@ -75,8 +75,7 @@
 					<v-divider></v-divider>
 					<v-card-text>
 						<template v-for="field in fields" :key="field.type">
-							<v-list-item
-								v-if="['text', 'date', 'datetime', 'timestamp', 'checkbox', 'select', 'int', 'decimal', 'rating', 'checkbox', 'deleted', 'select', 'combo'].includes(field.type)">
+							<v-list-item v-if="searchable.includes(field.type)">
 								<v-checkbox v-if="['checkbox', 'deleted'].includes(field.type)" :label="field.column"
 									v-model="params[field.column]"></v-checkbox>
 								<v-select v-else-if="['select'].includes(field.type)" :label="field.column"
@@ -125,6 +124,21 @@ export default {
 			params: { func: {} },
 			searchParams: {},
 			options: {},
+			searchable: [
+				'checkbox',
+				'combo',
+				'date',
+				'datetime',
+				'decimal',
+				'deleted',
+				'int', 
+				'page_name', 
+				'rating', 
+				'select', 
+				'select_parent',
+				'text',
+				'timestamp',
+			]
 		};
 	},
 
@@ -215,10 +229,10 @@ export default {
 
 			return '';
 		},
-        updateCombo: async function(term, column) {
+		updateCombo: async function (term, column) {
 			const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
 			this.options[column] = result.data;
-        }
+		}
 	},
 
 	watch: {
@@ -270,4 +284,5 @@ export default {
 	background-color: rgba(155, 155, 155, 0.5);
 	border-radius: 20px;
 	border: transparent;
-}</style>
+}
+</style>

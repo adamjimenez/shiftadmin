@@ -5,7 +5,7 @@
         <v-btn title="Delete" icon="mdi-delete" v-if="selected.length" @click="doAction('delete')"></v-btn>
         <v-btn title="Import" icon="mdi-import" @click="importDialog = true"></v-btn>
         <v-btn title="Export" icon="mdi-export" @click="exportItems"></v-btn>
-        <v-btn title="Sort" icon="mdi-sort" v-if="sortable"></v-btn>
+        <v-btn title="Sort" icon="mdi-sort" v-if="sortable" @click="openSortable"></v-btn>
 
         <v-menu v-if="buttons.length">
             <template v-slot:activator="{ props }">
@@ -19,11 +19,6 @@
         </v-menu>
 
         <v-dialog v-model="importDialog" max-width="600" scrollable>
-            <v-card title="Not yet implemented">
-            </v-card>
-        </v-dialog>
-
-        <v-dialog v-model="sortDialog" max-width="600" scrollable>
             <v-card title="Not yet implemented">
             </v-card>
         </v-dialog>
@@ -54,7 +49,6 @@ export default {
             internalSection: '',
             loading: false,
             importDialog: false,
-            sortDialog: false,
         };
     },
     methods: {
@@ -95,6 +89,9 @@ export default {
         },
         changeFields: function () {
             this.$emit('changeFields')
+        },
+        openSortable: function () {
+            this.$emit('openSortable')
         },
         customButton: function (button) {
             this.$emit('custombutton', button);

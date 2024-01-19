@@ -21,7 +21,7 @@
                 </v-menu>
             </span>
             <ListButtons v-else :selected="selected" :section="tab" @changeFields="changeFields" :parentsection="section"
-                :parentid="id"></ListButtons>
+                :parentid="id" :sortable="isSortable" @openSortable="openSortable"></ListButtons>
         </v-card-actions>
 
         <v-tabs v-model="tab" bg-color="primary">
@@ -202,6 +202,9 @@ export default {
         changeFields: function () {
             this.$refs['listPage'].dialog = true;
         },
+        openSortable: function () {
+            this.$refs['listPage'].sortableDialog = true;
+        },
         age: function (dateString) {
             const today = new Date();
             const birthDate = new Date(dateString);
@@ -270,6 +273,9 @@ export default {
             })
 
             return buttons;
+        },
+        sortable: function () {            
+            return this.$refs['listPage'].isSortable;
         }
     },
 

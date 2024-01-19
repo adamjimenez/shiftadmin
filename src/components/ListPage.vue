@@ -9,7 +9,9 @@
                 <v-container color="secondary" fluid v-if="!hidebuttons">
                     <v-row>
                         <v-col class="py-0">
-                            <ListButtons :selected="selected" :section="internalSection" @changeFields="dialog = true" @custombutton="customButton" :vars="vars">
+                            <ListButtons :selected="selected" :section="internalSection" @changeFields="dialog = true"
+                                @custombutton="customButton" :vars="vars" :sortable="isSortable"
+                                @openSortable="sortableDialog = true">
                             </ListButtons>
                         </v-col>
                     </v-row>
@@ -27,6 +29,21 @@
                 </v-data-table>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="sortableDialog" max-width="600" scrollable>
+            <v-card title="Sort Order" :loading="sortOrderLoading">
+                <v-card-text>
+                    <draggable v-model="sortOrder" group="items" @start="drag = true" @end="drag = false" item-key="id">
+                        <template #item="{ element }">
+                            <v-sheet color="primary" class="ma-5 pa-5">{{ element.title }}</v-sheet>
+                        </template>
+                    </draggable>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn variant="flat" color="primary" @click="saveSortOrder">Save</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-layout>
 </template>
 
@@ -34,10 +51,12 @@
 import api from "../services/api";
 import qs from "qs";
 import ListButtons from "./ListButtons";
+import draggable from 'vuedraggable'
 
 export default {
     components: {
-        ListButtons
+        ListButtons,
+        draggable,
     },
     props: {
         vars: null,
@@ -56,10 +75,14 @@ export default {
             internalSection: '',
             loading: false,
             importDialog: false,
+            sortableDialog: false,
             totalItems: 0,
             itemsPerPage: 20,
             search: '',
             headers: [],
+            drag: false,
+            sortOrder: [],
+            sortOrderLoading: false,
         };
     },
     methods: {
@@ -127,8 +150,20 @@ export default {
                 }
             });
             console.log(this.selectedHeaders)
-            
+
             this.$emit('changeFields', fields);
+
+            this.sortOrder = [];
+            if (this.isSortable) {
+                this.data.data.forEach((item) => {
+                    let key = Object.keys(item)[0];
+                    this.sortOrder.push({ title: key + ': ' + item[key], id: item.id, position: item.position });
+                });
+
+                this.sortOrder.sort((a, b) => {
+                    return a.position - b.position;
+                })
+            }
         },
 
         rowClick: function (e, item) {
@@ -144,7 +179,7 @@ export default {
             this.loading = true;
             await api.post('?cmd=' + action + '&section=' + this.internalSection, data);
             this.selected = [];
-            this.search = String(Date.now())
+            this.reload();
         },
         customButton: async function (button) {
             var data = {
@@ -169,25 +204,42 @@ export default {
                     location.href = result.data.result.redirect;
                 }
             } else {
-                this.search = String(Date.now())
+                this.reload();
             }
+        },
+        saveSortOrder: async function () {            
+            var data = {
+                cmd: 'reorder',
+                section: this.section,
+                items: this.sortOrder,
+            };
+
+            this.sortOrderLoading = true;
+            await api.post('?cmd=reorder&section=' + this.internalSection, data);
+            this.sortOrderLoading = false;
+
+            this.sortableDialog = false;
+            this.reload();
+        },
+        reload: function () {
+            this.search = String(Date.now())
         }
     },
 
     watch: {
         $route(route) {
             this.internalSection = route.params.section;
-            this.search = String(Date.now())
+            this.reload();
         },
         section: function (section) {
             this.internalSection = section;
-            this.search = String(Date.now())
+            this.reload();
         },
         selectedHeaders: function (newVal) {
             localStorage['fields_' + this.internalSection] = JSON.stringify(newVal);
         },
         searchparams: function () {
-            this.search = String(Date.now())
+            this.reload();
         },
         headers: function (headers) {
             var saved = localStorage['fields_' + this.internalSection];
@@ -212,6 +264,17 @@ export default {
 
             return activeHeaders;
         },
+        isSortable: function () {
+            let isSortable = false;
+            if (this.data.fields) {
+                Object.values(this.data.fields).forEach((item) => {
+                    if (item.type === 'position') {
+                        isSortable = true;
+                    }
+                });
+            }
+            return isSortable;
+        }
     },
 
     created() {

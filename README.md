@@ -1,19 +1,16 @@
-- list page custom buttons
-- view page custom buttons
 - configure area
 - login, handle logged out
-- import
-- filters open, save, delete
 - search urls
+
+- filters open, save, delete
 - sortable
-- phpupload, browse, upload, tinymce
-- combo EDIT FIND
-- coords EDIT
+- import
 - file EDIT
 - files EDIT VIEW
 - select-multiple EDIT VIEW FIND
 - select-parent EDIT VIEW
-- upload EDIT VIEW FIND
+- phpupload, browse, upload, tinymce
+- upload EDIT VIEW
 - uploads EDIT VIEW
 
 ?date FIND [NEED RANGE]

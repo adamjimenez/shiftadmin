@@ -9,11 +9,11 @@
                 <template v-for="(value, key, index) in fields" :key="index">
                     <v-list-item v-if="!['id', 'timestamp', 'deleted'].includes(value.type)">
                         <v-checkbox v-if="value.type === 'checkbox'" :label="key" v-model="data[key]"
-                            :error-messages="errors[key]"></v-checkbox>
+                            :error-messages="errors[key]" />
                         <v-file-input v-else-if="['file', 'files'].includes(value.type)" :label="key" v-model="data[key]"
-                            :error-messages="errors[key]" :multiple="value.type === 'files'"></v-file-input>
+                            :error-messages="errors[key]" :multiple="value.type === 'files'" />
                         <v-textarea v-else-if="value.type === 'textarea'" :label="key" v-model="data[key]"
-                            :error-messages="errors[key]"></v-textarea>
+                            :error-messages="errors[key]" />
                         <editor v-else-if="value.type === 'editor'"
                             v-model="data[key]"
                             :init="{
@@ -23,15 +23,16 @@
                         }" />
                         <div v-else-if="value.type === 'rating'">
                             <div class="px-3">{{ key }}</div>
-                            <v-rating v-model="data[key]" :error-messages="errors[key]" hover :length="5" :size="32">
-                            </v-rating>
+                            <v-rating v-model="data[key]" :error-messages="errors[key]" hover :length="5" :size="32" />
                         </div>
                         <v-select v-else-if="value.type === 'select'" :label="key" v-model="data[key]"
-                            :error-messages="errors[key]" :items="options[key]"></v-select>
+                            :error-messages="errors[key]" :items="options[key]" />
+                        <v-autocomplete v-else-if="value.type === 'combo'" :label="key" v-model="data[key]"
+                            :error-messages="errors[key]" :items="options[key]" @update:search="updateCombo($event, key)" />
                         <v-text-field :label="key" v-model="data[key]" :error-messages="errors[key]"
                             :rules="rules[value.type] ? [rules[value.type]] : []" :type="fieldType(value.type)"
                             :step="fieldStep(value.type)" autocomplete="new-password"
-                            v-else-if="key !== 'id'"></v-text-field>
+                            v-else-if="key !== 'id'" />
                     </v-list-item>
                 </template>
             </v-list>
@@ -124,7 +125,11 @@ export default {
                     // get options
                     if (field.type === 'select') {
                         let option = this.vars.options[field.column.replaceAll('_', ' ')];
-                        this.options[name] = util.getOptions(option);
+                        this.options[name] = await util.getOptions(option);
+                    }
+
+                    if (field.type === 'combo') {
+                        this.options[name] = [];
                     }
                 }
 
@@ -186,6 +191,10 @@ export default {
             }
 
             return '';
+        },
+        updateCombo: async function(term, column) {
+			const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
+			this.options[column] = result.data;
         }
     },
 

@@ -81,6 +81,9 @@
 									v-model="params[field.column]"></v-checkbox>
 								<v-select v-else-if="['select'].includes(field.type)" :label="field.column"
 									:items="options[field.column]" v-model="params[field.column]"></v-select>
+								<v-autocomplete v-else-if="field.type === 'combo'" :label="field.column"
+									v-model="params[field.column]" :items="options[field.column]"
+									@update:search="updateCombo($event, field.column)" />
 								<v-text-field v-else :label="field.column" v-model="params[field.column]"
 									:type="fieldType(field.type)" :step="fieldStep(field.type)">
 
@@ -212,6 +215,10 @@ export default {
 
 			return '';
 		},
+        updateCombo: async function(term, column) {
+			const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
+			this.options[column] = result.data;
+        }
 	},
 
 	async mounted() {

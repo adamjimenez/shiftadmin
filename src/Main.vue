@@ -45,6 +45,9 @@
 									</v-badge>
 									<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" v-else></v-icon>
 								</template>
+								<template v-slot:append>
+									<v-btn icon="mdi-delete" v-if="child.filter_id" @click.stop="deleteFilter(child.filter_id)" variant="text" size="x-small" />
+								</template>
 
 							</v-list-item>
 						</v-list-group>
@@ -95,7 +98,9 @@
 						</template>
 					</v-card-text>
 					<v-card-actions>
-						<v-btn @click="doSearch" color="primary" variant="flat">Search</v-btn>
+						<v-btn @click="doSearch" color="primary" variant="flat" prepend-icon="mdi-magnify">Search</v-btn>
+						<v-spacer></v-spacer>
+						<v-btn @click="saveSearch" color="secondary" variant="flat" prepend-icon="mdi-content-save">Save</v-btn>
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
@@ -166,6 +171,25 @@ export default {
 			this.searchParams = JSON.parse(JSON.stringify(this.params));
 			this.advancedDialog = false;
 		},
+		saveSearch: async function () {
+			let label = prompt('Name this filter');
+
+			if (!label) {
+				return;
+			}
+			
+			var data = {
+				save: 1,
+				label: label,
+				section: this.section,
+				conditions: this.searchParams
+			};
+
+			await api.post('?cmd=filters', data);
+			this.advancedDialog = false;
+
+			this.fetchData();
+		},
 		advancedSearch: async function () {
 			// resolve options
 			this.fields.forEach(async field => {
@@ -208,7 +232,7 @@ export default {
 
 			this.$vuetify.theme.themes.light.colors = this.vars?.branding?.colors
 		},
-		fieldType(type) {
+		fieldType (type) {
 			switch (type) {
 				case 'dob':
 				case 'date':
@@ -223,7 +247,7 @@ export default {
 
 			return ['email', 'password', 'dob', 'time'].includes(type) ? type : 'text'
 		},
-		fieldStep(type) {
+		fieldStep (type) {
 			switch (type) {
 				case 'int':
 					return 1;
@@ -235,13 +259,34 @@ export default {
 		updateCombo: async function (term, column) {
 			const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
 			this.options[column] = result.data;
+		},
+
+		deleteFilter: async function (filter_id) {
+            if (!confirm('Are you sure?')) {
+                return;
+            }
+
+			await api.post('?cmd=filters', {delete: filter_id});
+			this.fetchData();
 		}
 	},
 
 	watch: {
+        $route() {
+			// get params from qs
+			let query = this.$route.query
+			if (query) {
+				this.params = query;
+				this.searchParams = query;
+			}
+
+			if (this.$route.params.section) {
+				this.section = this.$route.params.section;
+			}
+        },
 		searchParams: function (searchParams) {
 			this.$router.push({ path: this.$route.path, query: searchParams })
-		}
+		},
 	},
 
 	async mounted() {
@@ -250,7 +295,12 @@ export default {
 		// get params from qs
 		let query = this.$route.query
 		if (query) {
+			this.params = query;
 			this.searchParams = query;
+		}
+
+		if (this.$route.params.section) {
+			this.section = this.$route.params.section;
 		}
 
 		await this.fetchData();

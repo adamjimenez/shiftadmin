@@ -112,10 +112,17 @@ export default {
             const params = qs.stringify(data);
 
             this.loading = true;
-            const result = await api.get('?' + params.toString(), data);
+
+            let result = {};
+            try {
+                result = await api.get('?' + params.toString(), data);
+            } catch (error) {
+                console.log(error)
+            }
+
             this.loading = false;
 
-            if (!result.data.fields) {
+            if (!result.data?.fields) {
                 return false;
             }
 

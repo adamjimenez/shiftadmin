@@ -1,8 +1,6 @@
-- login, handle logged out
 - filters open, save, delete
 - configure area
 - select-multiple EDIT VIEW FIND
-
 - file EDIT
 - files EDIT VIEW
 - phpupload, browse, upload, tinymce

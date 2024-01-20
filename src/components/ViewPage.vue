@@ -143,7 +143,9 @@ export default {
                 return false;
             }
 
-            this.data = result.data.data;
+            if (result.data.data) {
+                this.data = result.data.data;
+            }
             this.fields = result.data.fields;
 
             document.title = 'ADMIN | ' + this.section + ' | ' + this.id;

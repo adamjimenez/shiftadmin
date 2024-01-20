@@ -3,7 +3,7 @@ axios.defaults.withCredentials = true
 
 import { setup } from 'axios-cache-adapter'
 
-//import router from '../router'
+import router from '../router'
 
 // Create `axios-cache-adapter` instance
 const cache = setup({
@@ -22,14 +22,14 @@ const api = axios.create({
     adapter: cache.adapter
 })
 
-api.interceptors.response.use(function (response) {
+api.interceptors.response.use((response) => {
     return response;
-}, function (error) {
+}, (error) => {
     const originalRequest = error.config;
-
+    
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
-        location.href = 'https://adam.gogetters.co.uk/login?u=' + encodeURIComponent(location.href)
-        //router.push('/auth/login')
+        //location.href = 'https://adam.gogetters.co.uk/login?u=' + encodeURIComponent(location.href)
+        router.router.push('/login')
 
         return Promise.reject('Forbidden');
     }
@@ -54,7 +54,7 @@ export default {
     event(path, callback, errorCallback, completeCallback) {
         var source = new EventSource(apiRoot + path, { withCredentials: true })
 
-        source.addEventListener('message', function(event) {
+        source.addEventListener('message', (event) => {
             var result = JSON.parse(event.data)
             console.log(result);
             
@@ -65,7 +65,7 @@ export default {
             }
         }, false)
     
-        source.addEventListener('error', function(event) {
+        source.addEventListener('error', (event) => {
             if (event.eventPhase == 2) {
               if (source) {
                 source.close();

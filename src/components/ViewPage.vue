@@ -14,7 +14,8 @@
                         <v-btn v-bind="props" icon="mdi-dots-vertical"></v-btn>
                     </template>
                     <v-list>
-                        <v-list-item v-for="(item, index) in buttons" :key="index" :value="index" @click="customButton(item)">
+                        <v-list-item v-for="(item, index) in buttons" :key="index" :value="index"
+                            @click="customButton(item)">
                             <v-list-item-title>{{ item.label }}</v-list-item-title>
                         </v-list-item>
                     </v-list>
@@ -28,7 +29,7 @@
             <v-tab value="summary">Summary</v-tab>
             <template v-if="vars.subsections && vars.subsections[section]?.length">
                 <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection" :value="subsection">
-                    {{ subsection}}
+                    {{ subsection }}
                 </v-tab>
             </template>
         </v-tabs>
@@ -43,13 +44,19 @@
                         <a v-if="value.type === 'email'" :href="'mailto:' + data[key]">{{ data[key] }}</a>
                         <a v-else-if="value.type === 'tel'" :href="'tel:' + data[key]">{{ data[key] }}</a>
                         <a v-else-if="value.type === 'url'" :href="data[key]" target="_blank">{{ data[key] }}</a>
-                        <a v-else-if="value.type === 'coords'" :href="'https://www.google.com/maps/search/?api=1&query=' + data[key]" target="_blank">{{ data[key] }}</a>
-                        <v-btn v-else-if="['select', 'select_parent', 'combo'].includes(value.type)" :to="getSelectLink(key, value.type)" variant="text">{{ data[key + '_label'] ? data[key + '_label'] : data[key] }}</v-btn>
+                        <a v-else-if="value.type === 'coords'"
+                            :href="'https://www.google.com/maps/search/?api=1&query=' + data[key]" target="_blank">{{
+                                data[key] }}</a>
+                        <v-btn v-else-if="['select', 'select_parent', 'combo'].includes(value.type)"
+                            :to="getSelectLink(key, value.type)" variant="text">{{ data[key + '_label'] ? data[key +
+                                '_label'] : data[key] }}</v-btn>
                         <span v-else-if="value.type === 'rating'">
                             <v-rating v-model="data[key]" :length="5" :size="32" readonly></v-rating>
                         </span>
-                        <img v-else-if="value.type === 'file'" :src="apiRoot + '?cmd=file&f=' + data[key] + '&w=320&h=240'" />
-                        <img v-else-if="value.type === 'upload'" :src="apiRoot + '?cmd=upload&f=' + data[key] + '&w=320&h=240'" />
+                        <img v-else-if="value.type === 'file'"
+                            :src="apiRoot + '?cmd=file&f=' + data[key] + '&w=320&h=240'" />
+                        <img v-else-if="value.type === 'upload'"
+                            :src="apiRoot + '?cmd=upload&f=' + data[key] + '&w=320&h=240'" />
                         <div v-else-if="value.type === 'editor'" v-html="data[key]" class="mx-5"></div>
                         <span v-else>
                             <span v-if="['checkbox', 'deleted'].includes(value.type)">{{ data[key] > 0 ? 'Yes' : 'No'
@@ -84,7 +91,8 @@
                 <v-list>
                     <v-card-item>
                         <template v-for="section in sections" :key="section">
-                            <v-select :label="section" v-model="privileges[section]['access']" :items="accessOptions"></v-select>
+                            <v-select :label="section" v-model="privileges[section]['access']"
+                                :items="accessOptions"></v-select>
                         </template>
                     </v-card-item>
                 </v-list>
@@ -126,7 +134,7 @@ export default {
             selected: [],
             headers: [],
             activeHeaders: [],
-            accessOptions: [{value: 0, title: 'None'}, {value: 1, title: 'Read'}, {value: 2, title: 'Write'}, {value: 3, title: 'Full'}],
+            accessOptions: [{ value: 0, title: 'None' }, { value: 1, title: 'Read' }, { value: 2, title: 'Write' }, { value: 3, title: 'Full' }],
             apiRoot: '',
         };
     },
@@ -177,7 +185,7 @@ export default {
         },
         savePrivileges: async function () {
             this.loadingPrivileges = true;
-            await api.post('?cmd=privileges&user_id=' + this.id, {privileges: this.privileges});
+            await api.post('?cmd=privileges&user_id=' + this.id, { privileges: this.privileges });
             this.privilegesDialog = false;
         },
         restoreItem: async function () {
@@ -279,8 +287,8 @@ export default {
 
             return buttons;
         },
-        sortable: function () {            
-            return this.$refs['listPage'].isSortable;
+        isSortable: function () {
+            return this.$refs['listPage']?.isSortable;
         }
     },
 
@@ -295,6 +303,7 @@ export default {
     async mounted() {
         this.section = this.$route.params.section;
         this.id = this.$route.params.id;
+
         this.fetchData();
 
         this.apiRoot = api.getApiRoot()

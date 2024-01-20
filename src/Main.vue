@@ -253,7 +253,7 @@ export default {
 			this.searchParams = query;
 		}
 
-		this.fetchData();
+		await this.fetchData();
 	}
 }
 </script>

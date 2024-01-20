@@ -2,7 +2,7 @@
 - select-multiple EDIT VIEW FIND
 - file EDIT
 - files EDIT VIEW
-- phpupload, browse, upload, tinymce
+- file uploads: open folder, create folder, upload, delete, tinymce
 - upload EDIT VIEW
 - uploads EDIT VIEW
 - import

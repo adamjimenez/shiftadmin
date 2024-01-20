@@ -22,6 +22,7 @@
 				<v-spacer></v-spacer>
 
 				<v-btn variant="text" icon="mdi-home" href="/"></v-btn>
+				<FileUploads />
 				<v-btn variant="text" icon="mdi-cog" to="configure"></v-btn>
 				<v-btn variant="text" icon="mdi-logout" href="/logout"></v-btn>
 			</v-app-bar>
@@ -111,9 +112,14 @@
 <script>
 import api from "./services/api";
 import util from "./services/util";
+import FileUploads from "./components/FileUploads";
 
 export default {
 	name: 'ShiftAdmin',
+
+    components: {
+        FileUploads
+    },
 
 	data: function () {
 		return {

@@ -5,7 +5,6 @@
             v-model:items-per-page="itemsPerPage" :search="search">
 
             <template v-slot:top>
-
                 <v-container color="secondary" fluid v-if="!hidebuttons">
                     <v-row>
                         <v-col class="py-0">
@@ -16,9 +15,7 @@
                         </v-col>
                     </v-row>
                 </v-container>
-
             </template>
-
         </v-data-table-server>
 
         <v-dialog v-model="dialog" max-width="600" scrollable>

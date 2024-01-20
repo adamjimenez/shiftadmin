@@ -10,9 +10,7 @@
             </v-card-text>
 
             <v-card-actions>
-                <v-btn color="success" @click="login" variant="flat">
-                    Login
-                </v-btn>
+                <v-btn color="success" @click="login" variant="flat" text="Login" />
             </v-card-actions>
         </v-card>
     </v-form>

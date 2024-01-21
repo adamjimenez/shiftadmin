@@ -22,7 +22,7 @@
 				<v-spacer></v-spacer>
 
 				<v-btn variant="text" icon="mdi-home" href="/"></v-btn>
-				<FileUploads />
+				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" />
 				<v-btn variant="text" icon="mdi-cog" to="configure"></v-btn>
 				<v-btn variant="text" icon="mdi-logout" href="/logout"></v-btn>
 			</v-app-bar>
@@ -68,8 +68,8 @@
 			</v-navigation-drawer>
 
 			<v-main class="d-flex align-center justify-center">
-				<router-view class="fill-height" :vars="vars" :searchparams="searchParams"
-					@changeFields="changeFields"></router-view>
+				<router-view ref="main" class="fill-height" :vars="vars" :searchparams="searchParams"
+					@changeFields="changeFields" @chooseFileUpload="chooseFileUpload" :fileSelected="fileSelected"></router-view>
 			</v-main>
 
 			<v-dialog v-model="advancedDialog" max-width="600" scrollable>
@@ -151,7 +151,8 @@ export default {
 				'select_parent',
 				'text',
 				'timestamp',
-			]
+			],
+			fileSelected: {}
 		};
 	},
 
@@ -294,6 +295,14 @@ export default {
 			}
 
 			this.params['func'][column] = value[value.length - 1];
+		},
+
+		chooseFileUpload: function (column) {
+			this.$refs['fileUploads'].open(column);
+		},
+
+		fileSelectedHandler: function (data) {
+			this.fileSelected = data;
 		}
 	},
 

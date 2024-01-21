@@ -2,6 +2,5 @@
 - select-multiple EDIT VIEW FIND
 - files EDIT VIEW
 - file uploads: create folder, upload, delete, tinymce
-- upload EDIT
 - uploads EDIT VIEW
 - import

@@ -20,6 +20,13 @@
                             <v-file-input v-else :label="key" v-model="data[value.column]"
                                 :error-messages="errors[key]" :multiple="value.type === 'files'" />
                         </div>
+                        <div v-else-if="['upload'].includes(value.type)">
+                            <div>{{ key }}</div>
+                            <div v-if="data[value.column]" class="mb-3">
+                                <v-chip :text="data[value.column]" closable @click:close="data[value.column] = ''"></v-chip>
+                            </div>
+                            <v-btn v-else @click="chooseFileUpload(value.column)">Choose</v-btn>
+                        </div>
                         <v-textarea v-else-if="value.type === 'textarea'" :label="key" v-model="data[value.column]"
                             :error-messages="errors[key]" />
                         <editor v-else-if="value.type === 'editor'" v-model="data[key]" :init="{
@@ -81,6 +88,7 @@ export default {
     },
     props: {
         vars: null,
+        fileSelected: null,
     },
     data: function () {
         return {
@@ -117,25 +125,25 @@ export default {
             if (result.data.data) {
                 let data = result.data.data;
 
-                for (const [name, field] of Object.entries(this.fields)) {
+                for (const [, field] of Object.entries(this.fields)) {
                     if (field.type === 'password') {
-                        data[name] = '';
+                        data[field.column] = '';
                     }
                     if (field.type === 'checkbox') {
-                        data[name] = data[name] = data[name] > 0 ? true : false;
+                        data[field.column] = data[field.column] = data[field.column] > 0 ? true : false;
                     }
-                    if (['file', 'files'].includes(field.type) && data[name] <= 0) {
-                        data[name] = [];
+                    if (['file', 'files'].includes(field.type) && data[field.column] <= 0) {
+                        data[field.column] = [];
                     }
 
                     // get options
                     if (['select', 'select_parent'].includes(field.type)) {
                         let option = (field.type === 'select_parent') ? this.section : this.vars.options[field.column.replaceAll(' ', '_')];
-                        this.options[name] = await util.getOptions(option);
+                        this.options[field.column] = await util.getOptions(option);
                     }
 
                     if (field.type === 'combo') {
-                        this.options[name] = [];
+                        this.options[field.column] = [];
                     }
                 }
 
@@ -224,6 +232,15 @@ export default {
         updateCombo: async function (term, column) {
             const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
             this.options[column] = result.data;
+        },
+        chooseFileUpload: function (column) {
+            this.$emit('chooseFileUpload', column);
+        }
+    },
+    watch: {
+        fileSelected: function (data) {
+            console.log(data)
+            this.data[data.column] = data.value;
         }
     },
 

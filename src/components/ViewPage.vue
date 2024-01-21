@@ -55,6 +55,10 @@
                         </span>
                         <img v-else-if="['file', 'upload'].includes(value.type)"
                             :src="apiRoot + '?cmd=file&f=' + data[value.column] + '&w=320&h=240'" />
+                        <div v-else-if="['files', 'uploads'].includes(value.type)">
+                            <img v-for="image in data[value.column]" :key="image"
+                                :src="apiRoot + '?cmd=file&f=' + image + '&w=320&h=240'" class="d-block mb-5" />                            
+                        </div>
                         <img v-else-if="value.type === 'upload'"
                             :src="apiRoot + '?cmd=upload&f=' + data[value.column] + '&w=320&h=240'" />
                         <div v-else-if="value.type === 'editor'" v-html="data[value.column]" class="mx-5"></div>

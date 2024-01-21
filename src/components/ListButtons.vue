@@ -17,11 +17,6 @@
                 </v-list-item>
             </v-list>
         </v-menu>
-
-        <v-dialog v-model="importDialog" max-width="600" scrollable>
-            <v-card title="Not yet implemented">
-            </v-card>
-        </v-dialog>
     </span>
 </template>
 
@@ -48,7 +43,6 @@ export default {
             selectedHeaders: [],
             internalSection: '',
             loading: false,
-            importDialog: false,
         };
     },
     methods: {

@@ -18,6 +18,11 @@
             </template>
         </v-data-table-server>
 
+        <v-dialog v-model="importDialog" max-width="600" scrollable>
+            <v-card title="Not yet implemented">
+            </v-card>
+        </v-dialog>
+
         <v-dialog v-model="dialog" max-width="600" scrollable>
             <v-card title="Fields">
                 <v-data-table v-model="selectedHeaders" :headers="[{ title: 'Field', key: 'key' }]" :items="headers"

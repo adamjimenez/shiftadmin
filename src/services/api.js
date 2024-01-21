@@ -43,6 +43,9 @@ export default {
     getApiRoot() {
         return apiRoot;
     },
+    getAxios() {
+        return api;
+    },
     get(path) {
         var url = (path.substr(0, 4) === 'http') ? path : apiRoot + path
         return api.get(url);

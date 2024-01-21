@@ -5,7 +5,7 @@
         <v-card>
             <v-card-actions>
                 <v-btn title="Up level" :disabled="path === ''" icon="mdi-arrow-up" @click="upLevel"></v-btn>
-                <v-btn title="Create folder" icon="mdi-folder-outline"></v-btn>
+                <v-btn title="Create folder" icon="mdi-folder-outline" @click="createFolder"></v-btn>
                 <v-btn title="Upload" icon="mdi-upload"></v-btn>
                 <v-btn title="Delete" icon="mdi-delete"></v-btn>
             </v-card-actions>
@@ -56,6 +56,23 @@ export default {
             let index = this.path.substr(0, this.path.length - 1).lastIndexOf("/");
             if (index !== -1) {
                 this.path = this.path.substr(0, index + 1);
+            }
+
+            this.fetchData();
+        },
+        createFolder: async function () {
+            let folder = prompt('Folder name');
+
+            if (!folder) {
+                return;
+            }
+
+            const result = await api.get('?cmd=uploads&path=' + this.path, {
+                createFolder: folder
+            });
+
+            if (result.data.error) {
+                alert(result.data.error);
             }
 
             this.fetchData();

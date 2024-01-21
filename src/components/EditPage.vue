@@ -1,5 +1,7 @@
 <template>
     <v-card style="overflow: scroll;" :loading="loading">
+        <v-alert color="error" v-if="error">{{ error }}</v-alert>
+
         <v-card-actions>
             <v-btn title="Back" icon="mdi-arrow-left" to="./"></v-btn>
             <v-btn title="Save" icon="mdi-content-save" @click="save"></v-btn>
@@ -8,15 +10,19 @@
             <v-list min-width="600">
                 <template v-for="(value, key, index) in fields" :key="index">
                     <v-list-item v-if="!['id', 'timestamp', 'deleted'].includes(value.type)">
-                        <v-checkbox v-if="value.type === 'checkbox'" :label="key" v-model="data[key]"
+                        <v-checkbox v-if="value.type === 'checkbox'" :label="key" v-model="data[value.column]"
                             :error-messages="errors[key]" />
-                        <v-file-input v-else-if="['file', 'files'].includes(value.type)" :label="key" v-model="data[key]"
-                            :error-messages="errors[key]" :multiple="value.type === 'files'" />
-                        <v-textarea v-else-if="value.type === 'textarea'" :label="key" v-model="data[key]"
+                        <div v-else-if="['file', 'files'].includes(value.type)">
+                            <div v-if="data[value.column] > 0" class="mb-3">
+                                <div>{{ key }}</div>
+                                <v-chip :text="data[value.column]" closable @click:close="data[value.column] = []"></v-chip>
+                            </div>
+                            <v-file-input v-else :label="key" v-model="data[value.column]"
+                                :error-messages="errors[key]" :multiple="value.type === 'files'" />
+                        </div>
+                        <v-textarea v-else-if="value.type === 'textarea'" :label="key" v-model="data[value.column]"
                             :error-messages="errors[key]" />
-                        <editor v-else-if="value.type === 'editor'"
-                            v-model="data[key]"
-                            :init="{
+                        <editor v-else-if="value.type === 'editor'" v-model="data[key]" :init="{
                             toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
                             branding: false,
                             promotion: false
@@ -25,14 +31,13 @@
                             <div class="px-3">{{ key }}</div>
                             <v-rating v-model="data[key]" :error-messages="errors[key]" hover :length="5" :size="32" />
                         </div>
-                        <v-select v-else-if="['select', 'select_parent'].includes(value.type)" :label="key" v-model="data[key]"
-                            :error-messages="errors[key]" :items="options[key]" />
+                        <v-select v-else-if="['select', 'select_parent'].includes(value.type)" :label="key"
+                            v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]" />
                         <v-autocomplete v-else-if="value.type === 'combo'" :label="key" v-model="data[key]"
                             :error-messages="errors[key]" :items="options[key]" @update:search="updateCombo($event, key)" />
-                        <v-text-field :label="key" v-model="data[key]" :error-messages="errors[key]"
+                        <v-text-field :label="key" v-model="data[value.column]" :error-messages="errors[key]"
                             :rules="rules[value.type] ? [rules[value.type]] : []" :type="fieldType(value.type)"
-                            :step="fieldStep(value.type)" autocomplete="new-password"
-                            v-else-if="key !== 'id'" />
+                            :step="fieldStep(value.type)" autocomplete="new-password" v-else-if="key !== 'id'" />
                     </v-list-item>
                 </template>
             </v-list>
@@ -84,6 +89,7 @@ export default {
             section: '',
             id: 0,
             loading: false,
+            error: '',
             errors: {},
             options: {},
             rules: {
@@ -116,9 +122,9 @@ export default {
                         data[name] = '';
                     }
                     if (field.type === 'checkbox') {
-                        data[name] = this.data[name] = this.data[name] > 0 ? true : false;
+                        data[name] = data[name] = data[name] > 0 ? true : false;
                     }
-                    if (['file', 'files'].includes(field.type)) {
+                    if (['file', 'files'].includes(field.type) && data[name] <= 0) {
                         data[name] = [];
                     }
 
@@ -152,22 +158,45 @@ export default {
             }
         },
         save: async function () {
+            const formData = new FormData();
+            
+            // get file data
+            for (const [name, value] of Object.entries(this.data)) {
+                if (Array.isArray(this.data[name])) {
+                    this.data[name].forEach(function (file) {
+                        console.log('File details:', file);
+                        formData.append(name, file);
+                    })
+                } else {                    
+                    formData.append(name, value);
+                }
+            }
+
             this.loading = true;
             this.errors = {};
-            const result = await api.post('?cmd=save&section=' + this.section + '&id=' + this.id, this.data);
+            this.error = '';
+
+            const axios = api.getAxios();
+            const apiRoot = api.getApiRoot();
+
+            const result = await axios.post(apiRoot + '?cmd=save&section=' + this.section + '&id=' + this.id, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
             this.loading = false;
 
             if (!result) {
                 return false;
             }
 
-            if (Object.keys(result.data.errors).length) {
-                this.errors = result.data.errors;
+            if (Object.keys(result.data.errors).length || result.data.error) {
+                this.error = result.data?.error;
+                this.errors = result.data?.errors;
             } else if (result.data.id) {
                 this.$router.push('/section/' + this.section + '/' + result.data.id + '/');
             }
-
-            //this.data = result.data.data;
         },
         fieldType(type) {
             switch (type) {
@@ -192,9 +221,9 @@ export default {
 
             return '';
         },
-        updateCombo: async function(term, column) {
-			const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
-			this.options[column] = result.data;
+        updateCombo: async function (term, column) {
+            const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
+            this.options[column] = result.data;
         }
     },
 

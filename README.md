@@ -1,6 +1,5 @@
 - configure area
 - select-multiple EDIT VIEW FIND
-- file EDIT
 - files EDIT VIEW
 - file uploads: create folder, upload, delete, tinymce
 - upload EDIT VIEW

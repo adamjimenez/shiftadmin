@@ -30,9 +30,11 @@
                         <v-textarea v-else-if="value.type === 'textarea'" :label="key" v-model="data[value.column]"
                             :error-messages="errors[key]" />
                         <editor v-else-if="value.type === 'editor'" v-model="data[key]" :init="{
-                            toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+                            plugins: 'code link lists media image',
+                            toolbar: 'insertfile undo redo | styleselect | formatselect  | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | hr link image forecolor backcolor | components',
                             branding: false,
-                            promotion: false
+                            promotion: false,
+                            file_picker_callback: filePickerCallback
                         }" />
                         <div v-else-if="value.type === 'rating'">
                             <div class="px-3">{{ key }}</div>
@@ -75,6 +77,8 @@ import 'tinymce/plugins/emoticons/js/emojis';
 import 'tinymce/plugins/link';
 import 'tinymce/plugins/lists';
 import 'tinymce/plugins/table';
+import 'tinymce/plugins/media';
+import 'tinymce/plugins/image';
 
 /* content UI CSS is required */
 import 'tinymce/skins/ui/oxide/content.js';
@@ -182,7 +186,7 @@ export default {
 
             this.errors = {};
             this.error = '';
-            
+
             this.loading = true;
 
             const result = api.post('?cmd=save&section=' + this.section + '&id=' + this.id, formData, {
@@ -233,6 +237,9 @@ export default {
         },
         chooseFileUpload: function (column) {
             this.$emit('chooseFileUpload', column);
+        },
+        filePickerCallback: function (cb) {
+            this.$emit('chooseFileUpload', cb);
         }
     },
     watch: {

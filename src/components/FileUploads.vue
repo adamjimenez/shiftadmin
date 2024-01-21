@@ -59,7 +59,15 @@ export default {
         },
         rowClick: function (e, item) {
             if (item.item.leaf) {
-                this.$emit('fileSelected', { value: item.item.id.substr(1), column: this.column });
+                let filepath = item.item.id;
+                filepath = api.getBaseUrl() + 'uploads' + filepath
+
+                if (typeof this.column === 'function') {
+                    this.column(filepath, { title: filepath });
+                } else {
+                    this.$emit('fileSelected', { value: filepath, column: this.column });
+                }
+
                 this.dialog = false;
             } else {
                 this.path = item.item.id + '/';

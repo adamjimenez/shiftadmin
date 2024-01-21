@@ -2,7 +2,6 @@ import axios from 'axios'
 axios.defaults.withCredentials = true
 
 import { setup } from 'axios-cache-adapter'
-
 import router from '../router'
 
 // Create `axios-cache-adapter` instance
@@ -28,7 +27,6 @@ api.interceptors.response.use((response) => {
     const originalRequest = error.config;
     
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
-        //location.href = 'https://adam.gogetters.co.uk/login?u=' + encodeURIComponent(location.href)
         router.router.push('/login')
 
         return Promise.reject('Forbidden');
@@ -37,9 +35,13 @@ api.interceptors.response.use((response) => {
     return Promise.reject(error);
 })
 
-var apiRoot = 'https://adam.gogetters.co.uk/_lib/api/';
+var baseUrl = 'https://adam.gogetters.co.uk/';
+var apiRoot = baseUrl + '_lib/api/';
 
 export default {
+    getBaseUrl() {
+        return baseUrl;
+    },
     getApiRoot() {
         return apiRoot;
     },

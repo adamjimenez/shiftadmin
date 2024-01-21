@@ -23,7 +23,7 @@
 
 				<v-btn variant="text" icon="mdi-home" href="/"></v-btn>
 				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" />
-				<v-btn variant="text" icon="mdi-cog" to="configure"></v-btn>
+				<v-btn variant="text" icon="mdi-cog" to="/configure"></v-btn>
 				<v-btn variant="text" icon="mdi-logout" href="/logout"></v-btn>
 			</v-app-bar>
 

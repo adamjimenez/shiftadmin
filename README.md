@@ -1,4 +1,4 @@
-- configure area
+- configure: tables, sections, dropdowns, general, template, login
 - select-multiple EDIT VIEW FIND
 - files EDIT VIEW
 - file uploads: create folder, upload, delete, tinymce

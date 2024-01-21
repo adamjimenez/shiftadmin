@@ -50,9 +50,9 @@ export default {
         var url = (path.substr(0, 4) === 'http') ? path : apiRoot + path
         return api.get(url);
     },
-    post(path, payload) {
+    post(path, payload, headers) {
         var url = (path.substr(0, 4) === 'http') ? path : apiRoot + path
-        return api.post(url, payload)
+        return api.post(url, payload, headers)
     },
     event(path, callback, errorCallback, completeCallback) {
         var source = new EventSource(apiRoot + path, { withCredentials: true })

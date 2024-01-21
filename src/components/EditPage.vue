@@ -180,14 +180,12 @@ export default {
                 }
             }
 
-            this.loading = true;
             this.errors = {};
             this.error = '';
+            
+            this.loading = true;
 
-            const axios = api.getAxios();
-            const apiRoot = api.getApiRoot();
-
-            const result = await axios.post(apiRoot + '?cmd=save&section=' + this.section + '&id=' + this.id, formData, {
+            const result = api.post('?cmd=save&section=' + this.section + '&id=' + this.id, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

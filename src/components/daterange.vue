@@ -3,18 +3,16 @@
         <template v-slot:activator="{ props }">
             <v-text-field v-model="dateRangeText" label="Dates" readonly v-bind="props"></v-text-field>
         </template>
-        <v-date-picker v-model="dates" no-title bg-color="black" multiple range>
-            <!--
+        <v-date-picker v-model="dates" no-title bg-color="black" multiple="range">
 			<template #actions>
 			<div>
 				<v-btn
                     variant="text"
-                    onClick="onClickSave"
+                    @click="menu=false"
                     text="OK"
                   />
                 </div>
 			</template>
-			-->
         </v-date-picker>
     </v-menu>
 </template>
@@ -36,6 +34,11 @@ export default {
     methods: {
         parseDate: function (dateString) {
             const date = new Date(dateString);
+            console.log(date)
+            if(!date) {
+                return;
+            }
+
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
             const day = date.getDate();
@@ -45,8 +48,8 @@ export default {
         }
     },
     watch: {
-        dates: function (newVal) {
-            if (!newVal[1]) {
+        dates: function (newVal) {            
+            if (!newVal[1] && newVal[0]) {
                 newVal[1] = newVal[0];
             }
 
@@ -55,7 +58,8 @@ export default {
     },
     computed: {
         dateRangeText() {
-            return this.parseDate(this.modelValue[0]) + ' - ' + this.parseDate(this.modelValue[1]);
+            return this.modelValue[0] ? this.parseDate(this.modelValue[0]) + ' - ' + this.parseDate(this.modelValue[this.modelValue.length-1]) : '-';
         },
     },
 }
+</script>

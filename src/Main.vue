@@ -86,14 +86,14 @@
 								<v-autocomplete v-else-if="field.type === 'combo'" :label="field.column"
 									v-model="params[field.column]" :items="options[field.column]"
 									@update:search="updateCombo($event, field.column)" />
+								<DateRange v-else-if="['date', 'datetime', 'timestamp'].includes(field.type)" :label="field.column"
+									v-model="ranges[field.column]" @update:modelValue="updateRange($event, field.column)" />
 								<v-text-field v-else :label="field.column" v-model="params[field.column]"
 									:type="fieldType(field.type)" :step="fieldStep(field.type)">
-
 									<template v-slot:prepend v-if="['decimal', 'int', 'rating'].includes(field.type)">
 										<v-select v-model="params['func'][field.column]" :items="['=', '>', '<']"
 											hide-details></v-select>
 									</template>
-
 								</v-text-field>
 							</v-list-item>
 						</template>
@@ -113,12 +113,14 @@
 import api from "./services/api";
 import util from "./services/util";
 import FileUploads from "./components/FileUploads";
+import DateRange from "./components/DateRange";
 
 export default {
 	name: 'ShiftAdmin',
 
     components: {
-        FileUploads
+        FileUploads,
+		DateRange
     },
 
 	data: function () {
@@ -134,6 +136,7 @@ export default {
 			params: { func: {} },
 			searchParams: {},
 			options: {},
+			ranges: {},
 			searchable: [
 				'checkbox',
 				'combo',
@@ -174,7 +177,9 @@ export default {
 			this.searchParams = { s: this.search };
 		},
 		doSearch: function () {
-			this.searchParams = JSON.parse(JSON.stringify(this.params));
+			this.searchParams = structuredClone(this.params);
+			console.log(this.params)
+			console.log(this.searchParams)
 			this.advancedDialog = false;
 		},
 		saveSearch: async function () {
@@ -204,6 +209,11 @@ export default {
 
 					if (!this.options[field.column]) {
 						this.options[field.column] = await util.getOptions(option);
+					}
+				}
+				if (['date', 'datetime', 'timestamp'].includes(field.type)) {
+					if (!this.ranges[field.column]) {
+						this.ranges[field.column] = [];
 					}
 				}
 			});
@@ -274,6 +284,16 @@ export default {
 
 			await api.post('?cmd=filters', {delete: filter_id});
 			this.fetchData();
+		},
+
+		updateRange: function (value, column) {
+			this.params[column] = value[0];
+
+			if (!this.params['func']) {
+				this.params['func'] = [];
+			}
+
+			this.params['func'][column] = value[value.length - 1];
 		}
 	},
 

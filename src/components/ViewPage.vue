@@ -36,33 +36,33 @@
 
         <v-card v-if="tab === 'summary'" min-width="600">
             <template v-for="(value, key, index) in fields" :key="index">
-                <div v-if="data[key] && !['password'].includes(value.type)">
+                <div v-if="data[value.column] && !['password'].includes(value.type)">
                     <v-card-title>
                         {{ key }}
                     </v-card-title>
                     <v-card-text :title="key">
-                        <a v-if="value.type === 'email'" :href="'mailto:' + data[key]">{{ data[key] }}</a>
-                        <a v-else-if="value.type === 'tel'" :href="'tel:' + data[key]">{{ data[key] }}</a>
-                        <a v-else-if="value.type === 'url'" :href="data[key]" target="_blank">{{ data[key] }}</a>
+                        <a v-if="value.type === 'email'" :href="'mailto:' + data[value.column]">{{ data[value.column] }}</a>
+                        <a v-else-if="value.type === 'tel'" :href="'tel:' + data[value.column]">{{ data[value.column] }}</a>
+                        <a v-else-if="value.type === 'url'" :href="data[value.column]" target="_blank">{{ data[value.column] }}</a>
                         <a v-else-if="value.type === 'coords'"
-                            :href="'https://www.google.com/maps/search/?api=1&query=' + data[key]" target="_blank">{{
-                                data[key] }}</a>
+                            :href="'https://www.google.com/maps/search/?api=1&query=' + data[value.column]" target="_blank">{{
+                                data[value.column] }}</a>
                         <v-btn v-else-if="['select', 'select_parent', 'combo'].includes(value.type)"
-                            :to="getSelectLink(key, value.type)" variant="text">{{ data[key + '_label'] ? data[key +
-                                '_label'] : data[key] }}</v-btn>
+                            :to="getSelectLink(key, value.type)" variant="text">{{ data[value.column + '_label'] ? data[value.column +
+                                '_label'] : data[value.column] }}</v-btn>
                         <span v-else-if="value.type === 'rating'">
-                            <v-rating v-model="data[key]" :length="5" :size="32" readonly></v-rating>
+                            <v-rating v-model="data[value.column]" :length="5" :size="32" readonly></v-rating>
                         </span>
-                        <img v-else-if="value.type === 'file'"
-                            :src="apiRoot + '?cmd=file&f=' + data[key] + '&w=320&h=240'" />
+                        <img v-else-if="['file', 'upload'].includes(value.type)"
+                            :src="apiRoot + '?cmd=file&f=' + data[value.column] + '&w=320&h=240'" />
                         <img v-else-if="value.type === 'upload'"
-                            :src="apiRoot + '?cmd=upload&f=' + data[key] + '&w=320&h=240'" />
-                        <div v-else-if="value.type === 'editor'" v-html="data[key]" class="mx-5"></div>
+                            :src="apiRoot + '?cmd=upload&f=' + data[value.column] + '&w=320&h=240'" />
+                        <div v-else-if="value.type === 'editor'" v-html="data[value.column]" class="mx-5"></div>
                         <span v-else>
-                            <span v-if="['checkbox', 'deleted'].includes(value.type)">{{ data[key] > 0 ? 'Yes' : 'No'
+                            <span v-if="['checkbox', 'deleted'].includes(value.type)">{{ data[value.column] > 0 ? 'Yes' : 'No'
                             }}</span>
-                            <span v-else>{{ data[key] }}</span>
-                            <span v-if="value.type === 'dob'">({{ age(data[key]) }})</span>
+                            <span v-else>{{ data[value.column] }}</span>
+                            <span v-if="value.type === 'dob'">({{ age(data[value.column]) }})</span>
                         </span>
                     </v-card-text>
                 </div>

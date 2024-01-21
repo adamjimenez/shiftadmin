@@ -1,5 +1,6 @@
 - configure: tables, sections, dropdowns, general, template, login
 - select-multiple EDIT VIEW FIND
-- file uploads: create folder, upload, delete, tinymce
+- files EDIT
+- file uploads: upload, tinymce
 - uploads EDIT VIEW
 - import

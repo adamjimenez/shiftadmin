@@ -8,10 +8,10 @@
                     <v-btn title="Up level" :disabled="path === ''" icon="mdi-arrow-up" @click="upLevel"></v-btn>
                     <v-btn title="Create folder" icon="mdi-folder-outline" @click="createFolder"></v-btn>
                     <v-btn title="Upload" icon="mdi-upload"></v-btn>
-                    <v-btn title="Delete" icon="mdi-delete"></v-btn>
+                    <v-btn title="Delete" icon="mdi-delete" :disabled="selected.length === 0" @click="deleteItems"></v-btn>
                 </v-card-actions>
 
-                <v-data-table :items="items" :headers="headers" show-select v-model="selected" @click:row="rowClick">
+                <v-data-table :items="items" :headers="headers" show-select v-model="selected" @click:row="rowClick" :loading="loading">
                     <template v-slot:[`item.thumb`]="{ item }">
                         <img v-if="item.thumb" :src="apiRoot + '../..' + item.thumb">
                     </template>
@@ -40,11 +40,14 @@ export default {
             }],
             apiRoot: '',
             selected: [],
+            loading: false,
         }
     },
     methods: {
         fetchData: async function () {
+            this.loading = true;
             const result = await api.get('?cmd=uploads&path=' + this.path);
+            this.loading = false;
             this.items = result.data.items;
         },
         open: function (column) {
@@ -76,9 +79,28 @@ export default {
                 return;
             }
 
-            const result = await api.get('?cmd=uploads&path=' + this.path, {
+            this.loading = true;
+            const result = await api.post('?cmd=uploads&path=' + this.path, {
                 createFolder: folder
             });
+            this.loading = false;
+
+            if (result.data.error) {
+                alert(result.data.error);
+            }
+
+            this.fetchData();
+        },
+        deleteItems: async function () {
+            if (!confirm('Are you sure?')) {
+                return;
+            }
+
+            this.loading = true;
+            const result = await api.post('?cmd=uploads&path=' + this.path, {
+                delete: this.selected
+            });
+            this.loading = false;
 
             if (result.data.error) {
                 alert(result.data.error);

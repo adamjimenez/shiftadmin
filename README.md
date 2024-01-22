@@ -1,5 +1,5 @@
 - configure: tables, sections, dropdowns, general, template, login
 - select-multiple EDIT VIEW FIND
 - files EDIT
-- uploads EDIT VIEW
+- uploads EDIT
 - import

@@ -13,11 +13,11 @@
                         <v-checkbox v-if="value.type === 'checkbox'" :label="key" v-model="data[value.column]"
                             :error-messages="errors[key]" />
                         <div v-else-if="['file', 'files'].includes(value.type)">
-                            <div v-if="data[value.column] > 0" class="mb-3">
+                            <div v-if="data[value.column].length > 0" class="mb-3">
                                 <div>{{ key }}</div>
-                                <v-chip :text="data[value.column]" closable @click:close="data[value.column] = []"></v-chip>
+                                <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="data[value.column][fileIndex] = []"></v-chip>
                             </div>
-                            <v-file-input v-else :label="key" v-model="data[value.column]"
+                            <v-file-input v-if="value.type === 'files' || data[value.column].length === 0" :label="key" v-model="data[value.column]"
                                 :error-messages="errors[key]" :multiple="value.type === 'files'" />
                         </div>
                         <div v-else-if="['upload'].includes(value.type)">
@@ -124,19 +124,23 @@ export default {
                 return false;
             }
 
-            this.fields = result.data.fields;
+            let fields = result.data.fields;
 
             if (result.data.data) {
                 let data = result.data.data;
 
-                for (const [, field] of Object.entries(this.fields)) {
+                for (const [, field] of Object.entries(fields)) {
                     if (field.type === 'password') {
                         data[field.column] = '';
                     }
                     if (field.type === 'checkbox') {
                         data[field.column] = data[field.column] = data[field.column] > 0 ? true : false;
                     }
-                    if (['file', 'files'].includes(field.type) && data[field.column] <= 0) {
+
+                    if (['file'].includes(field.type)) {
+                        data[field.column] = [data[field.column]];
+                    }
+                    if (['files'].includes(field.type) && data[field.column] <= 0) {
                         data[field.column] = [];
                     }
 
@@ -153,6 +157,8 @@ export default {
 
                 this.data = data;
             }
+
+            this.fields = fields;
 
             // parent fields
             if (!this.id) {

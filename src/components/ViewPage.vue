@@ -62,6 +62,11 @@
                         <img v-else-if="value.type === 'upload'"
                             :src="apiRoot + '?cmd=upload&f=' + data[value.column] + '&w=320&h=240'" />
                         <div v-else-if="value.type === 'editor'" v-html="data[value.column]" class="mx-5"></div>
+                        <div v-else-if="value.type === 'select_multiple'" class="mx-5">
+                            <v-chip v-for="(value, key, index) in data[value.column]" :key="index">
+                                {{ value }}
+                            </v-chip>
+                        </div>
                         <span v-else>
                             <span v-if="['checkbox', 'deleted'].includes(value.type)">{{ data[value.column] > 0 ? 'Yes' : 'No'
                             }}</span>

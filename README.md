@@ -1,4 +1,4 @@
-- configure: tables, sections, dropdowns, general, template, login
+- configure: tables, sections, dropdowns, general
 - select-multiple EDIT VIEW FIND
 - files EDIT
 - uploads EDIT

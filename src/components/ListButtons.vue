@@ -3,7 +3,7 @@
         <v-btn title="Add" icon="mdi-plus" :to="'/section/' + internalSection + '/add' + (parentsection ? '?parentsection=' + parentsection + '&parentid=' + parentid : '')"></v-btn>
         <v-btn title="Fields" icon="mdi-view-column" @click="changeFields"></v-btn>
         <v-btn title="Delete" icon="mdi-delete" v-if="selected.length" @click="doAction('delete')"></v-btn>
-        <v-btn title="Import" icon="mdi-import" @click="importDialog = true"></v-btn>
+        <v-btn title="Import" icon="mdi-import" @click="openImport"></v-btn>
         <v-btn title="Export" icon="mdi-export" @click="exportItems"></v-btn>
         <v-btn title="Sort" icon="mdi-sort" v-if="sortable" @click="openSortable"></v-btn>
 
@@ -89,7 +89,10 @@ export default {
         },
         customButton: function (button) {
             this.$emit('custombutton', button);
-        }
+        },
+        openImport: function () {
+            this.$emit('openImport');
+        },
     },
 
     watch: {

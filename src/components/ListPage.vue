@@ -10,7 +10,7 @@
                         <v-col class="py-0">
                             <ListButtons :selected="selected" :section="internalSection" @changeFields="dialog = true"
                                 @custombutton="customButton" :vars="vars" :sortable="isSortable"
-                                @openSortable="sortableDialog = true">
+                                @openSortable="sortableDialog = true" @openImport="importDialog = true">
                             </ListButtons>
                         </v-col>
                     </v-row>
@@ -19,7 +19,10 @@
         </v-data-table-server>
 
         <v-dialog v-model="importDialog" max-width="600" scrollable>
-            <v-card title="Not yet implemented">
+            <v-card title="Import">
+                <v-card-text>
+                    <v-file-input v-model="file" label="CSV file" @update:modelValue="readFile"></v-file-input>
+                </v-card-text>
             </v-card>
         </v-dialog>
 
@@ -85,6 +88,7 @@ export default {
             drag: false,
             sortOrder: [],
             sortOrderLoading: false,
+            file: [],
         };
     },
     methods: {
@@ -216,7 +220,7 @@ export default {
                 this.reload();
             }
         },
-        saveSortOrder: async function () {            
+        saveSortOrder: async function () {
             var data = {
                 cmd: 'reorder',
                 section: this.section,
@@ -232,6 +236,18 @@ export default {
         },
         reload: function () {
             this.search = String(Date.now())
+        },
+        readFile: function () {
+            console.log(this.file);
+
+            const fileReader = new FileReader();
+            fileReader.onload = (e) => {
+                const csvData = e.target.result;
+                const rows = csvData.split('\n');
+                const headers = rows[0].split(','); // Assuming headers are in the first row
+                this.headers = headers;
+            };
+            fileReader.readAsText(this.file);
         }
     },
 

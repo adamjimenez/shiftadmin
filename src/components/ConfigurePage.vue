@@ -43,7 +43,11 @@
                 </v-expansion-panel>
             </v-expansion-panels>
         </v-card>
-        <v-card v-if="tab === 'dropdowns'" min-width="600"></v-card>
+        <v-card v-if="tab === 'dropdowns'" min-width="600">
+            <div v-for="(option, key, index) in vars.options" :key="index">
+                {{ key }}
+            </div>
+        </v-card>
         <v-card v-if="tab === 'general'" min-width="600">
             <v-text-field label="From email"></v-text-field>
         </v-card>

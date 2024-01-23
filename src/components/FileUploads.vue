@@ -60,9 +60,9 @@ export default {
         rowClick: function (e, item) {
             if (item.item.leaf) {
                 let filepath = item.item.id;
-                filepath = api.getBaseUrl() + 'uploads' + filepath
 
                 if (typeof this.column === 'function') {
+                    filepath = api.getBaseUrl() + 'uploads' + filepath
                     this.column(filepath, { title: filepath });
                 } else {
                     this.$emit('fileSelected', { value: filepath, column: this.column });

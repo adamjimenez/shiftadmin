@@ -15,17 +15,17 @@
                         <div v-else-if="['file', 'files'].includes(value.type)">
                             <div v-if="data[value.column].length > 0" class="mb-3">
                                 <div>{{ key }}</div>
-                                <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="data[value.column][fileIndex] = []"></v-chip>
+                                <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="delete data[value.column].splice(fileIndex, 1)"></v-chip>
                             </div>
-                            <v-file-input v-if="value.type === 'files' || data[value.column].length === 0" :label="key" v-model="data[value.column]"
+                            <v-file-input v-if="value.type === 'files' || data[value.column].length === 0" :label="key" v-model="files[value.column]"
                                 :error-messages="errors[key]" :multiple="value.type === 'files'" />
                         </div>
-                        <div v-else-if="['upload'].includes(value.type)">
+                        <div v-else-if="['upload', 'uploads'].includes(value.type)">
                             <div>{{ key }}</div>
-                            <div v-if="data[value.column]" class="mb-3">
-                                <v-chip :text="data[value.column]" closable @click:close="data[value.column] = ''"></v-chip>
+                            <div v-if="data[value.column].length > 0" class="mb-3">
+                                <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="data[value.column].splice(fileIndex, 1)"></v-chip>
                             </div>
-                            <v-btn v-else @click="chooseFileUpload(value.column)">Choose</v-btn>
+                            <v-btn v-if="value.type === 'uploads' || data[value.column].length === 0" @click="chooseFileUpload(value.column)">Choose</v-btn>
                         </div>
                         <v-textarea v-else-if="value.type === 'textarea'" :label="key" v-model="data[value.column]"
                             :error-messages="errors[key]" />
@@ -104,6 +104,7 @@ export default {
             error: '',
             errors: {},
             options: {},
+            files: {},
             rules: {
                 required: value => !!value || 'Required',
                 ip: v => (!v || /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(v)) || 'Invalid IP address',
@@ -139,9 +140,11 @@ export default {
 
                     if (['file'].includes(field.type)) {
                         data[field.column] = [data[field.column]];
+                        this.files[field.column] = [];
                     }
                     if (['files'].includes(field.type) && data[field.column] <= 0) {
                         data[field.column] = [];
+                        this.files[field.column] = [];
                     }
 
                     // get options
@@ -177,17 +180,28 @@ export default {
         },
         save: async function () {
             const formData = new FormData();
+
+            // form data
+            for (const [name, value] of Object.entries(this.data)) {
+                let val = value;
+
+                if (Array.isArray(value)) {
+                    if (value.length === 0) {
+                        continue;
+                    }
+
+                    val = value.join("\n");
+                }
+                
+                formData.append(name, val);
+            }
             
             // get file data
-            for (const [name, value] of Object.entries(this.data)) {
-                if (Array.isArray(this.data[name])) {
-                    this.data[name].forEach(function (file) {
-                        console.log('File details:', file);
-                        formData.append(name, file);
-                    })
-                } else {                    
-                    formData.append(name, value);
-                }
+            for (const [name, value] of Object.entries(this.files)) {
+                value.forEach(function (file) {
+                    console.log('File details:', file);
+                    formData.append(name + '[]', file);
+                })
             }
 
             this.errors = {};
@@ -195,7 +209,7 @@ export default {
 
             this.loading = true;
 
-            const result = api.post('?cmd=save&section=' + this.section + '&id=' + this.id, formData, {
+            const result = await api.post('?cmd=save&section=' + this.section + '&id=' + this.id, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -250,8 +264,10 @@ export default {
     },
     watch: {
         fileSelected: function (data) {
-            console.log(data)
-            this.data[data.column] = data.value;
+            this.data[data.column].push(data.value);
+        },
+        vars: function () {
+            this.fetchData();
         }
     },
 
@@ -260,7 +276,10 @@ export default {
         if (this.$route.params.id) {
             this.id = this.$route.params.id;
         }
-        this.fetchData();
+
+        if (this.vars.sections) {
+            this.fetchData();
+        }
     }
 };
 </script>

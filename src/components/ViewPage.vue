@@ -48,8 +48,13 @@
                             :href="'https://www.google.com/maps/search/?api=1&query=' + data[value.column]" target="_blank">{{
                                 data[value.column] }}</a>
                         <v-btn v-else-if="['select', 'select_parent', 'combo'].includes(value.type)"
-                            :to="getSelectLink(key, value.type)" variant="text">{{ data[value.column + '_label'] ? data[value.column +
+                            :to="getSelectLink(key, data[value.column], value.type)" variant="text">{{ data[value.column + '_label'] ? data[value.column +
                                 '_label'] : data[value.column] }}</v-btn>
+                        <div v-else-if="value.type === 'select_multiple'" class="mx-5">
+                            <v-btn v-for="(v, k, index) in data[value.column]" :key="index" :to="getSelectLink(key, v, value.type)" variant="text">
+                                {{ getOption(options[value.column], v).title }}
+                            </v-btn>
+                        </div>
                         <span v-else-if="value.type === 'rating'">
                             <v-rating v-model="data[value.column]" :length="5" :size="32" readonly></v-rating>
                         </span>
@@ -62,11 +67,6 @@
                         <img v-else-if="value.type === 'upload'"
                             :src="apiRoot + '?cmd=upload&f=' + data[value.column] + '&w=320&h=240'" />
                         <div v-else-if="value.type === 'editor'" v-html="data[value.column]" class="mx-5"></div>
-                        <div v-else-if="value.type === 'select_multiple'" class="mx-5">
-                            <v-chip v-for="(value, key, index) in data[value.column]" :key="index">
-                                {{ value }}
-                            </v-chip>
-                        </div>
                         <span v-else>
                             <span v-if="['checkbox', 'deleted'].includes(value.type)">{{ data[value.column] > 0 ? 'Yes' : 'No'
                             }}</span>
@@ -115,6 +115,7 @@
 
 <script>
 import api from "../services/api";
+import util from "../services/util";
 import ListPage from "./ListPage";
 import ListButtons from "./ListButtons";
 
@@ -145,6 +146,7 @@ export default {
             activeHeaders: [],
             accessOptions: [{ value: 0, title: 'None' }, { value: 1, title: 'Read' }, { value: 2, title: 'Write' }, { value: 3, title: 'Full' }],
             apiRoot: '',
+            options: [],
         };
     },
     methods: {
@@ -160,9 +162,27 @@ export default {
                 return false;
             }
 
+            let fields = result.data.fields;
+
             if (result.data.data) {
-                this.data = result.data.data;
+                let data = result.data.data;
+
+                this.options = await util.getAllOptions(fields, this.vars, this.section, data);
+
+                for (const [, field] of Object.entries(fields)) {
+                    if (field.type === 'password') {
+                        data[field.column] = '';
+                    } else if (field.type === 'checkbox') {
+                        data[field.column] = data[field.column] = data[field.column] > 0 ? true : false;
+                    } else if (field.type === 'select_multiple' && !Array.isArray(data[field.column])) {
+                        // default to array
+                        data[field.column] = [];
+                    }
+                }
+
+                this.data = data;
             }
+
             this.fields = result.data.fields;
 
             document.title = 'ADMIN | ' + this.section + ' | ' + this.id;
@@ -248,11 +268,11 @@ export default {
 
             return yearDiff;
         },
-        getSelectLink: function (field, type) {
+        getSelectLink: function (field, value, type) {
             let option = (type === 'select_parent') ? this.section : this.vars.options[field.replaceAll(' ', '_')];
 
             if (typeof option === 'string') {
-                return '/section/' + option + '/' + this.data[field];
+                return '/section/' + option + '/' + value;
             }
         },
         customButton: async function (button) {
@@ -280,6 +300,9 @@ export default {
             } else {
                 await this.fetchData();
             }
+        },
+        getOption: function (options, value) {
+            return options.find(item => item.value === value);
         }
     },
 
@@ -307,15 +330,19 @@ export default {
             this.id = this.$route.params.id;
             this.fetchData();
         },
+        vars: function () {
+            this.fetchData();
+        }
     },
 
     async mounted() {
         this.section = this.$route.params.section;
         this.id = this.$route.params.id;
-
-        this.fetchData();
-
         this.apiRoot = api.getApiRoot()
+
+        if (this.vars.sections) {
+            this.fetchData();
+        }
     }
 };
 </script>

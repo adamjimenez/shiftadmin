@@ -47,7 +47,8 @@
 									<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" v-else></v-icon>
 								</template>
 								<template v-slot:append>
-									<v-btn icon="mdi-delete" v-if="child.filter_id" @click.stop="deleteFilter(child.filter_id)" variant="text" size="x-small" />
+									<v-btn icon="mdi-delete" v-if="child.filter_id"
+										@click.stop="deleteFilter(child.filter_id)" variant="text" size="x-small" />
 								</template>
 
 							</v-list-item>
@@ -69,7 +70,8 @@
 
 			<v-main class="d-flex align-center justify-center">
 				<router-view ref="main" class="fill-height" :vars="vars" :searchparams="searchParams"
-					@changeFields="changeFields" @chooseFileUpload="chooseFileUpload" :fileSelected="fileSelected"></router-view>
+					@changeFields="changeFields" @chooseFileUpload="chooseFileUpload"
+					:fileSelected="fileSelected"></router-view>
 			</v-main>
 
 			<v-dialog v-model="advancedDialog" max-width="600" scrollable>
@@ -83,11 +85,19 @@
 									v-model="params[field.column]"></v-checkbox>
 								<v-select v-else-if="['select'].includes(field.type)" :label="field.column"
 									:items="options[field.column]" v-model="params[field.column]"></v-select>
+								<v-select v-else-if="['select_multiple'].includes(field.type)" :label="field.column"
+									:items="options[field.column]" v-model="params[field.column]" multiple chips>
+									<template v-slot:prepend>
+										<v-select v-model="params['func'][field.column]" :items="['in', 'not in']"
+											hide-details></v-select>
+									</template>
+								</v-select>
 								<v-autocomplete v-else-if="field.type === 'combo'" :label="field.column"
 									v-model="params[field.column]" :items="options[field.column]"
 									@update:search="updateCombo($event, field.column)" />
-								<DateRange v-else-if="['date', 'datetime', 'timestamp'].includes(field.type)" :label="field.column"
-									v-model="ranges[field.column]" @update:modelValue="updateRange($event, field.column)" />
+								<DateRange v-else-if="['date', 'datetime', 'timestamp'].includes(field.type)"
+									:label="field.column" v-model="ranges[field.column]"
+									@update:modelValue="updateRange($event, field.column)" />
 								<v-text-field v-else :label="field.column" v-model="params[field.column]"
 									:type="fieldType(field.type)" :step="fieldStep(field.type)">
 									<template v-slot:prepend v-if="['decimal', 'int', 'rating'].includes(field.type)">
@@ -101,7 +111,8 @@
 					<v-card-actions>
 						<v-btn @click="doSearch" color="primary" variant="flat" prepend-icon="mdi-magnify">Search</v-btn>
 						<v-spacer></v-spacer>
-						<v-btn @click="saveSearch" color="secondary" variant="flat" prepend-icon="mdi-content-save">Save</v-btn>
+						<v-btn @click="saveSearch" color="secondary" variant="flat"
+							prepend-icon="mdi-content-save">Save</v-btn>
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
@@ -118,10 +129,10 @@ import DateRange from "./components/DateRange";
 export default {
 	name: 'ShiftAdmin',
 
-    components: {
-        FileUploads,
+	components: {
+		FileUploads,
 		DateRange
-    },
+	},
 
 	data: function () {
 		return {
@@ -144,11 +155,12 @@ export default {
 				'datetime',
 				'decimal',
 				'deleted',
-				'int', 
-				'page_name', 
-				'rating', 
-				'select', 
+				'int',
+				'page_name',
+				'rating',
+				'select',
 				'select_parent',
+				'select_multiple',
 				'text',
 				'timestamp',
 			],
@@ -189,7 +201,7 @@ export default {
 			if (!label) {
 				return;
 			}
-			
+
 			var data = {
 				save: 1,
 				label: label,
@@ -203,15 +215,18 @@ export default {
 			this.fetchData();
 		},
 		advancedSearch: async function () {
-			// resolve options
-			this.fields.forEach(async field => {
-				if (['select'].includes(field.type)) {
-					let option = this.vars.options[field.column.replaceAll('_', ' ')];
+			this.options = await util.getAllOptions(this.fields, this.vars, this.section, {});
 
-					if (!this.options[field.column]) {
-						this.options[field.column] = await util.getOptions(option);
-					}
+			if (!this.params.func) {
+				this.params.func = {};
+			}
+
+			// add ranges
+			this.fields.forEach(async field => {
+				if (!this.params.func[field.column]) {
+					this.params.func[field.column] = '';
 				}
+
 				if (['date', 'datetime', 'timestamp'].includes(field.type)) {
 					if (!this.ranges[field.column]) {
 						this.ranges[field.column] = [];
@@ -229,9 +244,9 @@ export default {
 			let result = {};
 			try {
 				result = await api.get('?cmd=config');
-            } catch (error) {
-                console.log(error)
-            }
+			} catch (error) {
+				console.log(error)
+			}
 
 			this.vars = result.data?.vars;
 
@@ -245,11 +260,11 @@ export default {
 				if (!this.vars?.branding?.colors.error) {
 					this.vars.branding.colors.error = '#b00020';
 				}
-			}
 
-			this.$vuetify.theme.themes.light.colors = this.vars?.branding?.colors
+				this.$vuetify.theme.themes.light.colors = this.vars?.branding?.colors
+			}
 		},
-		fieldType (type) {
+		fieldType(type) {
 			switch (type) {
 				case 'dob':
 				case 'date':
@@ -264,7 +279,7 @@ export default {
 
 			return ['email', 'password', 'dob', 'time'].includes(type) ? type : 'text'
 		},
-		fieldStep (type) {
+		fieldStep(type) {
 			switch (type) {
 				case 'int':
 					return 1;
@@ -279,11 +294,11 @@ export default {
 		},
 
 		deleteFilter: async function (filter_id) {
-            if (!confirm('Are you sure?')) {
-                return;
-            }
+			if (!confirm('Are you sure?')) {
+				return;
+			}
 
-			await api.post('?cmd=filters', {delete: filter_id});
+			await api.post('?cmd=filters', { delete: filter_id });
 			this.fetchData();
 		},
 
@@ -307,7 +322,7 @@ export default {
 	},
 
 	watch: {
-        $route() {
+		$route() {
 			// get params from qs
 			let query = this.$route.query
 			if (query) {
@@ -318,7 +333,7 @@ export default {
 			if (this.$route.params.section) {
 				this.section = this.$route.params.section;
 			}
-        },
+		},
 		searchParams: function (searchParams) {
 			this.$router.push({ path: this.$route.path, query: searchParams })
 		},
@@ -372,5 +387,4 @@ export default {
 	background-color: rgba(155, 155, 155, 0.5);
 	border-radius: 20px;
 	border: transparent;
-}
-</style>
+}</style>

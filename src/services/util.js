@@ -25,6 +25,36 @@ export default {
             }
         }
 
+        options.sort((a, b) => a.title.localeCompare(b.title));
+
         return options;
     },
+    getAllOptions: async function (fields, vars, section, data) {
+        let options = {};
+
+        for (const [, field] of Object.entries(fields)) {
+            // get options
+            if (['select', 'select_parent', 'select_multiple'].includes(field.type)) {
+                let option = (field.type === 'select_parent') ? section : vars.options[field.column.replaceAll(' ', '_')];
+                options[field.column] = await this.getOptions(option);
+
+                // prepend selected value
+                if (field.type === 'select_multiple' && Array.isArray(data[field.column])) {
+                    data[field.column].reverse().forEach((item) => {
+                        // check if already exists
+                        if (!options[field.column].some(option => option.value === item)) {
+                            options[field.column].unshift({
+                                value: item,
+                                title: item,
+                            });
+                        }
+                    });
+                }
+            } else if (field.type === 'combo') {
+                options[field.column] = [];
+            }
+        }
+
+        return options;
+    }
 }

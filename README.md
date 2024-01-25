@@ -1,3 +1,2 @@
 - configure: tables, sections, dropdowns, general
-- select-multiple EDIT VIEW FIND
 - import

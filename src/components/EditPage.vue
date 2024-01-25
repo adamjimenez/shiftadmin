@@ -40,8 +40,8 @@
                             <div class="px-3">{{ key }}</div>
                             <v-rating v-model="data[key]" :error-messages="errors[key]" hover :length="5" :size="32" />
                         </div>
-                        <v-select v-else-if="['select', 'select_parent'].includes(value.type)" :label="key"
-                            v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]" />
+                        <v-select v-else-if="['select', 'select_parent', 'select_multiple'].includes(value.type)" :label="key"
+                            v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]" :multiple="value.type === 'select_multiple'" :chips="value.type === 'select_multiple'" />
                         <v-autocomplete v-else-if="value.type === 'combo'" :label="key" v-model="data[key]"
                             :error-messages="errors[key]" :items="options[key]" @update:search="updateCombo($event, key)" />
                         <v-text-field :label="key" v-model="data[value.column]" :error-messages="errors[key]"
@@ -130,31 +130,16 @@ export default {
             if (result.data.data) {
                 let data = result.data.data;
 
+                this.options = await util.getAllOptions(fields, this.vars, this.section, data);
+
                 for (const [, field] of Object.entries(fields)) {
                     if (field.type === 'password') {
                         data[field.column] = '';
-                    }
-                    if (field.type === 'checkbox') {
+                    } else if (field.type === 'checkbox') {
                         data[field.column] = data[field.column] = data[field.column] > 0 ? true : false;
-                    }
-
-                    if (['file'].includes(field.type)) {
-                        data[field.column] = [data[field.column]];
-                        this.files[field.column] = [];
-                    }
-                    if (['files'].includes(field.type) && data[field.column] <= 0) {
+                    } else if (field.type === 'select_multiple' && !Array.isArray(data[field.column])) {
+                        // default to array
                         data[field.column] = [];
-                        this.files[field.column] = [];
-                    }
-
-                    // get options
-                    if (['select', 'select_parent'].includes(field.type)) {
-                        let option = (field.type === 'select_parent') ? this.section : this.vars.options[field.column.replaceAll(' ', '_')];
-                        this.options[field.column] = await util.getOptions(option);
-                    }
-
-                    if (field.type === 'combo') {
-                        this.options[field.column] = [];
                     }
                 }
 
@@ -190,10 +175,12 @@ export default {
                         continue;
                     }
 
-                    val = value.join("\n");
-                }
-                
-                formData.append(name, val);
+                    value.forEach(function (file) {
+                        formData.append(name + '[]', file);
+                    })
+                } else {
+                    formData.append(name, val);
+                }                
             }
             
             // get file data

@@ -10,7 +10,7 @@
                         <v-col class="py-0">
                             <ListButtons :selected="selected" :section="internalSection" @changeFields="dialog = true"
                                 @custombutton="customButton" :vars="vars" :sortable="isSortable"
-                                @openSortable="sortableDialog = true" @openImport="importDialog = true">
+                                @openSortable="sortableDialog = true">
                             </ListButtons>
                         </v-col>
                     </v-row>
@@ -21,8 +21,20 @@
         <v-dialog v-model="importDialog" max-width="600" scrollable>
             <v-card title="Import">
                 <v-card-text>
+                    <v-alert v-if="error" :text="error" type="error" />
+
                     <v-file-input v-model="file" label="CSV file" @update:modelValue="readFile"></v-file-input>
+
+                    <div v-if="importHeaders.length">
+                        <h4>Match up the fields</h4>
+                        <div v-for="(header, index) in headers" :key="index">
+                            <v-select :items="importHeaders" :label="header.title" v-model="importCols[header.key]" />
+                        </div>
+                    </div>
                 </v-card-text>
+                <v-card-actions>
+                    <v-btn @click="doImport" variant="flat" color="primary" :disabled="!importHeaders.length">Import</v-btn>
+                </v-card-actions>
             </v-card>
         </v-dialog>
 
@@ -80,6 +92,8 @@ export default {
             internalSection: '',
             loading: false,
             importDialog: false,
+            importHeaders: [],
+            importCols: {},
             sortableDialog: false,
             totalItems: 0,
             itemsPerPage: 20,
@@ -89,6 +103,7 @@ export default {
             sortOrder: [],
             sortOrderLoading: false,
             file: [],
+            error: '',
         };
     },
     methods: {
@@ -138,13 +153,11 @@ export default {
             this.headers = [];
             let allHeaders = Object.values(result.data.fields);
 
-            if (this.data.data?.[0]) {
-                for (const [, field] of Object.entries(this.data.fields)) {
-                    this.headers.push({
-                        title: this.formatString(field.column),
-                        key: field.column,
-                    });
-                }
+            for (const [, field] of Object.entries(this.data.fields)) {
+                this.headers.push({
+                    title: this.formatString(field.column),
+                    key: field.column,
+                });
             }
 
             if (!this.selectedHeaders.length) {
@@ -195,7 +208,28 @@ export default {
             this.reload();
         },
         customButton: async function (button) {
-            var data = {
+            let data = {};
+
+            if (button === 'export') {
+                this.exportItems();
+                return
+            } else if (button === 'import') {
+                this.openImport();
+                return
+            } else if (typeof button === 'string') {
+                data = {
+                    cmd: button,
+                    section: this.internalSection,
+                    ids: this.selected,
+                };
+
+                this.loading = true;
+                await api.post('?cmd=' + button + '&section=' + this.internalSection, data);
+                this.reload();
+                return;
+            }
+
+            data = {
                 cmd: 'button',
                 button: button.id,
                 section: this.internalSection,
@@ -220,6 +254,58 @@ export default {
                 this.reload();
             }
         },
+        exportItems: function () {
+            var data = {
+                cmd: 'export',
+                section: this.internalSection,
+                fields: this.searchparams,
+                columns: this.activeHeaders.map(item => item.key),
+            };
+
+            if (this.parentsection) {
+                data.parentsection = this.parentsection;
+            }
+
+            if (this.parentid) {
+                data.parentid = this.parentid;
+            }
+
+            const params = qs.stringify(data);
+
+            window.open(api.getApiRoot() + '?' + params);
+        },
+        openImport: function () {
+            this.importDialog = true;
+        },
+        doImport: async function () {
+            const formData = new FormData();
+
+            // form data
+            for (const [name, value] of Object.entries(this.importCols)) {
+                formData.append('fields[' + name + ']', value);
+            }
+            
+            // get file data
+            formData.append('file', this.file[0]);
+
+            this.error = '';
+            this.loading = true;
+
+            const result = await api.post('?cmd=import&section=' + this.internalSection, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            this.loading = false;
+
+            if (result.data.error) {
+                this.error = result.data?.error;
+                return;
+            }
+
+            this.importDialog = false;
+            this.reload();
+        },
         saveSortOrder: async function () {
             var data = {
                 cmd: 'reorder',
@@ -238,16 +324,50 @@ export default {
             this.search = String(Date.now())
         },
         readFile: function () {
-            console.log(this.file);
-
             const fileReader = new FileReader();
             fileReader.onload = (e) => {
                 const csvData = e.target.result;
                 const rows = csvData.split('\n');
-                const headers = rows[0].split(','); // Assuming headers are in the first row
-                this.headers = headers;
+
+                let headers = [];
+                let rowData = rows[0].split(',');
+                for (let i = 0; i < rowData.length; i++) {
+                    const field = rowData[i].trim();
+                    if (field.startsWith('"') && field.endsWith('"')) {
+                        headers.push(field.slice(1, -1)); // Extract content excluding quotes
+                    } else {
+                        headers.push(field);
+                    }
+                }
+
+                let preview = [];
+                rowData = rows[1].split(',');
+                for (let i = 0; i < rowData.length; i++) {
+                    const field = rowData[i].trim();
+                    if (field.startsWith('"') && field.endsWith('"')) {
+                        preview.push(field.slice(1, -1)); // Extract content excluding quotes
+                    } else {
+                        preview.push(field);
+                    }
+                }
+
+                this.importHeaders = [];
+                headers.forEach((item, index) => {
+                    this.importHeaders.push({
+                        value: index,
+                        raw: item,
+                        title: item + ' - ' + preview[index],
+                    });
+                });
+
+                // auto-match columns
+                this.importCols = {};
+                this.headers.forEach((header) => {
+                    let option = this.importHeaders.find(item => item.raw === header.key);
+                    this.importCols[header.key] = option ? option.value : '';
+                });
             };
-            fileReader.readAsText(this.file);
+            fileReader.readAsText(this.file[0]);
         }
     },
 

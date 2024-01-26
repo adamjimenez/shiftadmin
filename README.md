@@ -1,2 +1,1 @@
 - configure: tables, sections, dropdowns, general
-- import

@@ -21,9 +21,6 @@
 </template>
 
 <script>
-import api from "../services/api";
-import qs from "qs";
-
 export default {
     props: {
         vars: null,
@@ -50,36 +47,11 @@ export default {
             str = str.replace(/_/g, ' ');
             return str.charAt(0).toUpperCase() + str.slice(1)
         },
-        doAction: async function (action) {
-            var data = {
-                cmd: action,
-                section: this.section,
-                ids: this.selected,
-            };
-
-            this.loading = true;
-            await api.post('?cmd=' + action + '&section=' + this.internalSection, data);
-            await this.fetchData();
+        doAction: async function (action) {            
+            this.$emit('custombutton', action);
         },
         exportItems: function () {
-            var data = {
-                cmd: 'export',
-                section: this.internalSection,
-                fields: this.searchparams,
-                columns: this.activeHeaders.map(item => item.key),
-            };
-
-            if (this.parentsection) {
-                data.parentsection = this.parentsection;
-            }
-
-            if (this.parentid) {
-                data.parentid = this.parentid;
-            }
-
-            const params = qs.stringify(data);
-
-            window.open(api.getApiRoot() + '?' + params);
+            this.$emit('custombutton', 'export');
         },
         changeFields: function () {
             this.$emit('changeFields')
@@ -91,7 +63,7 @@ export default {
             this.$emit('custombutton', button);
         },
         openImport: function () {
-            this.$emit('openImport');
+            this.$emit('custombutton', 'import');
         },
     },
 

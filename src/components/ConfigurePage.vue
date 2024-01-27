@@ -470,7 +470,7 @@ export default {
                 value = lines[0].includes('=') ? {} :  [];
 
                 lines.forEach((line) => {
-                    if (Array.isArray) {
+                    if (Array.isArray(value)) {
                         value.push(line);
                     } else {
                         let arr = line.split('=');

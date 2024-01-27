@@ -240,7 +240,7 @@ export default {
         },
         updateCombo: async function (term, column) {
             const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
-            this.options[column] = result.data;
+            this.options[column] = result.data.options;
         },
         chooseFileUpload: function (column) {
             this.$emit('chooseFileUpload', column);

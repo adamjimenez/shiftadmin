@@ -1,1 +1,0 @@
-- configure: tables, sections, dropdowns, general

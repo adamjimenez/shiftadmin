@@ -61,6 +61,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
     </v-layout>
 </template>
 
@@ -175,7 +176,6 @@ export default {
                     }
                 }
             });
-            console.log(this.selectedHeaders)
 
             this.$emit('changeFields', fields);
 
@@ -394,6 +394,8 @@ export default {
                 this.selectedHeaders = selectedHeaders;
             }
         },
+        vars: function () {
+        }
     },
 
     computed: {

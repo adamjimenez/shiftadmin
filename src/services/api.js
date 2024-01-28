@@ -35,15 +35,19 @@ api.interceptors.response.use((response) => {
     return Promise.reject(error);
 })
 
-var baseUrl = 'https://adam.gogetters.co.uk/';
-var apiRoot = baseUrl + '_lib/api/';
+var webUrl = '';
+var apiRoot = '';
 
 export default {
-    getBaseUrl() {
-        return baseUrl;
+    getWebUrl() {
+        return webUrl;
     },
     getApiRoot() {
         return apiRoot;
+    },
+    setWebUrl(url) {
+        webUrl = url;
+        apiRoot = webUrl + '_lib/api/';
     },
     getAxios() {
         return api;

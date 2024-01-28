@@ -23,10 +23,10 @@ const routes = [
         }, {
             path: '/',
             component: () => import('./components/HomePage.vue')
-        }/*, {
+        }, {
             path: '/:catchAll(.*)',
             component: () => import('./components/IframePage.vue')
-        }*/]
+        }]
     }, {
         path: '/login',
         component: () => import('./components/LoginPage.vue')

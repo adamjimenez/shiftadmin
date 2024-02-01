@@ -71,7 +71,7 @@
 			<v-main class="d-flex align-center justify-center">
 				<router-view ref="main" class="fill-height" :vars="vars" :searchparams="searchParams"
 					@changeFields="changeFields" @chooseFileUpload="chooseFileUpload"
-					:fileSelected="fileSelected"></router-view>
+					:fileSelected="fileSelected" @message="message" :class="fullScreen ? 'fullScreen' : ''"></router-view>
 			</v-main>
 
 			<v-dialog v-model="advancedDialog" max-width="600" scrollable>
@@ -164,7 +164,8 @@ export default {
 				'text',
 				'timestamp',
 			],
-			fileSelected: {}
+			fileSelected: {},
+			fullScreen: false,
 		};
 	},
 
@@ -318,6 +319,14 @@ export default {
 
 		fileSelectedHandler: function (data) {
 			this.fileSelected = data;
+		},
+
+		message: function (data) {
+			console.log(data)
+
+			if (typeof data.fullScreen === 'boolean') {
+				this.fullScreen = data.fullScreen;
+			}
 		}
 	},
 
@@ -387,4 +396,21 @@ export default {
 	background-color: rgba(155, 155, 155, 0.5);
 	border-radius: 20px;
 	border: transparent;
-}</style>
+}
+
+.fullScreen {
+	position: static !important;
+}
+
+.fullScreen iframe {
+	position: absolute;
+	background: #fff;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 100%;
+	width: 100%;
+	z-index: 99999999;
+}
+</style>

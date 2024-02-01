@@ -15,7 +15,7 @@ const routes = [
             path: '/section/:section(.*)/:id([0-9]+)',
             component: () => import('./components/ViewPage.vue')
         }, {
-            path: '/section/:section(.*)',
+            path: '/section/:section([a-z0-9% ]+)/',
             component: () => import('./components/ListPage.vue')
         }, {
             path: '/configure',

@@ -1,7 +1,6 @@
 <template>
 	<v-app>
-		<v-layout class="fill-height">
-			<v-app-bar color="primary" prominent>
+			<v-app-bar color="primary">
 				<v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
 				<v-toolbar-title>
@@ -30,7 +29,6 @@
 			<v-navigation-drawer :rail="drawer" expand-on-hover permanent color="secondary">
 				<v-list>
 					<div v-for="item in vars?.menu" :key="item">
-
 						<v-list-group v-if="item.children" :prepend-icon="item.icon ? item.icon : 'mdi-minus'"
 							:value="item.title">
 							<template v-slot:activator="{ props }">
@@ -50,26 +48,23 @@
 									<v-btn icon="mdi-delete" v-if="child.filter_id"
 										@click.stop="deleteFilter(child.filter_id)" variant="text" size="x-small" />
 								</template>
-
 							</v-list-item>
 						</v-list-group>
 
 						<v-list-item v-else :title="item.title" :value="item.to" :to="item.to">
-
 							<template v-slot:prepend>
 								<v-badge :content="item.count" color="error" v-if="item.count > 0">
 									<v-icon :icon="item.icon ? item.icon : 'mdi-minus'"></v-icon>
 								</v-badge>
 								<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" v-else></v-icon>
 							</template>
-
 						</v-list-item>
 					</div>
 				</v-list>
 			</v-navigation-drawer>
 
 			<v-main class="d-flex align-center justify-center">
-				<router-view ref="main" class="fill-height" :vars="vars" :searchparams="searchParams"
+				<router-view ref="main" class="w-100 fill-height" :vars="vars" :searchparams="searchParams"
 					@changeFields="changeFields" @chooseFileUpload="chooseFileUpload"
 					:fileSelected="fileSelected" @message="message" :class="fullScreen ? 'fullScreen' : ''"></router-view>
 			</v-main>
@@ -116,7 +111,6 @@
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
-		</v-layout>
 	</v-app>
 </template>
 

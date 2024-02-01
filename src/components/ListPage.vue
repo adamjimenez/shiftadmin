@@ -5,16 +5,12 @@
             v-model:items-per-page="itemsPerPage" :search="search">
 
             <template v-slot:top>
-                <v-container color="secondary" fluid v-if="!hidebuttons">
-                    <v-row>
-                        <v-col class="py-0">
-                            <ListButtons :selected="selected" :section="internalSection" @changeFields="dialog = true"
-                                @custombutton="customButton" :vars="vars" :sortable="isSortable"
-                                @openSortable="sortableDialog = true">
-                            </ListButtons>
-                        </v-col>
-                    </v-row>
-                </v-container>
+                <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
+                    <ListButtons v-if="!hidebuttons" :selected="selected" :section="internalSection" @changeFields="dialog = true"
+                        @custombutton="customButton" :vars="vars" :sortable="isSortable"
+                        @openSortable="sortableDialog = true">
+                    </ListButtons>
+                </v-sheet>
             </template>
         </v-data-table-server>
 
@@ -64,6 +60,12 @@
 
     </v-layout>
 </template>
+
+<style>
+    .v-table__wrapper {
+        margin-top: 40px !important;
+    }
+</style>
 
 <script>
 import api from "../services/api";
@@ -425,6 +427,7 @@ export default {
     },
 
     created() {
+        console.log(this.$route)
         this.internalSection = this.section ? this.section : this.$route.params.section;
 
         if (localStorage['fields_' + this.internalSection]) {

@@ -1,17 +1,18 @@
 <template>
-    <v-card style="overflow: scroll;">
-        <v-card-actions>
+    <v-card>
+        <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
+            <v-btn title="Back" icon="mdi-arrow-left" to="../" variant="text"></v-btn>
             <span v-if="tab === 'summary'">
-                <v-btn title="Edit" icon="mdi-pencil" to="edit"></v-btn>
+                <v-btn title="Edit" icon="mdi-pencil" to="edit" variant="text"></v-btn>
                 <v-btn v-if="data['deleted'] > 0" title="Restore" icon="mdi-delete-restore" @click="restoreItem"
-                    color="success" variant="flat"></v-btn>
-                <v-btn v-else title="Delete" icon="mdi-delete" @click="deleteItem" color="error" variant="flat"></v-btn>
-                <v-btn title="Logs" icon="mdi-text" @click="openLogs"></v-btn>
-                <v-btn v-if="data.admin > 1" title="Privileges" icon="mdi-account-key" @click="openPrivileges"></v-btn>
+                    color="success" variant="text"></v-btn>
+                <v-btn v-else title="Delete" icon="mdi-delete" @click="deleteItem" color="error" variant="text"></v-btn>
+                <v-btn title="Logs" icon="mdi-text" @click="openLogs" variant="text"></v-btn>
+                <v-btn v-if="data.admin > 1" title="Privileges" icon="mdi-account-key" @click="openPrivileges" variant="text"></v-btn>
 
                 <v-menu v-if="buttons.length">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-dots-vertical"></v-btn>
+                        <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text"></v-btn>
                     </template>
                     <v-list>
                         <v-list-item v-for="(item, index) in buttons" :key="index" :value="index"
@@ -23,9 +24,9 @@
             </span>
             <ListButtons v-else :selected="selected" :section="tab" @changeFields="changeFields" :parentsection="section"
                 :parentid="id" :sortable="isSortable" @openSortable="openSortable"></ListButtons>
-        </v-card-actions>
+        </v-sheet>
 
-        <v-tabs v-model="tab" bg-color="primary">
+        <v-tabs v-model="tab" bg-color="primary" class="mt-10">
             <v-tab value="summary">Summary</v-tab>
             <template v-if="vars.subsections && vars.subsections[section]?.length">
                 <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection" :value="subsection">

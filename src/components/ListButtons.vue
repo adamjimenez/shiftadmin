@@ -1,15 +1,15 @@
 <template>
-    <span color="secondary" fluid>
-        <v-btn title="Add" icon="mdi-plus" :to="'/section/' + internalSection + '/add' + (parentsection ? '?parentsection=' + parentsection + '&parentid=' + parentid : '')"></v-btn>
-        <v-btn title="Fields" icon="mdi-view-column" @click="changeFields"></v-btn>
-        <v-btn title="Delete" icon="mdi-delete" v-if="selected.length" @click="doAction('delete')"></v-btn>
-        <v-btn title="Import" icon="mdi-import" @click="openImport"></v-btn>
-        <v-btn title="Export" icon="mdi-export" @click="exportItems"></v-btn>
-        <v-btn title="Sort" icon="mdi-sort" v-if="sortable" @click="openSortable"></v-btn>
+    <span>
+        <v-btn variant="text" title="Add" icon="mdi-plus" :to="'/section/' + internalSection + '/add' + (parentsection ? '?parentsection=' + parentsection + '&parentid=' + parentid : '')"></v-btn>
+        <v-btn variant="text" title="Fields" icon="mdi-view-column" @click="changeFields"></v-btn>
+        <v-btn variant="text" title="Delete" icon="mdi-delete" v-if="selected.length" @click="doAction('delete')"></v-btn>
+        <v-btn variant="text" title="Import" icon="mdi-import" @click="openImport"></v-btn>
+        <v-btn variant="text" title="Export" icon="mdi-export" @click="exportItems"></v-btn>
+        <v-btn variant="text" title="Sort" icon="mdi-sort" v-if="sortable" @click="openSortable"></v-btn>
 
         <v-menu v-if="buttons.length">
             <template v-slot:activator="{ props }">
-                <v-btn v-bind="props" icon="mdi-dots-vertical"></v-btn>
+                <v-btn variant="text" v-bind="props" icon="mdi-dots-vertical"></v-btn>
             </template>
             <v-list>
                 <v-list-item v-for="(item, index) in buttons" :key="index" :value="index" @click="customButton(item)">

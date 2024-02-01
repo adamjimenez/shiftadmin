@@ -1,56 +1,59 @@
 <template>
-    <v-card style="overflow: scroll;" :loading="loading">
+    <v-card :loading="loading">
         <v-alert color="error" v-if="error">{{ error }}</v-alert>
 
-        <v-card-actions>
-            <v-btn title="Back" icon="mdi-arrow-left" to="./"></v-btn>
-            <v-btn title="Save" icon="mdi-content-save" @click="save"></v-btn>
-        </v-card-actions>
-        <v-form>
-            <v-list min-width="600">
-                <template v-for="(value, key, index) in fields" :key="index">
-                    <v-list-item v-if="!['id', 'timestamp', 'deleted'].includes(value.type)">
-                        <v-checkbox v-if="value.type === 'checkbox'" :label="key" v-model="data[value.column]"
-                            :error-messages="errors[key]" />
-                        <div v-else-if="['file', 'files'].includes(value.type)">
-                            <div v-if="data[value.column].length > 0" class="mb-3">
+        <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
+            <v-btn title="Back" icon="mdi-arrow-left" to="./" variant="text"></v-btn>
+            <v-btn title="Save" icon="mdi-content-save" @click="save" variant="text"></v-btn>
+        </v-sheet>
+
+        <v-card-text class="mt-10">
+            <v-form>
+                <v-list min-width="600">
+                    <template v-for="(value, key, index) in fields" :key="index">
+                        <v-list-item v-if="!['id', 'timestamp', 'deleted'].includes(value.type)">
+                            <v-checkbox v-if="value.type === 'checkbox'" :label="key" v-model="data[value.column]"
+                                :error-messages="errors[key]" />
+                            <div v-else-if="['file', 'files'].includes(value.type)">
+                                <div v-if="data[value.column]?.length > 0" class="mb-3">
+                                    <div>{{ key }}</div>
+                                    <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="delete data[value.column].splice(fileIndex, 1)"></v-chip>
+                                </div>
+                                <v-file-input v-if="value.type === 'files' || data[value.column]?.length === 0" :label="key" v-model="files[value.column]"
+                                    :error-messages="errors[key]" :multiple="value.type === 'files'" />
+                            </div>
+                            <div v-else-if="['upload', 'uploads'].includes(value.type)">
                                 <div>{{ key }}</div>
-                                <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="delete data[value.column].splice(fileIndex, 1)"></v-chip>
+                                <div v-if="data[value.column]?.length > 0" class="mb-3">
+                                    <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="data[value.column].splice(fileIndex, 1)"></v-chip>
+                                </div>
+                                <v-btn v-if="value.type === 'uploads' || data[value.column]?.length === 0" @click="chooseFileUpload(value.column)">Choose</v-btn>
                             </div>
-                            <v-file-input v-if="value.type === 'files' || data[value.column].length === 0" :label="key" v-model="files[value.column]"
-                                :error-messages="errors[key]" :multiple="value.type === 'files'" />
-                        </div>
-                        <div v-else-if="['upload', 'uploads'].includes(value.type)">
-                            <div>{{ key }}</div>
-                            <div v-if="data[value.column].length > 0" class="mb-3">
-                                <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="data[value.column].splice(fileIndex, 1)"></v-chip>
+                            <v-textarea v-else-if="value.type === 'textarea'" :label="key" v-model="data[value.column]"
+                                :error-messages="errors[key]" />
+                            <editor v-else-if="value.type === 'editor'" v-model="data[key]" :init="{
+                                plugins: 'code link lists media image',
+                                toolbar: 'insertfile undo redo | styleselect | formatselect  | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | hr link image forecolor backcolor | components',
+                                branding: false,
+                                promotion: false,
+                                file_picker_callback: filePickerCallback
+                            }" />
+                            <div v-else-if="value.type === 'rating'">
+                                <div class="px-3">{{ key }}</div>
+                                <v-rating v-model="data[key]" :error-messages="errors[key]" hover :length="5" :size="32" />
                             </div>
-                            <v-btn v-if="value.type === 'uploads' || data[value.column].length === 0" @click="chooseFileUpload(value.column)">Choose</v-btn>
-                        </div>
-                        <v-textarea v-else-if="value.type === 'textarea'" :label="key" v-model="data[value.column]"
-                            :error-messages="errors[key]" />
-                        <editor v-else-if="value.type === 'editor'" v-model="data[key]" :init="{
-                            plugins: 'code link lists media image',
-                            toolbar: 'insertfile undo redo | styleselect | formatselect  | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | hr link image forecolor backcolor | components',
-                            branding: false,
-                            promotion: false,
-                            file_picker_callback: filePickerCallback
-                        }" />
-                        <div v-else-if="value.type === 'rating'">
-                            <div class="px-3">{{ key }}</div>
-                            <v-rating v-model="data[key]" :error-messages="errors[key]" hover :length="5" :size="32" />
-                        </div>
-                        <v-select v-else-if="['select', 'select_parent', 'select_multiple'].includes(value.type)" :label="key"
-                            v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]" :multiple="value.type === 'select_multiple'" :chips="value.type === 'select_multiple'" />
-                        <v-autocomplete v-else-if="value.type === 'combo'" :label="key" v-model="data[key]"
-                            :error-messages="errors[key]" :items="options[key]" @update:search="updateCombo($event, key)" />
-                        <v-text-field :label="key" v-model="data[value.column]" :error-messages="errors[key]"
-                            :rules="rules[value.type] ? [rules[value.type]] : []" :type="fieldType(value.type)"
-                            :step="fieldStep(value.type)" autocomplete="new-password" v-else-if="key !== 'id'" />
-                    </v-list-item>
-                </template>
-            </v-list>
-        </v-form>
+                            <v-select v-else-if="['select', 'select_parent', 'select_multiple'].includes(value.type)" :label="key"
+                                v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]" :multiple="value.type === 'select_multiple'" :chips="value.type === 'select_multiple'" />
+                            <v-autocomplete v-else-if="value.type === 'combo'" :label="key" v-model="data[key]"
+                                :error-messages="errors[key]" :items="options[key]" @update:search="updateCombo($event, key)" />
+                            <v-text-field :label="key" v-model="data[value.column]" :error-messages="errors[key]"
+                                :rules="rules[value.type] ? [rules[value.type]] : []" :type="fieldType(value.type)"
+                                :step="fieldStep(value.type)" autocomplete="new-password" v-else-if="key !== 'id'" />
+                        </v-list-item>
+                    </template>
+                </v-list>
+            </v-form>
+        </v-card-text>
     </v-card>
 </template>
 

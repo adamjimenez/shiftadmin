@@ -24,6 +24,9 @@ const routes = [
             path: '/',
             component: () => import('./components/HomePage.vue')
         }, {
+            path: '/:catchAll(.*).vue',
+            component: () => import('./components/CustomComponent.vue')
+        }, {
             path: '/:catchAll(.*)',
             component: () => import('./components/IframePage.vue')
         }]

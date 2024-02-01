@@ -9,12 +9,12 @@
 					</v-btn>
 				</v-toolbar-title>
 
-				<v-combobox v-model="search" :items="searchItems" @update:search="updateSearch"
+				<v-combobox v-if="fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
 					@update:model-value="afterSelection" @keydown.enter="quickSearch" label="Search" placeholder="Search"
 					ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded
 					variant="solo-filled" no-filter>
 					<template v-slot:append-inner>
-						<v-btn icon="mdi-tune" @mousedown.stop @click="advancedSearch"></v-btn>
+						<v-btn icon="mdi-tune" @mousedown.stop @click="advancedSearch" :disabled="fields.length === 0"></v-btn>
 					</template>
 				</v-combobox>
 
@@ -71,7 +71,7 @@
 
 			<v-dialog v-model="advancedDialog" max-width="600" scrollable>
 				<v-card>
-					<v-card-title>Advanced search</v-card-title>
+					<v-card-title>Search {{ section }}</v-card-title>
 					<v-divider></v-divider>
 					<v-card-text>
 						<template v-for="field in fields" :key="field.type">

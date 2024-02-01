@@ -150,11 +150,22 @@ export default {
                 return false;
             }
 
+            if (!result.data.data) {
+                result.data.data = [];
+                result.data.total = 0;
+            }
+
             this.data = result.data;
             this.totalItems = this.data.total;
 
             this.headers = [];
             let allHeaders = Object.values(result.data.fields);
+
+            if (allHeaders.length && !allHeaders.find(obj => obj.column === 'id')) {
+                // redirect
+                this.$router.push('/section/' + this.internalSection + '/1/');
+                return false;
+            }
 
             for (const [, field] of Object.entries(this.data.fields)) {
                 this.headers.push({
@@ -164,22 +175,10 @@ export default {
             }
 
             if (!this.selectedHeaders.length) {
-                this.selectedHeaders = allHeaders;
+                this.selectedHeaders = allHeaders.map(item => item.column);
             }
 
             this.$emit('changeHeaders', allHeaders)
-
-            // get active fields
-            var fields = [];
-            this.selectedHeaders.forEach(item => {
-                for (const [, field] of Object.entries(this.data.fields)) {
-                    if (item === field.column) {
-                        fields.push(field);
-                    }
-                }
-            });
-
-            this.$emit('changeFields', fields);
 
             this.sortOrder = [];
             if (this.isSortable) {
@@ -383,18 +382,30 @@ export default {
             this.reload();
         },
         selectedHeaders: function (newVal) {
-            localStorage['fields_' + this.internalSection] = JSON.stringify(newVal);
+            localStorage['fields_' + this.internalSection] = JSON.stringify(Object.values(newVal));
         },
         searchparams: function () {
             this.reload();
         },
         headers: function (headers) {
-            var saved = localStorage['fields_' + this.internalSection];
-            var selectedHeaders = saved ? JSON.parse(saved) : headers.map(item => item.column);
+            let saved = localStorage['fields_' + this.internalSection];
+            let selectedHeaders = saved ? JSON.parse(saved) : headers.map(item => item.key);
 
             if (JSON.stringify(selectedHeaders) !== JSON.stringify(this.selectedHeaders)) {
                 this.selectedHeaders = selectedHeaders;
             }
+
+            // get active fields
+            var fields = [];
+            this.selectedHeaders.forEach(item => {
+                for (const [, field] of Object.entries(this.data.fields)) {
+                    if (item === field.column) {
+                        fields.push(field);
+                    }
+                }
+            });
+
+            this.$emit('changeFields', fields);
         },
         vars: function () {
         }
@@ -427,7 +438,6 @@ export default {
     },
 
     created() {
-        console.log(this.$route)
         this.internalSection = this.section ? this.section : this.$route.params.section;
 
         if (localStorage['fields_' + this.internalSection]) {

@@ -244,11 +244,8 @@ export default {
 
 			this.vars = result.data.vars;
 
-			console.log(this.$vuetify.theme.themes.light.colors);
-
-
 			let colors = {
-				primary: '#ffffff',
+				primary: '#007bff',
 				secondary: '#303641',
 			};
 
@@ -339,12 +336,7 @@ export default {
 
 	computed: {
 		base() {
-            let base = '/';
-            if (this.$route.params.base) {
-                base += this.$route.params.base + '/';
-            }
-
-			return base;
+			return util.base();
 		}
 	},
 

@@ -27,7 +27,13 @@ api.interceptors.response.use((response) => {
     const originalRequest = error.config;
     
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
-        router.router.push('login')
+        let base = '/';
+
+        if (router.router.currentRoute.value.params.base) {
+            base += router.router.currentRoute.value.params.base + '/';
+        }
+
+        router.router.push(base + 'login')
 
         return Promise.reject('Forbidden');
     }

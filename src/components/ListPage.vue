@@ -170,7 +170,7 @@ export default {
 
             if (allHeaders.length && !allHeaders.find(obj => obj.column === 'id')) {
                 // redirect
-                this.$router.push('/section/' + this.internalSection + '/1/');
+                this.$router.push(this.base + 'section/' + this.internalSection + '/1/');
                 return false;
             }
 

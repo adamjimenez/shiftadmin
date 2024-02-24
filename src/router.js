@@ -31,7 +31,7 @@ const routes = [
             component: () => import('./components/IframePage.vue')
         }]
     }, {
-        path: '/login',
+        path: '/:base(admin[^/]*)?/login',
         component: () => import('./components/LoginPage.vue')
     }
 ];

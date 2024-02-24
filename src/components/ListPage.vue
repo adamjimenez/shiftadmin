@@ -155,6 +155,13 @@ export default {
                 result.data.total = 0;
             }
 
+            // blank passwords
+            result.data.data.forEach(item => {
+                if (item.password) {
+                    item.password = '';
+                }
+            });
+
             this.data = result.data;
             this.totalItems = this.data.total;
 

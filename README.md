@@ -1,7 +1,6 @@
 Login
 Build process
 Admin htaccess
-hide password hash
 
 Trimmed down shiftlib
 Licensing

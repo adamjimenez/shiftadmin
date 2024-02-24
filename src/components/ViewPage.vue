@@ -6,7 +6,7 @@
                 <v-btn title="Edit" icon="mdi-pencil" to="edit" variant="text"></v-btn>
                 <v-btn v-if="data['deleted'] > 0" title="Restore" icon="mdi-delete-restore" @click="restoreItem"
                     color="success" variant="text"></v-btn>
-                <v-btn v-else title="Delete" icon="mdi-delete" @click="deleteItem" color="error" variant="text"></v-btn>
+                <v-btn v-else title="Delete" icon="mdi-delete" @click="deleteItem" variant="text"></v-btn>
                 <v-btn title="Logs" icon="mdi-text" @click="openLogs" variant="text"></v-btn>
                 <v-btn v-if="data.admin > 1" title="Privileges" icon="mdi-account-key" @click="openPrivileges" variant="text"></v-btn>
 

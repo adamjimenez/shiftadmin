@@ -1,6 +1,6 @@
 <template>
     <span>
-        <v-btn variant="text" title="Add" icon="mdi-plus" :to="'/section/' + internalSection + '/add' + (parentsection ? '?parentsection=' + parentsection + '&parentid=' + parentid : '')"></v-btn>
+        <v-btn variant="text" title="Add" icon="mdi-plus" :to="base + 'section/' + internalSection + '/add' + (parentsection ? '?parentsection=' + parentsection + '&parentid=' + parentid : '')"></v-btn>
         <v-btn variant="text" title="Fields" icon="mdi-view-column" @click="changeFields"></v-btn>
         <v-btn variant="text" title="Delete" icon="mdi-delete" v-if="selected.length" @click="doAction('delete')"></v-btn>
         <v-btn variant="text" title="Import" icon="mdi-import" @click="openImport"></v-btn>
@@ -85,6 +85,14 @@ export default {
             })
 
             return buttons;
+        },
+        base() {
+            let base = '/';
+            if (this.$route.params.base) {
+                base += this.$route.params.base + '/';
+            }
+
+            return base;
         }
     },
 

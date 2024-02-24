@@ -2,7 +2,7 @@
     <v-layout>
         <v-data-table-server v-model="selected" :headers="activeHeaders" :items="data.data" item-value="id" show-select
             @click:row="rowClick" :loading="loading" @update:options="loadItems" :items-length="totalItems"
-            v-model:items-per-page="itemsPerPage" :search="search">
+            v-model:items-per-page="itemsPerPage" :search="search" fixed-header fixed-footer>
 
             <template v-slot:top>
                 <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
@@ -194,7 +194,12 @@ export default {
         },
 
         rowClick: function (e, item) {
-            this.$router.push('/section/' + this.internalSection + '/' + item.item.id + '/');
+            let base = '/';
+            if (this.$route.params.base) {
+                base += this.$route.params.base + '/';
+            }
+
+            this.$router.push(base + 'section/' + this.internalSection + '/' + item.item.id + '/');
         },
         doAction: async function (action) {
             var data = {

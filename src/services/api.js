@@ -27,7 +27,7 @@ api.interceptors.response.use((response) => {
     const originalRequest = error.config;
     
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
-        router.router.push('/login')
+        router.router.push('login')
 
         return Promise.reject('Forbidden');
     }
@@ -47,7 +47,7 @@ export default {
     },
     setWebUrl(url) {
         webUrl = url;
-        apiRoot = webUrl + '_lib/api/';
+        apiRoot = webUrl + '_lib/api/v2/';
     },
     getAxios() {
         return api;

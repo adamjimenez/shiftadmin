@@ -3,31 +3,31 @@ import qs from 'qs';
 
 const routes = [
     {
-        path: '/',
+        path: '/:base(admin[^/]*)?',
         component: () => import('./Main.vue'),
         children: [{
-            path: '/section/:section(.*)/:id([0-9]+)/edit',
+            path: '/:base(admin[^/]*)?/section/:section(.*)/:id([0-9]+)/edit',
             component: () => import('./components/EditPage.vue')
         }, {
-            path: '/section/:section(.*)/add',
+            path: '/:base(admin[^/]*)?/section/:section(.*)/add',
             component: () => import('./components/EditPage.vue')
         }, {
-            path: '/section/:section(.*)/:id([0-9]+)',
+            path: '/:base(admin[^/]*)?/section/:section(.*)/:id([0-9]+)',
             component: () => import('./components/ViewPage.vue')
         }, {
-            path: '/section/:section([a-z0-9% ]+)/',
+            path: '/:base(admin[^/]*)?/section/:section([a-z0-9% ]+)/',
             component: () => import('./components/ListPage.vue')
         }, {
-            path: '/configure',
+            path: '/:base(admin[^/]*)?/configure',
             component: () => import('./components/ConfigurePage.vue')
         }, {
-            path: '/',
+            path: '/:base(admin[^/]*)?/',
             component: () => import('./components/HomePage.vue')
         }, {
-            path: '/:catchAll(.*).vue',
+            path: '/:base(admin[^/]*)?/:catchAll(.*).vue',
             component: () => import('./components/CustomComponent.vue')
         }, {
-            path: '/:catchAll(.*)',
+            path: '/:base(admin[^/]*)?/:catchAll(.*)',
             component: () => import('./components/IframePage.vue')
         }]
     }, {

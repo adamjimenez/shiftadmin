@@ -274,7 +274,13 @@ export default {
     methods: {
         fetchData: async function () {
             const result = await api.get('config.php');
-            this.data = result.data;
+            let data = result.data;
+
+            if (!data.vars.subsections) {
+                data.vars.subsections = {};
+            }
+
+            this.data = data;
             this.dirty = false;
         },
         save: async function () {

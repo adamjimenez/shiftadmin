@@ -22,7 +22,7 @@
 
 				<v-btn variant="text" icon="mdi-home" href="/"></v-btn>
 				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" />
-				<v-btn variant="text" icon="mdi-cog" to="/configure"></v-btn>
+				<v-btn variant="text" icon="mdi-cog" :to="base + 'configure'"></v-btn>
 				<v-btn variant="text" icon="mdi-logout" href="/logout"></v-btn>
 			</v-app-bar>
 
@@ -36,7 +36,7 @@
 							</template>
 
 							<v-list-item v-for="child in item.children" :key="child.to" :title="child.title"
-								:value="child.to" :to="child.to">
+								:value="child.to" :to="base + child.to">
 
 								<template v-slot:prepend>
 									<v-badge :content="child.count" color="error" v-if="child.count > 0">
@@ -51,7 +51,7 @@
 							</v-list-item>
 						</v-list-group>
 
-						<v-list-item v-else :title="item.title" :value="item.to" :to="item.to">
+						<v-list-item v-else :title="item.title" :value="item.to" :to="base + item.to">
 							<template v-slot:prepend>
 								<v-badge :content="item.count" color="error" v-if="item.count > 0">
 									<v-icon :icon="item.icon ? item.icon : 'mdi-minus'"></v-icon>
@@ -104,10 +104,9 @@
 						</template>
 					</v-card-text>
 					<v-card-actions>
-						<v-btn @click="doSearch" color="primary" variant="flat" prepend-icon="mdi-magnify">Search</v-btn>
 						<v-spacer></v-spacer>
-						<v-btn @click="saveSearch" color="secondary" variant="flat"
-							prepend-icon="mdi-content-save">Save</v-btn>
+						<v-btn @click="saveSearch" color="secondary" variant="text">Save filter</v-btn>
+						<v-btn @click="doSearch" color="primary" variant="flat">Search</v-btn>
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
@@ -243,21 +242,17 @@ export default {
 				console.log(error)
 			}
 
-			this.vars = result.data?.vars;
+			this.vars = result.data.vars;
 
-			if (this.vars?.branding) {
-				if (!this.vars?.branding?.colors.surface) {
-					this.vars.branding.colors.surface = '#ffffff';
-				}
-				if (!this.vars?.branding?.colors.success) {
-					this.vars.branding.colors.success = '#7ec581';
-				}
-				if (!this.vars?.branding?.colors.error) {
-					this.vars.branding.colors.error = '#b00020';
-				}
+			console.log(this.$vuetify.theme.themes.light.colors);
 
-				this.$vuetify.theme.themes.light.colors = this.vars?.branding?.colors
-			}
+
+			let colors = {
+				primary: '#ffffff',
+				secondary: '#303641',
+			};
+
+			this.$vuetify.theme.themes.light.colors = { ...this.$vuetify.theme.themes.light.colors, ...colors, ...this.vars?.branding };
 		},
 		fieldType(type) {
 			switch (type) {
@@ -340,6 +335,17 @@ export default {
 		searchParams: function (searchParams) {
 			this.$router.push({ path: this.$route.path, query: searchParams })
 		},
+	},
+
+	computed: {
+		base() {
+            let base = '/';
+            if (this.$route.params.base) {
+                base += this.$route.params.base + '/';
+            }
+
+			return base;
+		}
 	},
 
 	async mounted() {

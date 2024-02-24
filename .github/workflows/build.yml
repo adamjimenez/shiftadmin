@@ -1,0 +1,35 @@
+name: Build and Push to Builds Repo
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build App
+        run: npm run build
+
+      - name: Push to Builds Repo
+        run: |
+          git config --global user.name "$(git log -n 1 --pretty=format:%an)"
+          git config --global user.email "$(git log -n 1 --pretty=format:%ae)"
+          mkdir new
+          cd new
+          git init
+          git remote add origin https://adamjimenez:${{ secrets.SSH_KEY }}@github.com/adamjimenez/shiftadmin-builds.git
+          git pull origin master
+          rm -Rf *
+          cp -r ../dist/* .
+
+          git add --all          
+          git commit -m 'Deploying latest build'
+          git push origin master --force

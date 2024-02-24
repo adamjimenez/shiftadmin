@@ -164,11 +164,11 @@ export default {
 
 	methods: {
 		afterSelection: function (item) {
-			if (typeof item !== 'object') {
+			if (typeof item !== 'object' || item === null) {
 				return;
 			}
 
-			this.$router.push('/section/' + this.section + '/' + item.value);
+			this.$router.push(this.main + 'section/' + this.section + '/' + item.value);
 		},
 		updateSearch: async function (term) {
 			this.section = this.$route.params.section;

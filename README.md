@@ -1,4 +1,3 @@
-Login
 Build process
 Admin htaccess
 

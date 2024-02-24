@@ -1,4 +1,5 @@
 import api from "./api";
+import router from '../router'
 
 export default {
     getOptions: async function(option) {
@@ -57,5 +58,13 @@ export default {
         }
 
         return options;
+    },
+    base: function () {
+        let base = '/';
+        if (router.router.currentRoute.value.params.base) {
+            base += router.router.currentRoute.value.params.base + '/';
+        }
+
+        return base;
     }
 }

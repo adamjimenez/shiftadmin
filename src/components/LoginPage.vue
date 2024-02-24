@@ -18,6 +18,7 @@
   
 <script>
 import api from "../services/api";
+import util from "../services/util";
 
 export default {
     data: () => ({
@@ -46,8 +47,8 @@ export default {
 
             if (result.data.error) {
                 this.error = result.data.error;
-            } else if (result.data.id) {
-                this.$router.push('/');
+            } else {
+                this.$router.push(util.base());
             }
             
         },

@@ -37,7 +37,7 @@
         <v-dialog v-model="dialog" max-width="600" scrollable>
             <v-card title="Fields">
                 <v-data-table v-model="selectedHeaders" :headers="[{ title: 'Field', key: 'key' }]" :items="headers"
-                    item-value="key" items-per-page="-1" show-select>
+                    item-value="key" items-per-page="-1" show-select class="text-capitalize">
                     <template v-slot:bottom></template>
                 </v-data-table>
             </v-card>
@@ -64,6 +64,9 @@
 <style>
     .data-table-server .v-table__wrapper {
         margin-top: 40px !important;
+    }
+    .data-table-server .v-data-table__thead {
+        text-transform: capitalize;
     }
 </style>
 

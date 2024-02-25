@@ -38,7 +38,7 @@
         <v-card v-if="tab === 'summary'" min-width="600">
             <template v-for="(value, key, index) in fields" :key="index">
                 <div v-if="data[value.column] && !['password'].includes(value.type)">
-                    <v-card-title>
+                    <v-card-title class="text-capitalize">
                         {{ key }}
                     </v-card-title>
                     <v-card-text :title="key">

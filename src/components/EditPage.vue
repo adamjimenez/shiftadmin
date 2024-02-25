@@ -7,7 +7,7 @@
             <v-btn title="Save" icon="mdi-content-save" @click="save" variant="text"></v-btn>
         </v-sheet>
 
-        <v-card-text class="mt-10">
+        <v-card-text class="mt-10 text-capitalize">
             <v-form>
                 <v-list min-width="600">
                     <template v-for="(value, key, index) in fields" :key="index">

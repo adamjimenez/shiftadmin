@@ -1,6 +1,12 @@
 import { createApp } from 'vue'
+import { createVuetify } from 'vuetify'
 import App from './App.vue'
-import vuetify from './plugins/vuetify'
+
+let vuetify = createVuetify({
+  theme: {
+    defaultTheme: 'dark',
+  },
+})
 
 // Vuetify
 import 'vuetify/styles'

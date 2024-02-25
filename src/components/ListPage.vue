@@ -69,6 +69,7 @@
 
 <script>
 import api from "../services/api";
+import util from "../services/util";
 import qs from "qs";
 import ListButtons from "./ListButtons";
 import draggable from 'vuedraggable'
@@ -155,10 +156,18 @@ export default {
                 result.data.total = 0;
             }
 
-            // blank passwords
+            // format data
             result.data.data.forEach(item => {
-                if (item.password) {
-                    item.password = '';
+                for (const [, field] of Object.entries(result.data.fields)) {
+                    switch(field.type) {
+                        case 'password':
+                            item[field.column] = '';
+                        break;
+                        case 'datetime':
+                        case 'timestamp':
+                            item[field.column] = util.formatDate(item[field.column]);
+                        break;
+                    }
                 }
             });
 

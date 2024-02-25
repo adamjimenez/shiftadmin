@@ -1,5 +1,6 @@
 import api from "./api";
-import router from '../router'
+import router from '../router';
+import moment from 'moment';
 
 export default {
     getOptions: async function(option) {
@@ -66,5 +67,10 @@ export default {
         }
 
         return base;
-    }
+    },
+    formatDate: function(value) {
+        if (value) {
+            return moment(value).format('DD-MMM-YYYY HH:mm')
+        }
+    },
 }

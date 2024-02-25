@@ -231,7 +231,6 @@ export default {
 			this.advancedDialog = true;
 		},
 		changeFields: function (fields) {
-			//console.log(fields)
 			this.fields = fields;
 		},
 		fetchData: async function () {

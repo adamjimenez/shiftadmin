@@ -216,9 +216,13 @@ export default {
 			}
 
 			// add ranges
-			this.fields.forEach(async field => {
+			this.fields.forEach(field => {
 				if (!this.params.func[field.column]) {
 					this.params.func[field.column] = '';
+				}
+
+				if (['decimal', 'int', 'rating'].includes(field.type)) {
+					this.params.func[field.column] = '=';
 				}
 
 				if (['date', 'datetime', 'timestamp'].includes(field.type)) {
@@ -292,11 +296,11 @@ export default {
 		updateRange: function (value, column) {
 			this.params[column] = value[0];
 
-			if (!this.params['func']) {
-				this.params['func'] = [];
+			if (!this.params.func) {
+				this.params.func = [];
 			}
 
-			this.params['func'][column] = value[value.length - 1];
+			this.params.func[column] = value[value.length - 1];
 		},
 
 		chooseFileUpload: function (column) {

@@ -2,7 +2,7 @@
     <v-layout>
         <v-data-table-server v-model="selected" :headers="activeHeaders" :items="data.data" item-value="id" show-select
             @click:row="rowClick" :loading="loading" @update:options="loadItems" :items-length="totalItems"
-            v-model:items-per-page="itemsPerPage" :search="search" fixed-header fixed-footer>
+            v-model:items-per-page="itemsPerPage" :search="search" fixed-header fixed-footer class="data-table-server">
 
             <template v-slot:top>
                 <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
@@ -62,7 +62,7 @@
 </template>
 
 <style>
-    .v-table__wrapper {
+    .data-table-server .v-table__wrapper {
         margin-top: 40px !important;
     }
 </style>

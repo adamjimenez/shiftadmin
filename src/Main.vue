@@ -1,115 +1,115 @@
 <template>
 	<v-app>
-			<v-app-bar color="primary">
-				<v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+		<v-app-bar color="secondary">
+			<v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
-				<v-toolbar-title>
-					<v-btn to="/" variant="plain">
-						{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
-					</v-btn>
-				</v-toolbar-title>
+			<v-toolbar-title>
+				<v-btn to="/" variant="plain">
+					{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
+				</v-btn>
+			</v-toolbar-title>
 
-				<v-combobox v-if="fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
-					@update:model-value="afterSelection" @keydown.enter="quickSearch" label="Search" placeholder="Search"
-					ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded
-					variant="solo-filled" no-filter>
-					<template v-slot:append-inner>
-						<v-btn icon="mdi-tune" @mousedown.stop @click="advancedSearch" :disabled="fields.length === 0"></v-btn>
-					</template>
-				</v-combobox>
+			<v-combobox v-if="fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
+				@update:model-value="afterSelection" @keydown.enter="quickSearch" label="Search" placeholder="Search"
+				ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded
+				variant="solo-filled" no-filter>
+				<template v-slot:append-inner>
+					<v-btn icon="mdi-tune" @mousedown.stop @click="advancedSearch" :disabled="fields.length === 0"></v-btn>
+				</template>
+			</v-combobox>
 
-				<v-spacer></v-spacer>
+			<v-spacer></v-spacer>
 
-				<v-btn variant="text" icon="mdi-home" href="/"></v-btn>
-				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" />
-				<v-btn variant="text" icon="mdi-cog" :to="base + 'configure'"></v-btn>
-				<v-btn variant="text" icon="mdi-logout" href="/logout"></v-btn>
-			</v-app-bar>
+			<v-btn variant="text" icon="mdi-home" href="/"></v-btn>
+			<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" />
+			<v-btn variant="text" icon="mdi-cog" :to="base + 'configure'"></v-btn>
+			<v-btn variant="text" icon="mdi-logout" href="/logout"></v-btn>
+		</v-app-bar>
 
-			<v-navigation-drawer :rail="drawer" expand-on-hover permanent color="secondary">
-				<v-list>
-					<div v-for="item in vars?.menu" :key="item">
-						<v-list-group v-if="item.children" :prepend-icon="item.icon ? item.icon : 'mdi-minus'"
-							:value="item.title">
-							<template v-slot:activator="{ props }">
-								<v-list-item v-bind="props" :title="item.title"></v-list-item>
-							</template>
+		<v-navigation-drawer :rail="drawer" expand-on-hover permanent color="secondary">
+			<v-list>
+				<div v-for="item in vars?.menu" :key="item">
+					<v-list-group v-if="item.children" :prepend-icon="item.icon ? item.icon : 'mdi-minus'"
+						:value="item.title">
+						<template v-slot:activator="{ props }">
+							<v-list-item v-bind="props" :title="item.title"></v-list-item>
+						</template>
 
-							<v-list-item v-for="child in item.children" :key="child.to" :title="child.title"
-								:value="child.to" :to="base + child.to">
+						<v-list-item v-for="child in item.children" :key="child.to" :title="child.title" :value="child.to"
+							:to="base + child.to">
 
-								<template v-slot:prepend>
-									<v-badge :content="child.count" color="error" v-if="child.count > 0">
-										<v-icon :icon="child.icon ? child.icon : 'mdi-minus'"></v-icon>
-									</v-badge>
-									<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" v-else></v-icon>
-								</template>
-								<template v-slot:append>
-									<v-btn icon="mdi-delete" v-if="child.filter_id"
-										@click.stop="deleteFilter(child.filter_id)" variant="text" size="x-small" />
-								</template>
-							</v-list-item>
-						</v-list-group>
-
-						<v-list-item v-else :title="item.title" :value="item.to" :to="base + item.to">
 							<template v-slot:prepend>
-								<v-badge :content="item.count" color="error" v-if="item.count > 0">
-									<v-icon :icon="item.icon ? item.icon : 'mdi-minus'"></v-icon>
+								<v-badge :content="child.count" color="error" v-if="child.count > 0">
+									<v-icon :icon="child.icon ? child.icon : 'mdi-minus'"></v-icon>
 								</v-badge>
-								<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" v-else></v-icon>
+								<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" v-else></v-icon>
+							</template>
+							<template v-slot:append>
+								<v-btn icon="mdi-delete" v-if="child.filter_id" @click.stop="deleteFilter(child.filter_id)"
+									variant="text" size="x-small" />
 							</template>
 						</v-list-item>
-					</div>
-				</v-list>
-			</v-navigation-drawer>
+					</v-list-group>
 
-			<v-main class="d-flex align-center justify-center">
-				<router-view ref="main" class="w-100 fill-height" :vars="vars" :searchparams="searchParams"
-					@changeFields="changeFields" @chooseFileUpload="chooseFileUpload"
-					:fileSelected="fileSelected" @message="message" :class="fullScreen ? 'fullScreen' : ''"></router-view>
-			</v-main>
-
-			<v-dialog v-model="advancedDialog" max-width="600" scrollable>
-				<v-card>
-					<v-card-title>Search {{ section }}</v-card-title>
-					<v-divider></v-divider>
-					<v-card-text>
-						<template v-for="field in fields" :key="field.type">
-							<v-list-item v-if="searchable.includes(field.type)">
-								<v-checkbox v-if="['checkbox', 'deleted'].includes(field.type)" :label="field.column"
-									v-model="params[field.column]"></v-checkbox>
-								<v-select v-else-if="['select'].includes(field.type)" :label="field.column"
-									:items="options[field.column]" v-model="params[field.column]"></v-select>
-								<v-select v-else-if="['select_multiple'].includes(field.type)" :label="field.column"
-									:items="options[field.column]" v-model="params[field.column]" multiple chips>
-									<template v-slot:prepend>
-										<v-select v-model="params['func'][field.column]" :items="['in', 'not in']"
-											hide-details></v-select>
-									</template>
-								</v-select>
-								<v-autocomplete v-else-if="field.type === 'combo'" :label="field.column"
-									v-model="params[field.column]" :items="options[field.column]"
-									@update:search="updateCombo($event, field.column)" />
-								<DateRange v-else-if="['date', 'datetime', 'timestamp'].includes(field.type)"
-									:label="field.column" v-model="ranges[field.column]"
-									@update:modelValue="updateRange($event, field.column)" />
-								<v-text-field v-else :label="field.column" v-model="params[field.column]"
-									:type="fieldType(field.type)" :step="fieldStep(field.type)">
-									<template v-slot:prepend v-if="['decimal', 'int', 'rating'].includes(field.type)">
-										<v-select v-model="params['func'][field.column]" :items="['=', '>', '<']"
-											hide-details></v-select>
-									</template>
-								</v-text-field>
-							</v-list-item>
+					<v-list-item v-else :title="item.title" :value="item.to" :to="base + item.to">
+						<template v-slot:prepend>
+							<v-badge :content="item.count" color="error" v-if="item.count > 0">
+								<v-icon :icon="item.icon ? item.icon : 'mdi-minus'"></v-icon>
+							</v-badge>
+							<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" v-else></v-icon>
 						</template>
-					</v-card-text>
-					<v-card-actions>
-						<v-spacer></v-spacer>
-						<v-btn @click="saveSearch" color="secondary" variant="text">Save filter</v-btn>
-						<v-btn @click="doSearch" color="primary" variant="flat">Search</v-btn>
-					</v-card-actions>
-				</v-card>
-			</v-dialog>
+					</v-list-item>
+				</div>
+			</v-list>
+		</v-navigation-drawer>
+
+		<v-main class="d-flex align-center justify-center">
+			<router-view ref="main" class="w-100 fill-height" :vars="vars" :searchparams="searchParams"
+				@changeFields="changeFields" @chooseFileUpload="chooseFileUpload" :fileSelected="fileSelected"
+				@message="message" :class="fullScreen ? 'fullScreen' : ''"></router-view>
+		</v-main>
+
+		<v-dialog v-model="advancedDialog" max-width="600" scrollable>
+			<v-card>
+				<v-card-title>Search {{ section }}</v-card-title>
+				<v-divider></v-divider>
+				<v-card-text class="text-capitalize">
+					<template v-for="field in fields" :key="field.type">
+						<v-list-item v-if="searchable.includes(field.type)">
+							<v-checkbox v-if="['checkbox', 'deleted'].includes(field.type)" :label="field.column"
+								v-model="params[field.column]"></v-checkbox>
+							<v-select v-else-if="['select'].includes(field.type)" :label="field.column"
+								:items="options[field.column]" v-model="params[field.column]"></v-select>
+							<v-select v-else-if="['select_multiple'].includes(field.type)" :label="field.column"
+								:items="options[field.column]" v-model="params[field.column]" multiple chips>
+								<template v-slot:prepend>
+									<v-select v-model="params['func'][field.column]" :items="['in', 'not in']"
+										hide-details></v-select>
+								</template>
+							</v-select>
+							<v-autocomplete v-else-if="field.type === 'combo'" :label="field.column"
+								v-model="params[field.column]" :items="options[field.column]"
+								@update:search="updateCombo($event, field.column)" />
+							<DateRange v-else-if="['date', 'datetime', 'timestamp'].includes(field.type)"
+								:label="field.column" v-model="ranges[field.column]"
+								@update:modelValue="updateRange($event, field.column)" />
+							<v-text-field v-else :label="field.column" v-model="params[field.column]"
+								:type="fieldType(field.type)" :step="fieldStep(field.type)">
+								<template v-slot:prepend v-if="['decimal', 'int', 'rating'].includes(field.type)">
+									<v-select v-model="params['func'][field.column]" :items="['=', '>', '<']"
+										hide-details></v-select>
+								</template>
+							</v-text-field>
+						</v-list-item>
+					</template>
+				</v-card-text>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn @click="saveSearch" color="secondary" variant="text">Save filter</v-btn>
+					<v-btn @click="doSearch" color="primary" variant="flat">Search</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-app>
 </template>
 
@@ -249,6 +249,7 @@ export default {
 			};
 
 			this.$vuetify.theme.themes.light.colors = { ...this.$vuetify.theme.themes.light.colors, ...colors, ...this.vars?.branding };
+			this.$vuetify.theme.themes.dark.colors = { ...this.$vuetify.theme.themes.dark.colors, ...colors, ...this.vars?.branding };
 		},
 		fieldType(type) {
 			switch (type) {

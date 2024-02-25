@@ -4,7 +4,7 @@
 
         <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
             <v-btn title="Back" icon="mdi-arrow-left" to="./" variant="text"></v-btn>
-            <v-btn title="Save" icon="mdi-content-save" @click="save" variant="text"></v-btn>
+            <v-btn title="Save" icon="mdi-content-save" @click="save" variant="text" :disabled="!dirty"></v-btn>
         </v-sheet>
 
         <v-card-text class="mt-10 text-capitalize">
@@ -90,6 +90,11 @@ import 'tinymce/skins/ui/oxide/content.js';
 import 'tinymce/skins/content/default/content.js';
 
 export default {
+    beforeRouteLeave(to, from, next) {
+      if (!this.dirty || confirm('You have unsaved changes. Do you want to continue?')) {
+        return next()
+      }
+    },
     components: {
         'editor': Editor // <- Important part
     },
@@ -113,6 +118,7 @@ export default {
                 ip: v => (!v || /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(v)) || 'Invalid IP address',
                 email: v => (!v || /.+@.+\..+/.test(v)) || 'Invalid email',
             },
+            dirty: false,
         };
     },
     methods: {
@@ -147,6 +153,8 @@ export default {
                 }
 
                 this.data = data;
+                await this.$nextTick();
+                this.dirty = false;
             }
 
             this.fields = fields;
@@ -258,6 +266,12 @@ export default {
         },
         vars: function () {
             this.fetchData();
+        },
+        data:  {
+            handler() {
+                this.dirty = true;
+            },
+            deep: true
         }
     },
 
@@ -270,6 +284,11 @@ export default {
         if (this.vars.sections) {
             this.fetchData();
         }
+
+        window.onbeforeunload = function () {
+            if (this.dirty)
+                return true;
+        };
     }
 };
 </script>

@@ -10,7 +10,7 @@ const routes = [
             component: () => import('./components/EditPage.vue')
         }, {
             path: '/:base(admin[^/]*)?/section/:section(.*)/add',
-            component: () => import('./components/EditPage.vue')
+            component: () => import('./components/EditPage.vue'),
         }, {
             path: '/:base(admin[^/]*)?/section/:section(.*)/:id([0-9]+)',
             component: () => import('./components/ViewPage.vue')
@@ -48,7 +48,7 @@ const router = createRouter({
     stringifyQuery(query) {
         var result = qs.stringify(query);
         return result ? result : '';
-    }
+    },
 })
 
 export default {

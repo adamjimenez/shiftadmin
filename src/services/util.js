@@ -73,4 +73,15 @@ export default {
             return moment(value).format('DD-MMM-YYYY HH:mm')
         }
     },
+    formatData: function(value, fieldType) {
+        switch(fieldType) {
+            case 'password':
+                return '';
+            case 'datetime':
+            case 'timestamp':
+                return this.formatDate(value);
+        }
+
+        return value;
+    },
 }

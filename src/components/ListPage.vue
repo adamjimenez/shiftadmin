@@ -162,15 +162,7 @@ export default {
             // format data
             result.data.data.forEach(item => {
                 for (const [, field] of Object.entries(result.data.fields)) {
-                    switch(field.type) {
-                        case 'password':
-                            item[field.column] = '';
-                        break;
-                        case 'datetime':
-                        case 'timestamp':
-                            item[field.column] = util.formatDate(item[field.column]);
-                        break;
-                    }
+                    item[field.column] = util.formatData(item[field.column], field.type);
                 }
             });
 

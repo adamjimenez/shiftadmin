@@ -17,7 +17,12 @@
                             <div v-else-if="['file', 'files'].includes(value.type)">
                                 <div v-if="data[value.column]?.length > 0" class="mb-3">
                                     <div>{{ key }}</div>
-                                    <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="delete data[value.column].splice(fileIndex, 1)"></v-chip>
+                                    <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" pill closable @click:close="delete data[value.column].splice(fileIndex, 1)">
+                                        <v-avatar start>
+                                          <v-img :src="apiRoot + '?cmd=file&f=' + file + '&w=320&h=240'"></v-img>
+                                        </v-avatar>
+                                        {{ file }}
+                                    </v-chip>
                                 </div>
                                 <v-file-input v-if="value.type === 'files' || data[value.column]?.length === 0" :label="formatString(key)" v-model="files[value.column]"
                                     :error-messages="errors[key]" :multiple="value.type === 'files'" />
@@ -25,7 +30,12 @@
                             <div v-else-if="['upload', 'uploads'].includes(value.type)">
                                 <div>{{ key }}</div>
                                 <div v-if="data[value.column]?.length > 0" class="mb-3">
-                                    <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="data[value.column].splice(fileIndex, 1)"></v-chip>
+                                    <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="data[value.column].splice(fileIndex, 1)">
+                                        <v-avatar start>
+                                          <v-img :src="apiRoot + '?cmd=file&f=' + file + '&w=320&h=240'"></v-img>
+                                        </v-avatar>
+                                        {{ file }}
+                                    </v-chip>
                                 </div>
                                 <v-btn v-if="value.type === 'uploads' || data[value.column]?.length === 0" @click="chooseFileUpload(value.column)">Choose</v-btn>
                             </div>
@@ -119,6 +129,7 @@ export default {
                 email: v => (!v || /.+@.+\..+/.test(v)) || 'Invalid email',
             },
             dirty: false,
+            apiRoot: '',
         };
     },
     methods: {
@@ -292,6 +303,8 @@ export default {
             if (this.dirty)
                 return true;
         };
+
+        this.apiRoot = api.getApiRoot()
     }
 };
 </script>

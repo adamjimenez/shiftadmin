@@ -105,7 +105,7 @@
 				</v-card-text>
 				<v-card-actions>
 					<v-spacer></v-spacer>
-					<v-btn @click="saveSearch" color="secondary" variant="text">Save filter</v-btn>
+					<v-btn @click="saveSearch" color="secondary">Create filter</v-btn>
 					<v-btn @click="doSearch" color="primary" variant="flat">Search</v-btn>
 				</v-card-actions>
 			</v-card>

@@ -182,8 +182,10 @@ export default {
                 });
             }
 
+            let allHeaderKeys = allHeaders.map(item => item.column);
+
             if (!this.selectedHeaders.length) {
-                this.selectedHeaders = allHeaders.map(item => item.column);
+                this.selectedHeaders = allHeaderKeys;
             }
 
             this.$emit('changeHeaders', allHeaders)
@@ -404,6 +406,10 @@ export default {
             let saved = localStorage['fields_' + this.internalSection];
             let selectedHeaders = saved ? JSON.parse(saved) : headers.map(item => item.key);
 
+            // check the headers exist
+            let allHeaderKeys = headers.map(item => item.key);
+            selectedHeaders = selectedHeaders.filter((header) => allHeaderKeys.includes(header));
+
             if (JSON.stringify(selectedHeaders) !== JSON.stringify(this.selectedHeaders)) {
                 this.selectedHeaders = selectedHeaders;
             }
@@ -427,7 +433,8 @@ export default {
     computed: {
         activeHeaders: function () {
             var activeHeaders = [];
-            this.selectedHeaders.forEach(function (item) {
+            
+            this.selectedHeaders.forEach(item => {
                 activeHeaders.push({
                     title: this.formatString(item),
                     value: item,

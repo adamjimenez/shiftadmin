@@ -84,4 +84,8 @@ export default {
 
         return value;
     },
+    formatString: function (str) {
+        str = str.replace(/_/g, ' ');
+        return str.charAt(0).toUpperCase() + str.slice(1)
+    },
 }

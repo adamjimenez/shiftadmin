@@ -73,27 +73,27 @@
 			<v-card>
 				<v-card-title>Search {{ section }}</v-card-title>
 				<v-divider></v-divider>
-				<v-card-text class="text-capitalize">
+				<v-card-text>
 					<template v-for="field in fields" :key="field.type">
 						<v-list-item v-if="searchable.includes(field.type)">
-							<v-checkbox v-if="['checkbox', 'deleted'].includes(field.type)" :label="field.column"
+							<v-checkbox v-if="['checkbox', 'deleted'].includes(field.type)" :label="formatString(field.column)"
 								v-model="params[field.column]"></v-checkbox>
-							<v-select v-else-if="['select'].includes(field.type)" :label="field.column"
+							<v-select v-else-if="['select'].includes(field.type)" :label="formatString(field.column)"
 								:items="options[field.column]" v-model="params[field.column]"></v-select>
-							<v-select v-else-if="['select_multiple'].includes(field.type)" :label="field.column"
+							<v-select v-else-if="['select_multiple'].includes(field.type)" :label="formatString(field.column)"
 								:items="options[field.column]" v-model="params[field.column]" multiple chips>
 								<template v-slot:prepend>
 									<v-select v-model="params['func'][field.column]" :items="['in', 'not in']"
 										hide-details></v-select>
 								</template>
 							</v-select>
-							<v-autocomplete v-else-if="field.type === 'combo'" :label="field.column"
+							<v-autocomplete v-else-if="field.type === 'combo'" :label="formatString(field.column)"
 								v-model="params[field.column]" :items="options[field.column]"
 								@update:search="updateCombo($event, field.column)" />
 							<DateRange v-else-if="['date', 'datetime', 'timestamp'].includes(field.type)"
-								:label="field.column" v-model="ranges[field.column]"
+								:label="formatString(field.column)" v-model="ranges[field.column]"
 								@update:modelValue="updateRange($event, field.column)" />
-							<v-text-field v-else :label="field.column" v-model="params[field.column]"
+							<v-text-field v-else :label="formatString(field.column)" v-model="params[field.column]"
 								:type="fieldType(field.type)" :step="fieldStep(field.type)">
 								<template v-slot:prepend v-if="['decimal', 'int', 'rating'].includes(field.type)">
 									<v-select v-model="params['func'][field.column]" :items="['=', '>', '<']"

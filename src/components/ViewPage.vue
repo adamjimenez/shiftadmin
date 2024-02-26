@@ -26,59 +26,61 @@
                 :parentid="id" :sortable="isSortable" @openSortable="openSortable"></ListButtons>
         </v-sheet>
 
-        <v-tabs v-model="tab" class="mt-10">
-            <v-tab value="summary">Summary</v-tab>
-            <template v-if="vars.subsections && vars.subsections[section]?.length">
-                <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection" :value="subsection">
-                    {{ subsection }}
-                </v-tab>
-            </template>
-        </v-tabs>
+        <div class="pa-5">
+            <v-tabs v-model="tab" class="mt-10">
+                <v-tab value="summary">Summary</v-tab>
+                <template v-if="vars.subsections && vars.subsections[section]?.length">
+                    <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection" :value="subsection">
+                        {{ subsection }}
+                    </v-tab>
+                </template>
+            </v-tabs>
 
-        <v-card v-if="tab === 'summary'" min-width="600">
-            <template v-for="(value, key, index) in fields" :key="index">
-                <div v-if="data[value.column] && !['password'].includes(value.type)">
-                    <v-card-title class="text-capitalize">
-                        {{ key }}
-                    </v-card-title>
-                    <v-card-text :title="key">
-                        <a v-if="value.type === 'email'" :href="'mailto:' + data[value.column]">{{ data[value.column] }}</a>
-                        <a v-else-if="value.type === 'tel'" :href="'tel:' + data[value.column]">{{ data[value.column] }}</a>
-                        <a v-else-if="value.type === 'url'" :href="data[value.column]" target="_blank">{{ data[value.column] }}</a>
-                        <a v-else-if="value.type === 'coords'"
-                            :href="'https://www.google.com/maps/search/?api=1&query=' + data[value.column]" target="_blank">{{
-                                data[value.column] }}</a>
-                        <v-btn v-else-if="['select', 'select_parent', 'combo'].includes(value.type)"
-                            :to="getSelectLink(key, data[value.column], value.type)" variant="text">{{ data[value.column + '_label'] ? data[value.column +
-                                '_label'] : data[value.column] }}</v-btn>
-                        <div v-else-if="value.type === 'select_multiple'" class="mx-5">
-                            <v-btn v-for="(v, k, index) in data[value.column]" :key="index" :to="getSelectLink(key, v, value.type)" variant="text">
-                                {{ getOption(options[value.column], v).title }}
-                            </v-btn>
-                        </div>
-                        <span v-else-if="value.type === 'rating'">
-                            <v-rating v-model="data[value.column]" :length="5" :size="32" readonly></v-rating>
-                        </span>
-                        <img v-else-if="['file', 'upload'].includes(value.type)"
-                            :src="apiRoot + '?cmd=file&f=' + data[value.column] + '&w=320&h=240'" />
-                        <div v-else-if="['files', 'uploads'].includes(value.type)">
-                            <img v-for="image in data[value.column]" :key="image"
-                                :src="apiRoot + '?cmd=file&f=' + image + '&w=320&h=240'" class="d-block mb-5" />                            
-                        </div>
-                        <img v-else-if="value.type === 'upload'"
-                            :src="apiRoot + '?cmd=upload&f=' + data[value.column] + '&w=320&h=240'" />
-                        <div v-else-if="value.type === 'editor'" v-html="data[value.column]"></div>
-                        <span v-else>
-                            <span v-if="['checkbox', 'deleted'].includes(value.type)">{{ data[value.column] > 0 ? 'Yes' : 'No'
-                            }}</span>
-                            <span v-else>{{ formatData(data[value.column], value.type) }}</span>
-                            <span v-if="value.type === 'dob'">({{ age(data[value.column]) }})</span>
-                        </span>
-                    </v-card-text>
-                </div>
-            </template>
-        </v-card>
-        <list-page v-else :section="tab" :parentsection="section" :parentid="id" hidebuttons ref="listPage"></list-page>
+            <v-card v-if="tab === 'summary'" min-width="600">
+                <template v-for="(value, key, index) in fields" :key="index">
+                    <div v-if="data[value.column] && !['password'].includes(value.type)">
+                        <v-card-title>
+                            {{ formatString(key) }}
+                        </v-card-title>
+                        <v-card-text :title="key">
+                            <a v-if="value.type === 'email'" :href="'mailto:' + data[value.column]">{{ data[value.column] }}</a>
+                            <a v-else-if="value.type === 'tel'" :href="'tel:' + data[value.column]">{{ data[value.column] }}</a>
+                            <a v-else-if="value.type === 'url'" :href="data[value.column]" target="_blank">{{ data[value.column] }}</a>
+                            <a v-else-if="value.type === 'coords'"
+                                :href="'https://www.google.com/maps/search/?api=1&query=' + data[value.column]" target="_blank">{{
+                                    data[value.column] }}</a>
+                            <v-btn v-else-if="['select', 'select_parent', 'combo'].includes(value.type)"
+                                :to="getSelectLink(key, data[value.column], value.type)" variant="text">{{ data[value.column + '_label'] ? data[value.column +
+                                    '_label'] : data[value.column] }}</v-btn>
+                            <div v-else-if="value.type === 'select_multiple'" class="mx-5">
+                                <v-btn v-for="(v, k, index) in data[value.column]" :key="index" :to="getSelectLink(key, v, value.type)" variant="text">
+                                    {{ getOption(options[value.column], v).title }}
+                                </v-btn>
+                            </div>
+                            <span v-else-if="value.type === 'rating'">
+                                <v-rating v-model="data[value.column]" :length="5" :size="32" readonly></v-rating>
+                            </span>
+                            <img v-else-if="['file', 'upload'].includes(value.type)"
+                                :src="apiRoot + '?cmd=file&f=' + data[value.column] + '&w=320&h=240'" />
+                            <div v-else-if="['files', 'uploads'].includes(value.type)">
+                                <img v-for="image in data[value.column]" :key="image"
+                                    :src="apiRoot + '?cmd=file&f=' + image + '&w=320&h=240'" class="d-block mb-5" />                            
+                            </div>
+                            <img v-else-if="value.type === 'upload'"
+                                :src="apiRoot + '?cmd=upload&f=' + data[value.column] + '&w=320&h=240'" />
+                            <div v-else-if="value.type === 'editor'" v-html="data[value.column]"></div>
+                            <span v-else>
+                                <span v-if="['checkbox', 'deleted'].includes(value.type)">{{ data[value.column] > 0 ? 'Yes' : 'No'
+                                }}</span>
+                                <span v-else>{{ formatData(data[value.column], value.type) }}</span>
+                                <span v-if="value.type === 'dob'">({{ age(data[value.column]) }})</span>
+                            </span>
+                        </v-card-text>
+                    </div>
+                </template>
+            </v-card>
+            <list-page v-else :section="tab" :parentsection="section" :parentid="id" hidebuttons ref="listPage"></list-page>
+        </div>
 
         <v-dialog v-model="logsDialog" max-width="600" scrollable>
             <v-card title="Logs" :loading="loadingLogs">
@@ -307,6 +309,9 @@ export default {
         },
         formatData: function (value, fieldType) {
             return util.formatData(value, fieldType);
+        },
+        formatString: function (string) {
+            return util.formatString(string);
         }
     },
 

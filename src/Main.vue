@@ -317,6 +317,10 @@ export default {
 			if (typeof data.fullScreen === 'boolean') {
 				this.fullScreen = data.fullScreen;
 			}
+		},
+
+		formatString: function (string) {
+			return util.formatString(string);
 		}
 	},
 

@@ -95,7 +95,7 @@
 								@update:modelValue="updateRange($event, field.column)" />
 							<v-text-field v-else :label="formatString(field.column)" v-model="params[field.column]"
 								:type="fieldType(field.type)" :step="fieldStep(field.type)">
-								<template v-slot:prepend v-if="['decimal', 'int', 'rating'].includes(field.type)">
+								<template v-slot:prepend v-if="['id', 'decimal', 'int', 'rating'].includes(field.type)">
 									<v-select v-model="params['func'][field.column]" :items="['=', '>', '<']"
 										hide-details></v-select>
 								</template>
@@ -148,6 +148,7 @@ export default {
 				'datetime',
 				'decimal',
 				'deleted',
+				'id',
 				'int',
 				'page_name',
 				'rating',
@@ -221,7 +222,7 @@ export default {
 					this.params.func[field.column] = '';
 				}
 
-				if (['decimal', 'int', 'rating'].includes(field.type)) {
+				if (['decimal', 'int', 'id', 'rating'].includes(field.type)) {
 					this.params.func[field.column] = '=';
 				}
 

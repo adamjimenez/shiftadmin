@@ -184,7 +184,9 @@ export default {
                     }
                 }
 
-                this.back = '../' + parentsection + '/' + parentid + '/';
+                if (parentsection) {
+                    this.back = '../' + parentsection + '/' + parentid + '/';
+                }
             }
         },
         save: async function () {

@@ -1,5 +1,5 @@
 <template>
-    <span class="d-flex">
+    <span class="d-flex w-100">
         <v-btn variant="text" title="Add" icon="mdi-plus" :to="base + 'section/' + internalSection + '/add' + (parentsection ? '?parentsection=' + parentsection + '&parentid=' + parentid : '')"></v-btn>
         <v-btn variant="text" title="Fields" icon="mdi-view-column" @click="changeFields"></v-btn>
         <v-btn variant="text" title="Delete" icon="mdi-delete" v-if="selected.length" @click="doAction('delete')"></v-btn>

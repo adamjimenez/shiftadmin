@@ -1,8 +1,8 @@
 <template>
     <v-card>
-        <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
+        <v-sheet color="secondary" class="w-100 d-flex flex-grow-1">
             <v-btn title="Back" icon="mdi-arrow-left" :to="back" variant="text"></v-btn>
-            <span v-if="tab === 'summary'">
+            <span v-if="tab === 'summary'" class="w-100">
                 <v-btn title="Edit" icon="mdi-pencil" to="edit" variant="text"></v-btn>
                 <v-btn v-if="data['deleted'] > 0" title="Restore" icon="mdi-delete-restore" @click="restoreItem"
                     color="success" variant="text"></v-btn>
@@ -27,7 +27,7 @@
         </v-sheet>
 
         <div class="pa-5">
-            <v-tabs v-model="tab" class="mt-10">
+            <v-tabs v-model="tab">
                 <v-tab value="summary">Summary</v-tab>
                 <template v-if="vars.subsections && vars.subsections[section]?.length">
                     <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection" :value="subsection">
@@ -257,7 +257,7 @@ export default {
         changeFields: function () {
             this.$refs['listPage'].dialog = true;
         },
-        openSortable: function () {
+        actionHandler: function () {
             this.$refs['listPage'].actionHandler(arguments);
         },
         age: function (dateString) {

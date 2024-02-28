@@ -5,7 +5,7 @@
             v-model:items-per-page="itemsPerPage" :search="search" fixed-header fixed-footer class="data-table-server">
 
             <template v-slot:top>
-                <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
+                <v-sheet color="secondary">
                     <ListButtons v-if="!hidebuttons" :selected="selected" :section="internalSection" @changeFields="dialog = true"
                         @action="actionHandler" :vars="vars" :sortable="isSortable">
                     </ListButtons>
@@ -59,12 +59,6 @@
 
     </v-layout>
 </template>
-
-<style>
-    .data-table-server .v-table__wrapper {
-        margin-top: 40px !important;
-    }
-</style>
 
 <script>
 import api from "../services/api";

@@ -5,7 +5,7 @@ import moment from 'moment';
 export default {
     getOptions: async function(option) {
         let options = [];
-
+        
         if (Array.isArray(option)) {
             option.forEach(function (item) {
                 options.push({
@@ -35,10 +35,9 @@ export default {
         let options = {};
 
         for (const [, field] of Object.entries(fields)) {
-
             // get options
             if (['select', 'select_parent', 'select_multiple'].includes(field.type)) {
-                let option = (field.type === 'select_parent') ? section : vars.options[field.column.replaceAll(' ', '_')];
+                let option = field.type === 'select_parent' ? section : vars.options[field.column.replaceAll('_', ' ')];
                 options[field.column] = await this.getOptions(option);
 
                 // prepend selected value

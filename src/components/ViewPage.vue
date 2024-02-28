@@ -38,7 +38,7 @@
 
             <v-card v-if="tab === 'summary'" min-width="600">
                 <template v-for="(value, key, index) in fields" :key="index">
-                    <div v-if="data[value.column] && !['password'].includes(value.type)">
+                    <div v-if="data[value.column] && !['password'].includes(value.type) && (!['select', 'select_parent', 'combo'].includes(value.type) || data[value.column] > 0)">
                         <v-card-title>
                             {{ formatString(key) }}
                         </v-card-title>
@@ -50,8 +50,7 @@
                                 :href="'https://www.google.com/maps/search/?api=1&query=' + data[value.column]" target="_blank">{{
                                     data[value.column] }}</a>
                             <v-btn v-else-if="['select', 'select_parent', 'combo'].includes(value.type)"
-                                :to="getSelectLink(key, data[value.column], value.type)" variant="text">{{ data[value.column + '_label'] ? data[value.column +
-                                    '_label'] : data[value.column] }}</v-btn>
+                                :to="getSelectLink(key, data[value.column], value.type)" variant="text">{{ getSelectLabel(value.column) }}</v-btn>
                             <div v-else-if="value.type === 'select_multiple'" class="mx-5">
                                 <v-btn v-for="(v, k, index) in data[value.column]" :key="index" :to="getSelectLink(key, v, value.type)" variant="text">
                                     {{ getOption(options[value.column], v).title }}
@@ -88,7 +87,7 @@
                     <v-card-item v-for="item in logs" :key="item.id">
                         <v-card-title>
                             {{ item.task }} on {{ item.date }} by <v-btn variant="text"
-                                :to="'/section/users/' + item.user">{{ item.name }}</v-btn>
+                                :to="'../../users/' + item.user">{{ item.name }}</v-btn>
                         </v-card-title>
                         <v-card-subtitle>
                             <div v-html="item.details" style="white-space: pre;"></div>
@@ -242,7 +241,7 @@ export default {
                 ids: [this.id]
             };
             await api.post('?cmd=delete&section=' + this.section, data);
-            this.$router.push('/section/' + this.section);
+            this.$router.push('../' + this.section);
         },
         changeFields: function () {
             this.$refs['listPage'].dialog = true;
@@ -271,11 +270,14 @@ export default {
 
             return yearDiff;
         },
+        getSelectLabel: function (column) {
+            return this.options[column].find(item => item.value === this.data[column])?.title;
+        },
         getSelectLink: function (field, value, type) {
-            let option = (type === 'select_parent') ? this.section : this.vars.options[field.replaceAll(' ', '_')];
+            let option = (type === 'select_parent') ? this.section : this.vars.options[field.replaceAll('_', ' ')];
 
             if (typeof option === 'string') {
-                return '/section/' + option + '/' + value;
+                return '../../' + option + '/' + value + '/';
             }
         },
         customButton: async function (button) {

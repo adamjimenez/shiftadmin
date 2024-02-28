@@ -2,15 +2,17 @@
     <v-layout>
         <v-data-table-server v-model="selected" :headers="activeHeaders" :items="data.data" item-value="id" show-select
             @click:row="rowClick" :loading="loading" @update:options="loadItems" :items-length="totalItems"
-            v-model:items-per-page="itemsPerPage" :search="search" fixed-header fixed-footer class="data-table-server">
+            v-model:items-per-page="itemsPerPage" :search="search" fixed-header fixed-footer class="data-table-server" :page="page">
 
             <template v-slot:top>
-                <v-sheet color="secondary">
+                <v-sheet color="secondary" class="w-100">
                     <ListButtons v-if="!hidebuttons" :selected="selected" :section="internalSection" @changeFields="dialog = true"
-                        @action="actionHandler" :vars="vars" :sortable="isSortable">
+                        @action="actionHandler" :vars="vars" :sortable="isSortable" :data="buttonData">
                     </ListButtons>
                 </v-sheet>
             </template>
+
+            <template v-slot:bottom></template>
         </v-data-table-server>
 
         <v-dialog v-model="importDialog" max-width="600" scrollable>
@@ -60,6 +62,14 @@
     </v-layout>
 </template>
 
+<style>
+.data-table-server .v-table__wrapper {
+    /*margin-top: 40px;*/
+    height: 600px;
+    overflow: auto;
+}
+</style>
+
 <script>
 import api from "../services/api";
 import util from "../services/util";
@@ -85,7 +95,7 @@ export default {
             dialog: false,
             selectedHeaders: [],
             selected: [],
-            data: [],
+            data: {},
             internalSection: '',
             loading: false,
             importDialog: false,
@@ -94,6 +104,7 @@ export default {
             sortableDialog: false,
             totalItems: 0,
             itemsPerPage: 20,
+            page: 1,
             search: '',
             headers: [],
             drag: false,
@@ -102,6 +113,7 @@ export default {
             file: [],
             error: '',
             filter: '',
+            buttonData: {},
         };
     },
     methods: {
@@ -170,6 +182,14 @@ export default {
             this.data = result.data;
             this.totalItems = this.data.total;
 
+            // pagination
+            this.buttonData = {
+                page: page,
+                itemsPerPage: itemsPerPage,
+                totalItems: this.totalItems,
+            };
+
+            // headers
             this.headers = [];
             let allHeaders = Object.values(result.data.fields);
 
@@ -205,6 +225,8 @@ export default {
                     return a.position - b.position;
                 })
             }
+
+            this.$emit('loaded')
         },
 
         rowClick: function (e, item) {
@@ -248,6 +270,19 @@ export default {
             } else if (button === 'filter') {
                 this.filter = arguments[1];
                 this.reload();
+                return
+            } else if (button === 'prevPage') {
+                if (this.page === 1) {
+                    return;
+                }
+                this.page--;
+                return
+            } else if (button === 'nextPage') {
+                if (this.page * this.itemsPerPage >= this.totalItems) {
+                    return;
+                }
+
+                this.page++;
                 return
             } else if (typeof button === 'string') {
                 data = {
@@ -443,8 +478,6 @@ export default {
 
             this.$emit('changeFields', fields);
         },
-        vars: function () {
-        }
     },
 
     computed: {

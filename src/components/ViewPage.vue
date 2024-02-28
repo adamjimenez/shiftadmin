@@ -23,7 +23,7 @@
                 </v-menu>
             </span>
             <ListButtons v-else :selected="selected" :section="tab" @changeFields="changeFields" :parentsection="section"
-                :parentid="id" :sortable="isSortable" @action="actionHandler"></ListButtons>
+                :parentid="id" :sortable="isSortable" @action="actionHandler" :data="buttonData"></ListButtons>
         </v-sheet>
 
         <div class="pa-5">
@@ -78,7 +78,7 @@
                     </div>
                 </template>
             </v-card>
-            <list-page v-else :section="tab" :parentsection="section" :parentid="id" hidebuttons ref="listPage"></list-page>
+            <list-page v-else :section="tab" :parentsection="section" :parentid="id" hidebuttons ref="listPage" @loaded="loaded"></list-page>
         </div>
 
         <v-dialog v-model="logsDialog" max-width="600" scrollable>
@@ -131,7 +131,7 @@ export default {
     },
     data: function () {
         return {
-            data: [],
+            data: {},
             fields: [],
             section: '',
             id: 0,
@@ -149,7 +149,8 @@ export default {
             accessOptions: [{ value: 0, title: 'None' }, { value: 1, title: 'Read' }, { value: 2, title: 'Write' }, { value: 3, title: 'Full' }],
             apiRoot: '',
             options: [],
-            back: '../'
+            back: '../',
+            buttonData: {},
         };
     },
     methods: {
@@ -258,7 +259,7 @@ export default {
             this.$refs['listPage'].dialog = true;
         },
         actionHandler: function () {
-            this.$refs['listPage'].actionHandler(arguments);
+            this.$refs['listPage'].actionHandler(...arguments);
         },
         age: function (dateString) {
             const today = new Date();
@@ -325,12 +326,16 @@ export default {
         },
         formatString: function (string) {
             return util.formatString(string);
+        },
+        loaded: function () {            
+            let data = this.$refs['listPage']?.buttonData;
+            this.buttonData = data ? data : {};
         }
     },
 
     computed: {
         buttons: function () {
-            var buttons = [];
+            let buttons = [];
 
             this.vars?.buttons?.forEach((item, index) => {
                 if (item.page === 'view' && item.section === this.section) {
@@ -355,7 +360,7 @@ export default {
         },
         vars: function () {
             this.fetchData();
-        }
+        },
     },
 
     async mounted() {

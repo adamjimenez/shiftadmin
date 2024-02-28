@@ -1,5 +1,5 @@
 <template>
-    <span class="d-flex w-100">
+    <span class="d-flex w-100 align-center">
         <v-btn variant="text" title="Add" icon="mdi-plus" :to="base + 'section/' + internalSection + '/add' + (parentsection ? '?parentsection=' + parentsection + '&parentid=' + parentid : '')"></v-btn>
         <v-btn variant="text" title="Fields" icon="mdi-view-column" @click="changeFields"></v-btn>
         <v-btn variant="text" title="Delete" icon="mdi-delete" v-if="selected.length" @click="doAction('delete')"></v-btn>
@@ -20,7 +20,12 @@
 
         <v-spacer></v-spacer>
         
-        <v-text-field v-model="filter" hide-details placeholder="Filter" density="compact"></v-text-field>
+        <v-col style="text-align: right;">
+            {{ (data.page - 1) * data.itemsPerPage + 1 }}-{{ Math.min(data.page * data.itemsPerPage, data.totalItems) }} of {{ data.totalItems }}
+        </v-col>
+
+        <v-btn variant="text" icon="mdi-chevron-left" :disabled="data.page === 1" @click="prevPage"></v-btn>
+        <v-btn variant="text" icon="mdi-chevron-right" :disabled="data.page * data.itemsPerPage >= data.totalItems" @click="nextPage"></v-btn>
     </span>
 </template>
 
@@ -66,6 +71,12 @@ export default {
         },
         openImport: function () {
             this.$emit('action', 'import');
+        },
+        prevPage: function () {
+            this.$emit('action', 'prevPage');
+        },
+        nextPage: function () {
+            this.$emit('action', 'nextPage');
         },
     },
 

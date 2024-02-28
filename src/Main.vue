@@ -176,6 +176,8 @@ export default {
 			const result = await api.post('?cmd=search&section=' + this.section, data);
 
 			this.searchItems = result.data.data;
+			
+			this.searchParams = { s: this.search };
 		},
 		quickSearch: function () {
 			this.searchParams = { s: this.search };
@@ -401,5 +403,9 @@ export default {
 	height: 100%;
 	width: 100%;
 	z-index: 99999999;
+}
+
+html {
+	overflow-y: auto;
 }
 </style>

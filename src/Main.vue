@@ -3,16 +3,15 @@
 		<v-app-bar color="secondary">
 			<v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
-			<v-toolbar-title>
-				<v-btn :to=base variant="plain">
-					{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
-				</v-btn>
-			</v-toolbar-title>
-
 			<v-combobox v-if="fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
 				@update:model-value="afterSelection" @keydown.enter="quickSearch" label="Search" placeholder="Search"
 				ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded
-				variant="solo-filled" no-filter>
+				variant="solo-filled" no-filter class="mx-5">
+				<template v-slot:prepend>					
+					<v-btn :to=base variant="plain">
+						{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
+					</v-btn>
+				</template>
 				<template v-slot:append-inner>
 					<v-btn icon="mdi-tune" @mousedown.stop @click="advancedSearch" :disabled="fields.length === 0"></v-btn>
 				</template>

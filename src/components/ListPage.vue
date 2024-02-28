@@ -159,7 +159,11 @@ export default {
             // format data
             result.data.data.forEach(item => {
                 for (const [, field] of Object.entries(result.data.fields)) {
-                    item[field.column] = util.formatData(item[field.column], field.type);
+                    if (item[field.column + '_label']) {
+                        item[field.column] = item[field.column + '_label'];
+                    } else {
+                        item[field.column] = util.formatData(item[field.column], field.type);
+                    }
                 }
             });
 

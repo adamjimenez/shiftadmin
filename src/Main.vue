@@ -1,7 +1,7 @@
 <template>
 	<v-app>
 		<v-app-bar color="secondary">
-			<v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+			<v-app-bar-nav-icon variant="text" color="grey-lighten-1" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
 			<v-combobox v-if="fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
 				@update:model-value="afterSelection" @keydown.enter="quickSearch" label="Search" placeholder="Search"
@@ -13,7 +13,7 @@
 					</v-btn>
 				</template>
 				<template v-slot:append-inner>
-					<v-btn icon="mdi-tune" @mousedown.stop @click="advancedSearch" :disabled="fields.length === 0"></v-btn>
+					<v-btn icon="mdi-tune" color="grey-lighten-1" @mousedown.stop @click="advancedSearch" :disabled="fields.length === 0"></v-btn>
 				</template>
 			</v-combobox>
 		</v-app-bar>

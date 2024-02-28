@@ -1,18 +1,18 @@
 <template>
     <v-card>
         <v-sheet color="secondary" class="w-100 d-flex flex-grow-1">
-            <v-btn title="Back" icon="mdi-arrow-left" :to="back" variant="text"></v-btn>
+            <v-btn title="Back" icon="mdi-arrow-left" :to="back" color="grey-lighten-1" variant="text"></v-btn>
             <span v-if="tab === 'summary'" class="w-100">
-                <v-btn title="Edit" icon="mdi-pencil" to="edit" variant="text"></v-btn>
-                <v-btn v-if="data['deleted'] > 0" title="Restore" icon="mdi-delete-restore" @click="restoreItem"
-                    color="success" variant="text"></v-btn>
-                <v-btn v-else title="Delete" icon="mdi-delete" @click="deleteItem" variant="text"></v-btn>
-                <v-btn title="Logs" icon="mdi-text" @click="openLogs" variant="text"></v-btn>
-                <v-btn v-if="data.admin > 1" title="Privileges" icon="mdi-account-key" @click="openPrivileges" variant="text"></v-btn>
+                <v-btn title="Edit" icon="mdi-pencil" color="grey-lighten-1" to="edit" variant="text"></v-btn>
+                <v-btn v-if="data['deleted'] > 0" title="Restore" icon="mdi-delete-restore" color="success" @click="restoreItem"
+                    variant="text"></v-btn>
+                <v-btn v-else title="Delete" icon="mdi-delete" color="grey-lighten-1" @click="deleteItem" variant="text"></v-btn>
+                <v-btn title="Logs" icon="mdi-text" color="grey-lighten-1" @click="openLogs" variant="text"></v-btn>
+                <v-btn v-if="data.admin > 1" title="Privileges" icon="mdi-account-key" color="grey-lighten-1" @click="openPrivileges" variant="text"></v-btn>
 
                 <v-menu v-if="buttons.length">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text"></v-btn>
+                        <v-btn v-bind="props" icon="mdi-dots-vertical" color="grey-lighten-1" variant="text"></v-btn>
                     </template>
                     <v-list>
                         <v-list-item v-for="(item, index) in buttons" :key="index" :value="index"

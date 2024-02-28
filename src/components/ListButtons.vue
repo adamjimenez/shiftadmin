@@ -1,10 +1,10 @@
 <template>
     <span class="d-flex w-100 align-center">
         <v-btn variant="text" title="Add" icon="mdi-plus" :to="base + 'section/' + internalSection + '/add' + (parentsection ? '?parentsection=' + parentsection + '&parentid=' + parentid : '')"></v-btn>
-        <v-btn variant="text" title="Fields" icon="mdi-view-column" @click="changeFields"></v-btn>
-        <v-btn variant="text" title="Delete" icon="mdi-delete" v-if="selected.length" @click="doAction('delete')"></v-btn>
-        <v-btn variant="text" title="Import" icon="mdi-import" @click="openImport"></v-btn>
-        <v-btn variant="text" title="Export" icon="mdi-export" @click="exportItems"></v-btn>
+        <v-btn variant="text" title="Fields" icon="mdi-view-column" color="grey-lighten-1" @click="changeFields"></v-btn>
+        <v-btn variant="text" title="Delete" icon="mdi-delete" color="grey-lighten-1" v-if="selected.length" @click="doAction('delete')"></v-btn>
+        <v-btn variant="text" title="Import" icon="mdi-import" color="grey-lighten-1" @click="openImport"></v-btn>
+        <v-btn variant="text" title="Export" icon="mdi-export" color="grey-lighten-1" @click="exportItems"></v-btn>
         <v-btn variant="text" title="Sort" icon="mdi-sort" v-if="sortable" @click="doAction('openSortable')"></v-btn>
 
         <v-menu v-if="buttons.length">
@@ -20,7 +20,7 @@
 
         <v-spacer></v-spacer>
         
-        <v-col style="text-align: right;">
+        <v-col class="text-grey-lighten-1 text-right">
             {{ (data.page - 1) * data.itemsPerPage + 1 }}-{{ Math.min(data.page * data.itemsPerPage, data.totalItems) }} of {{ data.totalItems }}
         </v-col>
 

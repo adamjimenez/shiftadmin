@@ -16,7 +16,7 @@
                                 :error-messages="errors[key]" />
                             <div v-else-if="['file', 'files'].includes(value.type)">
                                 <div v-if="data[value.column]?.length > 0" class="mb-3">
-                                    <div>{{ key }}</div>
+                                    <div class="mb-3">{{ formatString(key) }}</div>
                                     <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" pill closable @click:close="delete data[value.column].splice(fileIndex, 1)">
                                         <v-avatar start>
                                           <v-img :src="apiRoot + '?cmd=file&f=' + file + '&w=320&h=240'"></v-img>

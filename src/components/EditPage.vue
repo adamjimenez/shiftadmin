@@ -3,7 +3,7 @@
         <v-alert color="error" v-if="error">{{ error }}</v-alert>
 
         <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
-            <v-btn title="Back" icon="mdi-arrow-left" to="./" variant="text"></v-btn>
+            <v-btn title="Back" icon="mdi-arrow-left" :to="back" variant="text"></v-btn>
             <v-btn title="Save" icon="mdi-content-save" @click="save" variant="text" :disabled="!dirty"></v-btn>
         </v-sheet>
 
@@ -53,7 +53,7 @@
                                 <v-rating v-model="data[key]" :error-messages="errors[key]" hover :length="5" :size="32" />
                             </div>
                             <v-select v-else-if="['select', 'select_parent', 'select_multiple'].includes(value.type)" :label="formatString(key)"
-                                v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]" :multiple="value.type === 'select_multiple'" :chips="value.type === 'select_multiple'" />
+                                v-model="data[value.column]" :error-messages="errors[key]" :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'" :chips="value.type === 'select_multiple'" />
                             <v-autocomplete v-else-if="value.type === 'combo'" :label="formatString(key)" v-model="data[key]"
                                 :error-messages="errors[key]" :items="options[key]" @update:search="updateCombo($event, key)" />
                             <v-text-field :label="formatString(key)" v-model="data[value.column]" :error-messages="errors[key]"
@@ -130,11 +130,12 @@ export default {
             },
             dirty: false,
             apiRoot: '',
+            back: './',
         };
     },
     methods: {
         fetchData: async function () {
-            var data = {
+            let data = {
                 cmd: 'get',
                 section: this.section,
                 id: this.id
@@ -147,11 +148,10 @@ export default {
 
             let fields = result.data.fields;
 
+            data = result.data.data ? result.data.data : {};
+            this.options = await util.getAllOptions(fields, this.vars, this.section, data);
+
             if (result.data.data) {
-                let data = result.data.data;
-
-                this.options = await util.getAllOptions(fields, this.vars, this.section, data);
-
                 for (const [, field] of Object.entries(fields)) {
                     if (field.type === 'password') {
                         data[field.column] = '';
@@ -183,6 +183,8 @@ export default {
                         }
                     }
                 }
+
+                this.back = '../' + parentsection + '/' + parentid + '/';
             }
         },
         save: async function () {

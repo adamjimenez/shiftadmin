@@ -209,7 +209,13 @@ export default {
                 base += this.$route.params.base + '/';
             }
 
-            this.$router.push(base + 'section/' + this.internalSection + '/' + item.item.id + '/');
+            let link = base + 'section/' + this.internalSection + '/' + item.item.id + '/';
+
+            if (this.parentsection) {
+                link += '?parentsection=' + this.parentsection + '&parentid=' + this.parentid;
+            }
+
+            this.$router.push(link);
         },
         doAction: async function (action) {
             var data = {

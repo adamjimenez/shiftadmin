@@ -1,7 +1,7 @@
 <template>
     <v-card>
         <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
-            <v-btn title="Back" icon="mdi-arrow-left" to="../" variant="text"></v-btn>
+            <v-btn title="Back" icon="mdi-arrow-left" :to="back" variant="text"></v-btn>
             <span v-if="tab === 'summary'">
                 <v-btn title="Edit" icon="mdi-pencil" to="edit" variant="text"></v-btn>
                 <v-btn v-if="data['deleted'] > 0" title="Restore" icon="mdi-delete-restore" @click="restoreItem"
@@ -149,6 +149,7 @@ export default {
             accessOptions: [{ value: 0, title: 'None' }, { value: 1, title: 'Read' }, { value: 2, title: 'Write' }, { value: 3, title: 'Full' }],
             apiRoot: '',
             options: [],
+            back: '../'
         };
     },
     methods: {
@@ -188,6 +189,15 @@ export default {
             this.fields = result.data.fields;
 
             document.title = 'ADMIN | ' + this.section + ' | ' + this.id;
+
+            // back button to go back to parent section
+            const urlParams = new URLSearchParams(window.location.search);
+            const parentsection = urlParams.get('parentsection');
+
+            if (parentsection) {                
+                const parentid = urlParams.get('parentid');
+                this.back = '../../' + parentsection + '/' + parentid + '/';
+            }
         },
         openLogs: async function () {
             this.logsDialog = true;
@@ -277,7 +287,7 @@ export default {
             let option = (type === 'select_parent') ? this.section : this.vars.options[field.replaceAll('_', ' ')];
 
             if (typeof option === 'string') {
-                return '../../' + option + '/' + value + '/';
+                return '../../' + option.replaceAll('_', ' ') + '/' + value + '/';
             }
         },
         customButton: async function (button) {
@@ -339,6 +349,7 @@ export default {
         $route() {
             this.section = this.$route.params.section;
             this.id = this.$route.params.id;
+            this.tab = 'summary';
             this.fetchData();
         },
         vars: function () {

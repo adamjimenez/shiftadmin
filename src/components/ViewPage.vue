@@ -87,7 +87,7 @@
                     <v-card-item v-for="item in logs" :key="item.id">
                         <v-card-title>
                             {{ item.task }} on {{ item.date }} by <v-btn variant="text"
-                                :to="'../../users/' + item.user">{{ item.name }}</v-btn>
+                                :to="'../../users/' + item.user" @click="logsDialog = false">{{ item.name }}</v-btn>
                         </v-card-title>
                         <v-card-subtitle>
                             <div v-html="item.details" style="white-space: pre;"></div>

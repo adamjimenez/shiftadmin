@@ -232,6 +232,7 @@ export default {
                 },
             });
 
+            this.dirty = false;
             this.loading = false;
 
             if (!result) {

@@ -8,8 +8,7 @@
                     <v-btn title="Up level" :disabled="path === ''" icon="mdi-arrow-up" @click="upLevel"></v-btn>
                     <v-btn title="Create folder" icon="mdi-folder-outline" @click="createFolder"></v-btn>
                     <v-btn title="Delete" icon="mdi-delete" :disabled="selected.length === 0" @click="deleteItems"></v-btn>
-                    <v-btn title="Upload" icon="mdi-upload"></v-btn>
-                    <v-file-input v-model="file" @update:modelValue="uploadFile"></v-file-input>
+                    <v-file-input v-model="file" @update:modelValue="uploadFile" prepend-icon="mdi-upload" hide-details class="hide-input mx-3"></v-file-input>
                 </v-card-actions>
 
                 <v-data-table :items="items" :headers="headers" show-select v-model="selected" @click:row="rowClick" :loading="loading">
@@ -21,6 +20,12 @@
         </v-dialog>
     </span>
 </template>
+
+<style>
+    .hide-input .v-input__control {
+        display: none;
+    }
+</style>
 
 <script>
 import api from "../services/api";

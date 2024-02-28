@@ -4,7 +4,7 @@
 			<v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
 			<v-toolbar-title>
-				<v-btn to="/" variant="plain">
+				<v-btn :to=base variant="plain">
 					{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
 				</v-btn>
 			</v-toolbar-title>
@@ -17,13 +17,6 @@
 					<v-btn icon="mdi-tune" @mousedown.stop @click="advancedSearch" :disabled="fields.length === 0"></v-btn>
 				</template>
 			</v-combobox>
-
-			<v-spacer></v-spacer>
-
-			<v-btn variant="text" icon="mdi-home" href="/"></v-btn>
-			<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" />
-			<v-btn variant="text" icon="mdi-cog" :to="base + 'configure'"></v-btn>
-			<v-btn variant="text" icon="mdi-logout" href="/logout"></v-btn>
 		</v-app-bar>
 
 		<v-navigation-drawer :rail="drawer" expand-on-hover permanent color="secondary">
@@ -60,6 +53,10 @@
 						</template>
 					</v-list-item>
 				</div>
+
+				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" />
+				<v-list-item title="Configure" prepend-icon="mdi-cog" :to="base + 'configure'" />
+				<v-list-item title="Logout" href="/logout" prepend-icon="mdi-logout" />
 			</v-list>
 		</v-navigation-drawer>
 
@@ -284,7 +281,6 @@ export default {
 			const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
 			this.options[column] = result.data;
 		},
-
 		deleteFilter: async function (filter_id) {
 			if (!confirm('Are you sure?')) {
 				return;
@@ -293,7 +289,6 @@ export default {
 			await api.post('?cmd=filters', { delete: filter_id });
 			this.fetchData();
 		},
-
 		updateRange: function (value, column) {
 			this.params[column] = value[0];
 
@@ -303,15 +298,12 @@ export default {
 
 			this.params.func[column] = value[value.length - 1];
 		},
-
 		chooseFileUpload: function (column) {
 			this.$refs['fileUploads'].open(column);
 		},
-
 		fileSelectedHandler: function (data) {
 			this.fileSelected = data;
 		},
-
 		message: function (data) {
 			console.log(data)
 
@@ -319,7 +311,6 @@ export default {
 				this.fullScreen = data.fullScreen;
 			}
 		},
-
 		formatString: function (string) {
 			return util.formatString(string);
 		}
@@ -373,10 +364,6 @@ export default {
 <style>
 .v-application--wrap {
 	min-height: 100% !important;
-}
-
-.v-navigation-drawer__content {
-	overflow-y: hidden !important;
 }
 
 .v-navigation-drawer__content:hover {

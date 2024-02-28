@@ -1,6 +1,6 @@
 <template>
-    <span>
-        <v-btn icon="mdi-file-upload" title="File uploads" @click="open"></v-btn>
+    <span>        
+		<v-list-item title="File uploads" prepend-icon="mdi-file-upload" @click="open" />
 
         <v-dialog v-model="dialog" scrollable>
             <v-card>

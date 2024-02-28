@@ -166,6 +166,7 @@ export default {
             }
 
             let fields = result.data.fields;
+            this.$emit('changeFields', Object.values(fields));
 
             if (result.data.data) {
                 let data = result.data.data;

@@ -147,6 +147,7 @@ export default {
             }
 
             let fields = result.data.fields;
+            this.$emit('changeFields', Object.values(fields));
 
             data = result.data.data ? result.data.data : {};
             this.options = await util.getAllOptions(fields, this.vars, this.section, data);

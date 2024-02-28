@@ -169,7 +169,7 @@ export default {
 				return;
 			}
 
-			this.$router.push(this.main + 'section/' + this.section + '/' + item.value);
+			this.$router.push(this.base + 'section/' + this.section + '/' + item.value + '/');
 		},
 		updateSearch: async function (term) {
 			this.section = this.$route.params.section;
@@ -339,7 +339,9 @@ export default {
 			}
 		},
 		searchParams: function (searchParams) {
-			this.$router.push({ path: this.$route.path, query: searchParams })
+			if (Object.values(searchParams).length) {
+				this.$router.push({ path: this.base + 'section/' + this.$route.params.section, query: searchParams })
+			}
 		},
 	},
 

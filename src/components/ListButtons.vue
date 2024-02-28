@@ -1,11 +1,11 @@
 <template>
-    <span>
+    <span class="d-flex">
         <v-btn variant="text" title="Add" icon="mdi-plus" :to="base + 'section/' + internalSection + '/add' + (parentsection ? '?parentsection=' + parentsection + '&parentid=' + parentid : '')"></v-btn>
         <v-btn variant="text" title="Fields" icon="mdi-view-column" @click="changeFields"></v-btn>
         <v-btn variant="text" title="Delete" icon="mdi-delete" v-if="selected.length" @click="doAction('delete')"></v-btn>
         <v-btn variant="text" title="Import" icon="mdi-import" @click="openImport"></v-btn>
         <v-btn variant="text" title="Export" icon="mdi-export" @click="exportItems"></v-btn>
-        <v-btn variant="text" title="Sort" icon="mdi-sort" v-if="sortable" @click="openSortable"></v-btn>
+        <v-btn variant="text" title="Sort" icon="mdi-sort" v-if="sortable" @click="doAction('openSortable')"></v-btn>
 
         <v-menu v-if="buttons.length">
             <template v-slot:activator="{ props }">
@@ -17,6 +17,10 @@
                 </v-list-item>
             </v-list>
         </v-menu>
+
+        <v-spacer></v-spacer>
+        
+        <v-text-field v-model="filter" hide-details placeholder="Filter" density="compact"></v-text-field>
     </span>
 </template>
 
@@ -40,6 +44,7 @@ export default {
             selectedHeaders: [],
             internalSection: '',
             loading: false,
+            filter: '',
         };
     },
     methods: {
@@ -48,22 +53,19 @@ export default {
             return str.charAt(0).toUpperCase() + str.slice(1)
         },
         doAction: async function (action) {            
-            this.$emit('custombutton', action);
+            this.$emit('action', action);
         },
         exportItems: function () {
-            this.$emit('custombutton', 'export');
+            this.$emit('action', 'export');
         },
         changeFields: function () {
             this.$emit('changeFields')
         },
-        openSortable: function () {
-            this.$emit('openSortable')
-        },
         customButton: function (button) {
-            this.$emit('custombutton', button);
+            this.$emit('action', button);
         },
         openImport: function () {
-            this.$emit('custombutton', 'import');
+            this.$emit('action', 'import');
         },
     },
 
@@ -71,6 +73,9 @@ export default {
         section: function (section) {
             this.internalSection = section;
         },
+        filter: function (value) {
+            this.$emit('action', 'filter', value);
+        }
     },
 
     computed: {

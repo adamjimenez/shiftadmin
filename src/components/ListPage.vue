@@ -7,8 +7,7 @@
             <template v-slot:top>
                 <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
                     <ListButtons v-if="!hidebuttons" :selected="selected" :section="internalSection" @changeFields="dialog = true"
-                        @custombutton="customButton" :vars="vars" :sortable="isSortable"
-                        @openSortable="sortableDialog = true">
+                        @action="actionHandler" :vars="vars" :sortable="isSortable">
                     </ListButtons>
                 </v-sheet>
             </template>
@@ -108,6 +107,7 @@ export default {
             sortOrderLoading: false,
             file: [],
             error: '',
+            filter: '',
         };
     },
     methods: {
@@ -117,10 +117,16 @@ export default {
         },
 
         loadItems: async function ({ page, itemsPerPage, sortBy }) {
+            let searchParams = this.searchparams;
+
+            if (this.filter) {
+                searchParams['s'] = this.filter;
+            }
+
             var data = {
                 cmd: 'get',
                 section: this.internalSection,
-                fields: this.searchparams,
+                fields: searchParams,
                 page: page,
                 itemsPerPage: itemsPerPage,
                 sortBy: sortBy
@@ -233,7 +239,7 @@ export default {
             this.selected = [];
             this.reload();
         },
-        customButton: async function (button) {
+        actionHandler: async function (button) {
             let data = {};
 
             if (button === 'export') {
@@ -241,6 +247,13 @@ export default {
                 return
             } else if (button === 'import') {
                 this.openImport();
+                return
+            } else if (button === 'openSortable') {
+                this.sortableDialog = true
+                return
+            } else if (button === 'filter') {
+                this.filter = arguments[1];
+                this.reload();
                 return
             } else if (typeof button === 'string') {
                 data = {

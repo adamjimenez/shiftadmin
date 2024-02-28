@@ -23,7 +23,7 @@
                 </v-menu>
             </span>
             <ListButtons v-else :selected="selected" :section="tab" @changeFields="changeFields" :parentsection="section"
-                :parentid="id" :sortable="isSortable" @openSortable="openSortable"></ListButtons>
+                :parentid="id" :sortable="isSortable" @action="actionHandler"></ListButtons>
         </v-sheet>
 
         <div class="pa-5">
@@ -258,7 +258,7 @@ export default {
             this.$refs['listPage'].dialog = true;
         },
         openSortable: function () {
-            this.$refs['listPage'].sortableDialog = true;
+            this.$refs['listPage'].actionHandler(arguments);
         },
         age: function (dateString) {
             const today = new Date();

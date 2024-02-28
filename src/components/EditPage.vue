@@ -161,6 +161,9 @@ export default {
                     } else if (field.type === 'select_multiple' && !Array.isArray(data[field.column])) {
                         // default to array
                         data[field.column] = [];
+                    } else if (field.type === 'upload' && typeof data[field.column] === 'string') {                        
+                        // default to array
+                        data[field.column] = [data[field.column]];
                     }
                 }
 

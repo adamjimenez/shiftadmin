@@ -246,7 +246,7 @@ export default {
 				console.log(error)
 			}
 
-			this.vars = result.data.vars;
+			this.vars = result.data?.vars;
 
 			let colors = {
 				primary: '#007bff',

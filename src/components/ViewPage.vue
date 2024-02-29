@@ -26,8 +26,8 @@
                 :parentid="id" :sortable="isSortable" @action="actionHandler" :data="buttonData"></ListButtons>
         </v-sheet>
 
-        <div class="pa-5" style="height: 1px; overflow: auto; flex-grow: 1;">
-            <v-tabs v-model="tab">
+        <div class="pa-5 d-flex flex-column" style="height: 1px; overflow: auto; flex-grow: 1;">
+            <v-tabs v-model="tab" style="min-height: 50px;">
                 <v-tab value="summary">Summary</v-tab>
                 <template v-if="vars.subsections && vars.subsections[section]?.length">
                     <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection" :value="subsection">

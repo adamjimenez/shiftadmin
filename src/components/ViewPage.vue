@@ -200,6 +200,10 @@ export default {
                 const parentid = urlParams.get('parentid');
                 this.back = '../../' + parentsection + '/' + parentid + '/';
             }
+
+            if (!fields.id) {
+                this.back = '';
+            }
         },
         openLogs: async function () {
             this.logsDialog = true;

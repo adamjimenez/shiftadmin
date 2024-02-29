@@ -243,7 +243,7 @@ export default {
                 this.error = result.data?.error;
                 this.errors = result.data?.errors;
             } else if (result.data.id) {
-                this.$router.push('/section/' + this.section + '/' + result.data.id + '/');
+                this.$router.push('../' + result.data.id + '/');
             }
         },
         fieldType(type) {

@@ -225,6 +225,9 @@ export default {
                 })
             }
 
+            let title = this.vars?.branding?.title ? this.vars.branding.title : 'ADMIN';
+            document.title = title + ' | ' + this.internalSection;
+
             this.$emit('loaded')
         },
 
@@ -514,12 +517,7 @@ export default {
         }
     },
 
-    mounted() {
-        // check if main page
-        if (!this.hidebuttons) {
-            document.title = 'ADMIN | ' + this.internalSection;
-        }
-    }
+    mounted() {}
 
 };
 </script>

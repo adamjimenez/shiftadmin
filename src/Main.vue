@@ -255,6 +255,9 @@ export default {
 
 			this.$vuetify.theme.themes.light.colors = { ...this.$vuetify.theme.themes.light.colors, ...colors, ...this.vars?.branding?.colors };
 			this.$vuetify.theme.themes.dark.colors = { ...this.$vuetify.theme.themes.dark.colors, ...colors, ...this.vars?.branding?.colors };
+
+			let title = this.vars?.branding?.title ? this.vars.branding.title : 'ADMIN';
+			document.title = title;
 		},
 		fieldType(type) {
 			switch (type) {

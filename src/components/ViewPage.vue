@@ -190,7 +190,8 @@ export default {
 
             this.fields = result.data.fields;
 
-            document.title = 'ADMIN | ' + this.section + ' | ' + this.id;
+            let title = this.vars?.branding?.title ? this.vars.branding.title : 'ADMIN';
+            document.title = title + ' | ' + this.section + ' | ' + this.id;
 
             // back button to go back to parent section
             const urlParams = new URLSearchParams(window.location.search);

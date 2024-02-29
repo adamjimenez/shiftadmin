@@ -174,6 +174,9 @@ export default {
 
             this.fields = fields;
 
+            let title = this.vars?.branding?.title ? this.vars.branding.title : 'ADMIN';
+            document.title = title + ' | ' + this.section + ' | ' + this.id;
+
             // parent fields
             if (!this.id) {
                 const urlParams = new URLSearchParams(window.location.search);

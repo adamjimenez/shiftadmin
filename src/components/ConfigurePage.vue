@@ -295,6 +295,9 @@ export default {
 
             await this.$nextTick();
 
+            let title = data.vars?.branding?.title ? data.vars.branding.title : 'ADMIN';
+            document.title = title + ' | Configure';
+
             this.dirty = false;
         },
         save: async function () {

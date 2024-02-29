@@ -26,7 +26,7 @@
                 :parentid="id" :sortable="isSortable" @action="actionHandler" :data="buttonData"></ListButtons>
         </v-sheet>
 
-        <div class="pa-5 flex-grow-1" style="height: 600px; overflow: auto;">
+        <div class="pa-5 flex-grow-1 d-flex flex-column" style="height: 600px; overflow: auto;">
             <v-tabs v-model="tab">
                 <v-tab value="summary">Summary</v-tab>
                 <template v-if="vars.subsections && vars.subsections[section]?.length">
@@ -102,7 +102,7 @@
                 <v-list>
                     <v-card-item>
                         <template v-for="section in sections" :key="section">
-                            <v-select :label="section" v-model="privileges[section]['access']"
+                            <v-select :label="section" v-model="privileges[section].access"
                                 :items="accessOptions"></v-select>
                         </template>
                     </v-card-item>

@@ -5,7 +5,7 @@
         <v-btn variant="text" title="Delete" icon="mdi-delete" color="grey-lighten-1" v-if="selected.length" @click="doAction('delete')"></v-btn>
         <v-btn variant="text" title="Import" icon="mdi-import" color="grey-lighten-1" @click="openImport"></v-btn>
         <v-btn variant="text" title="Export" icon="mdi-export" color="grey-lighten-1" @click="exportItems"></v-btn>
-        <v-btn variant="text" title="Sort" icon="mdi-sort" v-if="sortable" @click="doAction('openSortable')"></v-btn>
+        <v-btn variant="text" title="Sort" icon="mdi-sort" color="grey-lighten-1" v-if="sortable" @click="doAction('openSortable')"></v-btn>
 
         <v-menu v-if="buttons.length">
             <template v-slot:activator="{ props }">

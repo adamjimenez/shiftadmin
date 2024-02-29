@@ -95,6 +95,9 @@
             </div>
             <div v-if="tab === 'general'">
                 <v-text-field label="From email" v-model="data.from_email"></v-text-field>
+                <v-text-field label="Title" v-model="data.vars.branding.title"></v-text-field>
+                <v-text-field label="Primary" v-model="data.vars.branding.colors.primary" type="color"></v-text-field>
+                <v-text-field label="Secondary" v-model="data.vars.branding.colors.secondary" type="color"></v-text-field>
             </div>
         </v-card>
 
@@ -280,20 +283,25 @@ export default {
                 data.vars.subsections = {};
             }
 
+            if (!data.vars.branding) {
+                data.vars.branding = {};
+            }
+
+            if (!data.vars.branding.colors) {
+                data.vars.branding.colors = {};
+            }
+
             this.data = data;
+
+            await this.$nextTick();
+
             this.dirty = false;
         },
         save: async function () {
             this.error = '';
 
             this.loading = true;
-            const result = await api.post('config.php?cmd=save', {
-                from_email: this.data.from_email,
-                sections: this.data.vars.sections,
-                subsections: this.data.vars.subsections,
-                options: this.data.vars.options,
-                last_modified: this.data.last_modified,
-            });
+            const result = await api.post('config.php?cmd=save', this.data);
             this.loading = false;
 
             if (result.data.error) {
@@ -505,6 +513,12 @@ export default {
     watch: {
         vars: function () {
             this.fetchData();
+        },
+        data: {
+            handler : function () {
+                this.dirty = true;
+            },
+            deep: true,
         }
     },
     async mounted() {

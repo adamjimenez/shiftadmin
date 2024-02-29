@@ -65,6 +65,8 @@
 <style>
 .data-table-server .v-table__wrapper {
     overflow: auto;
+    height: 100px;
+    flex-grow: 1;
 }
 </style>
 

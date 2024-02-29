@@ -1,6 +1,6 @@
 <template>
-    <v-card>
-        <v-sheet color="secondary" class="w-100 d-flex flex-grow-1">
+    <v-card style="display: flex; flex-direction: column;">
+        <v-sheet color="secondary" class="w-100 d-flex">
             <v-btn title="Back" icon="mdi-arrow-left" :to="back" color="grey-lighten-1" variant="text"></v-btn>
             <span v-if="tab === 'summary'" class="w-100">
                 <v-btn title="Edit" icon="mdi-pencil" color="grey-lighten-1" to="edit" variant="text"></v-btn>
@@ -26,7 +26,7 @@
                 :parentid="id" :sortable="isSortable" @action="actionHandler" :data="buttonData"></ListButtons>
         </v-sheet>
 
-        <div class="pa-5">
+        <div class="pa-5 flex-grow-1" style="height: 600px; overflow: auto;">
             <v-tabs v-model="tab">
                 <v-tab value="summary">Summary</v-tab>
                 <template v-if="vars.subsections && vars.subsections[section]?.length">

@@ -1,7 +1,7 @@
 <template>
-    <v-card style="display: flex; flex-direction: column;">
+    <v-card class="d-flex flex-column">
         <v-sheet color="secondary" class="w-100 d-flex">
-            <v-btn title="Back" icon="mdi-arrow-left" :to="back" color="grey-lighten-1" variant="text"></v-btn>
+            <v-btn title="Back" icon="mdi-arrow-left" :to="back" color="grey-lighten-1" variant="text" v-if="back"></v-btn>
             <span v-if="tab === 'summary'" class="w-100">
                 <v-btn title="Edit" icon="mdi-pencil" color="grey-lighten-1" to="edit" variant="text"></v-btn>
                 <v-btn v-if="data['deleted'] > 0" title="Restore" icon="mdi-delete-restore" color="success" @click="restoreItem"
@@ -26,7 +26,7 @@
                 :parentid="id" :sortable="isSortable" @action="actionHandler" :data="buttonData"></ListButtons>
         </v-sheet>
 
-        <div class="pa-5 flex-grow-1 d-flex flex-column" style="height: 600px; overflow: auto;">
+        <div class="pa-5" style="height: 1px; overflow: auto; flex-grow: 1;">
             <v-tabs v-model="tab">
                 <v-tab value="summary">Summary</v-tab>
                 <template v-if="vars.subsections && vars.subsections[section]?.length">

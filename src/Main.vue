@@ -168,9 +168,13 @@ export default {
 			this.$router.push(this.base + 'section/' + this.section + '/' + item.value + '/');
 		},
 		updateSearch: async function (term) {
+			if (typeof this.search === 'object') {
+				return;
+			}
+			
 			this.section = this.$route.params.section;
 
-			var data = {
+			let data = {
 				term: term
 			};
 			const result = await api.post('?cmd=search&section=' + this.section, data);
@@ -184,8 +188,6 @@ export default {
 		},
 		doSearch: function () {
 			this.searchParams = structuredClone(this.params);
-			console.log(this.params)
-			console.log(this.searchParams)
 			this.advancedDialog = false;
 		},
 		saveSearch: async function () {
@@ -331,6 +333,10 @@ export default {
 			}
 		},
 		searchParams: function (searchParams) {
+			let params = searchParams;
+			delete params.parentsection;
+			delete params.parentid;
+
 			if (Object.values(searchParams).length) {
 				this.$router.push({ path: this.base + 'section/' + this.$route.params.section, query: searchParams })
 			}

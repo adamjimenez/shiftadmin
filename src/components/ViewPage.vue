@@ -155,7 +155,7 @@ export default {
     },
     methods: {
         fetchData: async function () {
-            var data = {
+            let data = {
                 cmd: 'get',
                 section: this.section,
                 id: this.id
@@ -236,7 +236,7 @@ export default {
                 return;
             }
 
-            var data = {
+            let data = {
                 section: this.section,
                 id: this.id
             };
@@ -248,7 +248,7 @@ export default {
                 return;
             }
 
-            var data = {
+            let data = {
                 section: this.section,
                 ids: [this.id]
             };
@@ -293,7 +293,7 @@ export default {
             }
         },
         customButton: async function (button) {
-            var data = {
+            let data = {
                 cmd: 'button',
                 button: button.id,
                 section: this.section,

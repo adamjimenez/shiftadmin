@@ -91,7 +91,7 @@ export default {
 
     computed: {
         buttons: function () {
-            var buttons = [];
+            let buttons = [];
 
             this.vars?.buttons?.forEach((item, index) => {
                 if (item.page === 'list' && item.section === this.internalSection) {

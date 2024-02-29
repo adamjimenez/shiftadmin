@@ -360,7 +360,7 @@ export default {
         },
         vars: function () {
             this.fetchData();
-        },
+        }
     },
 
     async mounted() {

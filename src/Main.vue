@@ -171,7 +171,7 @@ export default {
 			if (typeof this.search === 'object') {
 				return;
 			}
-			
+
 			this.section = this.$route.params.section;
 
 			let data = {

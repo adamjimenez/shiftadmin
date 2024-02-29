@@ -244,7 +244,7 @@ export default {
             this.$router.push(link);
         },
         doAction: async function (action) {
-            var data = {
+            let data = {
                 cmd: action,
                 section: this.section,
                 ids: this.selected,
@@ -323,7 +323,7 @@ export default {
             }
         },
         exportItems: function () {
-            var data = {
+            let data = {
                 cmd: 'export',
                 section: this.internalSection,
                 fields: this.searchparams,
@@ -375,7 +375,7 @@ export default {
             this.reload();
         },
         saveSortOrder: async function () {
-            var data = {
+            let data = {
                 cmd: 'reorder',
                 section: this.section,
                 items: this.sortOrder,
@@ -467,7 +467,7 @@ export default {
             }
 
             // get active fields
-            var fields = [];
+            let fields = [];
             this.selectedHeaders.forEach(item => {
                 for (const [, field] of Object.entries(this.data.fields)) {
                     if (item === field.column) {
@@ -482,7 +482,7 @@ export default {
 
     computed: {
         activeHeaders: function () {
-            var activeHeaders = [];
+            let activeHeaders = [];
             
             this.selectedHeaders.forEach(item => {
                 activeHeaders.push({

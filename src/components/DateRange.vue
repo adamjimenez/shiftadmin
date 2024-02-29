@@ -3,7 +3,7 @@
         <template v-slot:activator="{ props }">
             <v-text-field v-model="dateRangeText" label="Dates" readonly v-bind="props"></v-text-field>
         </template>
-        <v-date-picker v-model="dates" no-title bg-color="black" multiple="range">
+        <v-date-picker v-model="dates" no-title bg-color="black" multiple="range" v-bind="$attrs">
 			<template #actions>
 			<div>
 				<v-btn

@@ -195,7 +195,8 @@ export default {
 
             if (allHeaders.length && !allHeaders.find(obj => obj.column === 'id')) {
                 // redirect
-                this.$router.push(this.base + 'section/' + this.internalSection + '/1/');
+                let base = util.base();
+                this.$router.push(base + 'section/' + this.internalSection + '/1/');
                 return false;
             }
 

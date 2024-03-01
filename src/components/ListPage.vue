@@ -40,7 +40,6 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-
     </v-layout>
 </template>
 
@@ -69,7 +68,7 @@ export default {
     props: {
         vars: null,
         section: null,
-        hidebuttons: Boolean,
+        hidebuttons: Boolean, // used when included in view page
         parentsection: null,
         parentid: null,
         searchparams: null,
@@ -77,35 +76,29 @@ export default {
     data: function () {
         return {
             dialog: false,
-            selectedHeaders: [],
+            selectedHeaders: [], // flat array of header column names to display
+            headers: [], // array of all headers (title, key)
             selected: [],
             data: {},
             internalSection: '',
             loading: false,
-            importDialog: false,
-            importHeaders: [],
-            importCols: {},
             sortableDialog: false,
             totalItems: 0,
             itemsPerPage: 20,
             page: 1,
             search: '',
-            headers: [],
             drag: false,
             sortOrder: [],
             sortOrderLoading: false,
             file: [],
-            error: '',
             filter: '',
             buttonData: {},
         };
     },
     methods: {
-
         formatString: function (string) {
             return util.formatString(string);
         },
-
         loadItems: async function ({ page, itemsPerPage, sortBy }) {
             let searchParams = this.searchparams;
 
@@ -113,7 +106,7 @@ export default {
                 searchParams['s'] = this.filter;
             }
 
-            var data = {
+            let data = {
                 cmd: 'get',
                 section: this.internalSection,
                 fields: searchParams,
@@ -216,7 +209,6 @@ export default {
 
             this.$emit('loaded')
         },
-
         rowClick: function (e, item) {
             let base = '/';
             if (this.$route.params.base) {
@@ -328,7 +320,6 @@ export default {
             this.search = String(Date.now())
         },
     },
-
     watch: {
         $route(route) {
             this.internalSection = route.params.section;
@@ -369,16 +360,15 @@ export default {
             this.$emit('changeFields', fields);
         },
     },
-
     computed: {
-        activeHeaders: function () {
+        activeHeaders: function () { // turns selectedHeaders array into multidimensional array
             let activeHeaders = [];
             
             this.selectedHeaders.forEach(item => {
                 activeHeaders.push({
                     title: this.formatString(item),
                     value: item,
-                    sortable: true,
+                    //sortable: true,
                 });
             });
 
@@ -396,7 +386,6 @@ export default {
             return isSortable;
         }
     },
-
     created() {
         this.internalSection = this.section ? this.section : this.$route.params.section;
 
@@ -404,8 +393,5 @@ export default {
             this.selectedHeaders = JSON.parse(localStorage['fields_' + this.internalSection]);
         }
     },
-
-    mounted() {}
-
 };
 </script>

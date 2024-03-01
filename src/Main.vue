@@ -16,9 +16,9 @@
 					<template v-slot:append-inner>
 						<v-btn color="grey-lighten-1" @mousedown.stop @click="advancedSearch" :disabled="fields.length === 0" icon>						
 							<v-badge :content="searchParamCount" color="info" v-if="searchParamCount > 0">
-								<v-icon icon="mdi-tune"></v-icon>
+								<v-icon icon="mdi-tune" />
 							</v-badge>
-							<v-icon icon="mdi-tune" v-else></v-icon>
+							<v-icon icon="mdi-tune" v-else />
 						</v-btn>
 					</template>
 				</v-combobox>
@@ -31,7 +31,7 @@
 					<v-list-group v-if="item.children" :prepend-icon="item.icon ? item.icon : 'mdi-minus'"
 						:value="item.title">
 						<template v-slot:activator="{ props }">
-							<v-list-item v-bind="props" :title="item.title"></v-list-item>
+							<v-list-item v-bind="props" :title="item.title" />
 						</template>
 
 						<v-list-item v-for="child in item.children" :key="child.to" :title="child.title" :value="child.to"
@@ -39,9 +39,9 @@
 
 							<template v-slot:prepend>
 								<v-badge :content="child.count" color="error" v-if="child.count > 0">
-									<v-icon :icon="child.icon ? child.icon : 'mdi-minus'"></v-icon>
+									<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" />
 								</v-badge>
-								<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" v-else></v-icon>
+								<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" v-else />
 							</template>
 							<template v-slot:append>
 								<v-btn icon="mdi-delete" v-if="child.filter_id" @click.stop="deleteFilter(child.filter_id)"
@@ -53,9 +53,9 @@
 					<v-list-item v-else :title="item.title" :value="item.to" :to="base + item.to">
 						<template v-slot:prepend>
 							<v-badge :content="item.count" color="error" v-if="item.count > 0">
-								<v-icon :icon="item.icon ? item.icon : 'mdi-minus'"></v-icon>
+								<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" />
 							</v-badge>
-							<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" v-else></v-icon>
+							<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" v-else />
 						</template>
 					</v-list-item>
 				</div>
@@ -69,7 +69,7 @@
 		<v-main class="d-flex flex-column align-center justify-center">
 			<router-view ref="main" class="w-100 flex-grow-1" :vars="vars" :searchparams="searchParams"
 				@changeFields="changeFields" @chooseFileUpload="chooseFileUpload" :fileSelected="fileSelected"
-				@message="message" :class="fullScreen ? 'fullScreen' : ''"></router-view>
+				@message="message" :class="fullScreen ? 'fullScreen' : ''" />
 		</v-main>
 
 		<v-dialog v-model="advancedDialog" max-width="600" scrollable>
@@ -80,14 +80,14 @@
 					<template v-for="field in fields" :key="field.type">
 						<v-list-item v-if="searchable.includes(field.type)">
 							<v-checkbox v-if="['checkbox', 'deleted'].includes(field.type)" :label="formatString(field.column)"
-								v-model="params[field.column]"></v-checkbox>
+								v-model="params[field.column]" />
 							<v-select v-else-if="['select'].includes(field.type)" :label="formatString(field.column)"
-								:items="options[field.column]" v-model="params[field.column]"></v-select>
+								:items="options[field.column]" v-model="params[field.column]" />
 							<v-select v-else-if="['select_multiple'].includes(field.type)" :label="formatString(field.column)"
 								:items="options[field.column]" v-model="params[field.column]" multiple chips>
 								<template v-slot:prepend>
 									<v-select v-model="param.func[field.column]" :items="['in', 'not in']"
-										hide-details></v-select>
+										hide-details />
 								</template>
 							</v-select>
 							<v-autocomplete v-else-if="field.type === 'combo'" :label="formatString(field.column)"
@@ -100,7 +100,7 @@
 								:type="fieldType(field.type)" :step="fieldStep(field.type)">
 								<template v-slot:prepend v-if="['id', 'decimal', 'int', 'rating'].includes(field.type)">
 									<v-select v-model="params.func[field.column]" :items="['=', '>', '<']"
-										hide-details></v-select>
+										hide-details />
 								</template>
 							</v-text-field>
 						</v-list-item>
@@ -181,13 +181,11 @@ export default {
 
 			this.section = this.$route.params.section;
 
-			let data = {
+			const result = await api.post('?cmd=search&section=' + this.section, {
 				term: term
-			};
-			const result = await api.post('?cmd=search&section=' + this.section, data);
+			});
 
-			this.searchItems = result.data.data;
-			
+			this.searchItems = result.data.data;			
 			this.searchParams = { s: this.search };
 		},
 		quickSearch: function () {
@@ -219,7 +217,7 @@ export default {
 				return;
 			}
 
-			var data = {
+			let data = {
 				save: 1,
 				label: label,
 				section: this.section,

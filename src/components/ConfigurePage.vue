@@ -156,7 +156,7 @@
             <v-card title="Section">
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-combobox label="Section" v-model="section.section" :items="data.vars.sections"></v-combobox>
+                    <v-combobox label="Section" v-model="section.section" :items="Object.keys(data.tables)"></v-combobox>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn variant="flat" color="primary" :disabled="section.section === ''" @click="saveSection">Save</v-btn>
@@ -398,10 +398,12 @@ export default {
             }
         },
         saveSection: function () {
+            let value = this.section.section.replaceAll('_', ' ');
+
             if (Object.hasOwn(this.section, 'index')) {
-                this.data.vars.sections[this.section.index] = this.section.section;
+                this.data.vars.sections[this.section.index] = value;
             } else {
-                this.data.vars.sections.push(this.section.section);
+                this.data.vars.sections.push(value);
             }
             this.sectionDialog = false;
             this.dirty = true;
@@ -415,10 +417,12 @@ export default {
             this.dirty = true;
         },
         saveSubsection: function () {
+            let value = this.subsection.subsection.replaceAll('_', ' ');
+
             if (Object.hasOwn(this.subsection, 'index')) {
-                this.data.vars.subsections[this.subsection.section][this.subsection.index] = this.subsection.subsection;
+                this.data.vars.subsections[this.subsection.section][this.subsection.index] = value;
             } else {
-                this.data.vars.subsections[this.subsection.section].push(this.subsection.subsection);
+                this.data.vars.subsections[this.subsection.section].push(value);
             }
             this.subsectionDialog = false;
             this.dirty = true;

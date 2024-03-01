@@ -314,7 +314,7 @@ export default {
             }
 
             if (result.data.result?.redirect) {
-                if (button.target) {
+                if (result.data.result?.target) {
                     window.open(result.data.result.redirect);
                 } else {
                     location.href = result.data.result.redirect;

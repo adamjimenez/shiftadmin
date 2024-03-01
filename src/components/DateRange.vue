@@ -1,7 +1,7 @@
 <template>
     <v-menu ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y>
         <template v-slot:activator="{ props }">
-            <v-text-field v-model="dateRangeText" label="Dates" readonly v-bind="props"></v-text-field>
+            <v-text-field v-model="dateRangeText" :label="label" readonly v-bind="props"></v-text-field>
         </template>
         <v-date-picker v-model="dates" no-title bg-color="black" multiple="range" v-bind="$attrs">
 			<template #actions>
@@ -25,6 +25,7 @@ export default {
             type: [Array],
             required: true,
         },
+        label: String,
     },
     emits: ["update:modelValue"],
     data: () => ({

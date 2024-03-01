@@ -16,6 +16,7 @@
         </v-data-table-server>
 
         <ImportExport ref="importExport" :headers="headers" :section="internalSection" :fields="searchparams" :columns="selectedHeaders" @reload="reload" />
+        <BulkEdit ref="bulkEdit" :section="internalSection" :fields="data?.fields" @action="actionHandler" :vars="vars" />
 
         <v-dialog v-model="dialog" max-width="600" scrollable>
             <v-card title="Fields">
@@ -58,12 +59,14 @@ import qs from "qs";
 import ListButtons from "./ListButtons";
 import draggable from 'vuedraggable'
 import ImportExport from "./ImportExport";
+import BulkEdit from "./BulkEdit";
 
 export default {
     components: {
         ListButtons,
         draggable,
         ImportExport,
+        BulkEdit,
     },
     props: {
         vars: null,
@@ -223,6 +226,7 @@ export default {
 
             this.$router.push(link);
         },
+        /*
         doAction: async function (action) {
             let data = {
                 cmd: action,
@@ -235,6 +239,7 @@ export default {
             this.selected = [];
             this.reload();
         },
+        */
         actionHandler: async function (button) {
             let data = {};
 
@@ -243,6 +248,9 @@ export default {
                 return
             } else if (button === 'import') {
                 this.$refs['importExport'].openImport();
+                return
+            } else if (button === 'openBulkEdit') {
+                this.$refs['bulkEdit'].open();
                 return
             } else if (button === 'openSortable') {
                 this.sortableDialog = true
@@ -269,7 +277,11 @@ export default {
                     cmd: button,
                     section: this.internalSection,
                     ids: this.selected,
-                };
+                }; 
+
+                if (typeof arguments[1] === 'object') {
+                    data = { ...data, ...arguments[1]};
+                }
 
                 this.loading = true;
                 await api.post('?cmd=' + button + '&section=' + this.internalSection, data);

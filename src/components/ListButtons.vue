@@ -2,6 +2,7 @@
     <span class="d-flex w-100 align-center">
         <v-btn variant="text" title="Add" icon="mdi-plus" :to="base + 'section/' + internalSection + '/add' + (parentsection ? '?parentsection=' + parentsection + '&parentid=' + parentid : '')"></v-btn>
         <v-btn variant="text" title="Fields" icon="mdi-view-column" color="grey-lighten-1" @click="changeFields"></v-btn>
+        <v-btn variant="text" title="Bulk Edit" icon="mdi-pencil" color="grey-lighten-1" v-if="selected.length" @click="doAction('openBulkEdit')"></v-btn>
         <v-btn variant="text" title="Delete" icon="mdi-delete" color="grey-lighten-1" v-if="selected.length" @click="doAction('delete')"></v-btn>
         <v-btn variant="text" title="Import" icon="mdi-import" color="grey-lighten-1" @click="openImport"></v-btn>
         <v-btn variant="text" title="Export" icon="mdi-export" color="grey-lighten-1" @click="exportItems"></v-btn>

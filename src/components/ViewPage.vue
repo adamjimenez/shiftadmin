@@ -38,7 +38,7 @@
 
             <v-card v-if="tab === 'summary'" min-width="600" style="overflow: scroll;">
                 <template v-for="(value, key, index) in fields" :key="index">
-                    <div v-if="data[value.column] && !['password'].includes(value.type) && (!['select', 'select_parent', 'combo'].includes(value.type) || data[value.column] > 0)">
+                    <div v-if="data[value.column] && !['password'].includes(value.type) && (!['file', 'select', 'select_parent', 'combo'].includes(value.type) || data[value.column] > 0)">
                         <v-card-title>
                             {{ formatString(key) }}
                         </v-card-title>
@@ -59,8 +59,10 @@
                             <span v-else-if="value.type === 'rating'">
                                 <v-rating v-model="data[value.column]" :length="5" :size="32" readonly></v-rating>
                             </span>
-                            <img v-else-if="['file', 'upload'].includes(value.type)"
-                                :src="apiRoot + '?cmd=file&f=' + data[value.column] + '&w=320&h=240'" />
+                            <a v-else-if="['file', 'upload'].includes(value.type)" :href="apiRoot + '?cmd=file&f=' + data[value.column]" target="_blank">
+                                <img :src="apiRoot + '?cmd=file&f=' + data[value.column] + '&w=320&h=240'" />
+                                <div>{{ data[value.column] }}</div>
+                            </a>
                             <div v-else-if="['files', 'uploads'].includes(value.type)">
                                 <img v-for="image in data[value.column]" :key="image"
                                     :src="apiRoot + '?cmd=file&f=' + image + '&w=320&h=240'" class="d-block mb-5" />                            

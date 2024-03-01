@@ -380,7 +380,7 @@ export default {
                 activeHeaders.push({
                     title: this.formatString(item),
                     value: item,
-                    //sortable: true,
+                    sortable: true, // used by v-data-table
                 });
             });
 

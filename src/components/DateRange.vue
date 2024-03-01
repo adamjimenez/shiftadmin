@@ -34,7 +34,7 @@ export default {
     methods: {
         parseDate: function (dateString) {
             const date = new Date(dateString);
-            console.log(date)
+            
             if(!date) {
                 return;
             }

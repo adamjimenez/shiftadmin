@@ -376,6 +376,10 @@ export default {
 	min-height: 100% !important;
 }
 
+.v-navigation-drawer__content {
+	overflow-y: hidden;
+}
+
 .v-navigation-drawer__content:hover {
 	overflow-y: auto !important;
 }
@@ -385,7 +389,7 @@ export default {
 }
 
 ::-webkit-scrollbar {
-	width: 9px;
+	width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -394,7 +398,6 @@ export default {
 
 ::-webkit-scrollbar-thumb {
 	background-color: rgba(155, 155, 155, 0.5);
-	border-radius: 20px;
 	border: transparent;
 }
 

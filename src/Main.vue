@@ -3,19 +3,26 @@
 		<v-app-bar color="secondary">
 			<v-app-bar-nav-icon variant="text" color="grey-lighten-1" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
-			<v-combobox v-if="fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
-				@update:model-value="afterSelection" @keydown.enter="quickSearch" label="Search" placeholder="Search"
-				ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded
-				variant="solo-filled" no-filter class="mx-5">
-				<template v-slot:prepend>					
-					<v-btn :to=base variant="plain">
-						{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
-					</v-btn>
-				</template>
-				<template v-slot:append-inner>
-					<v-btn icon="mdi-tune" color="grey-lighten-1" @mousedown.stop @click="advancedSearch" :disabled="fields.length === 0"></v-btn>
-				</template>
-			</v-combobox>
+			<div class="text-align-center w-100 d-flex flex-row justify-center">
+				<v-combobox v-if="fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
+					@update:model-value="afterSelection" @keydown.enter="quickSearch" label="Search" placeholder="Search"
+					ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded
+					variant="solo-filled" no-filter class="mx-5" style="max-width: 800px;">
+					<template v-slot:prepend>					
+						<v-btn :to=base variant="plain">
+							{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
+						</v-btn>
+					</template>
+					<template v-slot:append-inner>
+						<v-btn color="grey-lighten-1" @mousedown.stop @click="advancedSearch" :disabled="fields.length === 0" icon>						
+							<v-badge :content="searchParamCount" color="info" v-if="searchParamCount > 0">
+								<v-icon icon="mdi-tune"></v-icon>
+							</v-badge>
+							<v-icon icon="mdi-tune" v-else></v-icon>
+						</v-btn>
+					</template>
+				</v-combobox>
+			</div>
 		</v-app-bar>
 
 		<v-navigation-drawer :rail="drawer" expand-on-hover permanent color="secondary">
@@ -79,7 +86,7 @@
 							<v-select v-else-if="['select_multiple'].includes(field.type)" :label="formatString(field.column)"
 								:items="options[field.column]" v-model="params[field.column]" multiple chips>
 								<template v-slot:prepend>
-									<v-select v-model="params['func'][field.column]" :items="['in', 'not in']"
+									<v-select v-model="param.func[field.column]" :items="['in', 'not in']"
 										hide-details></v-select>
 								</template>
 							</v-select>
@@ -92,7 +99,7 @@
 							<v-text-field v-else :label="formatString(field.column)" v-model="params[field.column]"
 								:type="fieldType(field.type)" :step="fieldStep(field.type)">
 								<template v-slot:prepend v-if="['id', 'decimal', 'int', 'rating'].includes(field.type)">
-									<v-select v-model="params['func'][field.column]" :items="['=', '>', '<']"
+									<v-select v-model="params.func[field.column]" :items="['=', '>', '<']"
 										hide-details></v-select>
 								</template>
 							</v-text-field>
@@ -187,7 +194,22 @@ export default {
 			this.searchParams = { s: this.search };
 		},
 		doSearch: function () {
-			this.searchParams = structuredClone(this.params);
+			let searchParams = structuredClone(this.params);
+
+			// remove empty
+			for (const [k, v] of Object.entries(searchParams)) {
+				if (v === '') {
+					delete searchParams[k];
+				}
+			}
+
+			for (const [k, v] of Object.entries(searchParams.func)) {
+				if ( v === '' || typeof searchParams[k] === 'undefined') {
+					delete searchParams.func[k];
+				}
+			}
+
+			this.searchParams = searchParams;
 			this.advancedDialog = false;
 		},
 		saveSearch: async function () {
@@ -222,13 +244,21 @@ export default {
 					this.params.func[field.column] = '';
 				}
 
-				if (['decimal', 'int', 'id', 'rating'].includes(field.type)) {
+				if (['decimal', 'int', 'id', 'rating'].includes(field.type) && !this.params.func[field.column]) {
 					this.params.func[field.column] = '=';
 				}
 
 				if (['date', 'datetime', 'timestamp'].includes(field.type)) {
 					if (!this.ranges[field.column]) {
 						this.ranges[field.column] = [];
+
+						if (this.params[field.column]) {
+							this.ranges[field.column].push(this.params[field.column]);
+						}
+
+						if (this.params.func[field.column]) {
+							this.ranges[field.column].push(this.params.func[field.column]);
+						}
 					}
 				}
 			});
@@ -349,6 +379,9 @@ export default {
 	computed: {
 		base() {
 			return util.base();
+		},
+		searchParamCount() {
+			return Object.keys(this.searchParams).filter(item => item !== 'func').length
 		}
 	},
 

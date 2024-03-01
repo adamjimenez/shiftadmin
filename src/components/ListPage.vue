@@ -15,25 +15,7 @@
             <template v-slot:bottom></template>
         </v-data-table-server>
 
-        <v-dialog v-model="importDialog" max-width="600" scrollable>
-            <v-card title="Import">
-                <v-card-text>
-                    <v-alert v-if="error" :text="error" type="error" />
-
-                    <v-file-input v-model="file" label="CSV file" @update:modelValue="readFile"></v-file-input>
-
-                    <div v-if="importHeaders.length">
-                        <h4>Match up the fields</h4>
-                        <div v-for="(header, index) in headers" :key="index">
-                            <v-select :items="importHeaders" :label="header.title" v-model="importCols[header.key]" />
-                        </div>
-                    </div>
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn @click="doImport" variant="flat" color="primary" :disabled="!importHeaders.length">Import</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+        <ImportExport ref="importExport" :headers="headers" :section="internalSection" :fields="searchparams" :columns="selectedHeaders" @reload="reload" />
 
         <v-dialog v-model="dialog" max-width="600" scrollable>
             <v-card title="Fields">
@@ -76,11 +58,13 @@ import util from "../services/util";
 import qs from "qs";
 import ListButtons from "./ListButtons";
 import draggable from 'vuedraggable'
+import ImportExport from "./ImportExport";
 
 export default {
     components: {
         ListButtons,
         draggable,
+        ImportExport,
     },
     props: {
         vars: null,
@@ -263,10 +247,10 @@ export default {
             let data = {};
 
             if (button === 'export') {
-                this.exportItems();
+                this.$refs['importExport'].exportItems();
                 return
             } else if (button === 'import') {
-                this.openImport();
+                this.$refs['importExport'].openImport();
                 return
             } else if (button === 'openSortable') {
                 this.sortableDialog = true
@@ -326,58 +310,6 @@ export default {
                 this.reload();
             }
         },
-        exportItems: function () {
-            let data = {
-                cmd: 'export',
-                section: this.internalSection,
-                fields: this.searchparams,
-                columns: this.activeHeaders.map(item => item.key),
-            };
-
-            if (this.parentsection) {
-                data.parentsection = this.parentsection;
-            }
-
-            if (this.parentid) {
-                data.parentid = this.parentid;
-            }
-
-            const params = qs.stringify(data);
-
-            window.open(api.getApiRoot() + '?' + params);
-        },
-        openImport: function () {
-            this.importDialog = true;
-        },
-        doImport: async function () {
-            const formData = new FormData();
-
-            // form data
-            for (const [name, value] of Object.entries(this.importCols)) {
-                formData.append('fields[' + name + ']', value);
-            }
-            
-            // get file data
-            formData.append('file', this.file[0]);
-
-            this.error = '';
-            this.loading = true;
-
-            const result = await api.post('?cmd=import&section=' + this.internalSection, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            this.loading = false;
-
-            if (result.data.error) {
-                this.error = result.data?.error;
-                return;
-            }
-
-            this.importDialog = false;
-            this.reload();
-        },
         saveSortOrder: async function () {
             let data = {
                 cmd: 'reorder',
@@ -395,52 +327,6 @@ export default {
         reload: function () {
             this.search = String(Date.now())
         },
-        readFile: function () {
-            const fileReader = new FileReader();
-            fileReader.onload = (e) => {
-                const csvData = e.target.result;
-                const rows = csvData.split('\n');
-
-                let headers = [];
-                let rowData = rows[0].split(',');
-                for (let i = 0; i < rowData.length; i++) {
-                    const field = rowData[i].trim();
-                    if (field.startsWith('"') && field.endsWith('"')) {
-                        headers.push(field.slice(1, -1)); // Extract content excluding quotes
-                    } else {
-                        headers.push(field);
-                    }
-                }
-
-                let preview = [];
-                rowData = rows[1].split(',');
-                for (let i = 0; i < rowData.length; i++) {
-                    const field = rowData[i].trim();
-                    if (field.startsWith('"') && field.endsWith('"')) {
-                        preview.push(field.slice(1, -1)); // Extract content excluding quotes
-                    } else {
-                        preview.push(field);
-                    }
-                }
-
-                this.importHeaders = [];
-                headers.forEach((item, index) => {
-                    this.importHeaders.push({
-                        value: index,
-                        raw: item,
-                        title: item + ' - ' + preview[index],
-                    });
-                });
-
-                // auto-match columns
-                this.importCols = {};
-                this.headers.forEach((header) => {
-                    let option = this.importHeaders.find(item => item.raw === header.key);
-                    this.importCols[header.key] = option ? option.value : '';
-                });
-            };
-            fileReader.readAsText(this.file[0]);
-        }
     },
 
     watch: {

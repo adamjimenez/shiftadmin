@@ -379,7 +379,7 @@ export default {
 			return util.base();
 		},
 		searchParamCount() {
-			return Object.keys(this.searchParams).filter(item => item !== 'func').length
+			return Object.keys(this.searchParams).filter(item => item !== 'func' && typeof this.searchParams[item] !== 'undefined').length
 		}
 	},
 

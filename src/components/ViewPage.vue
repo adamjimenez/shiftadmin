@@ -50,9 +50,9 @@
                                 :href="'https://www.google.com/maps/search/?api=1&query=' + data[value.column]" target="_blank">{{
                                     data[value.column] }}</a>
                             <v-btn v-else-if="['select', 'select_parent', 'combo'].includes(value.type)"
-                                :to="getSelectLink(key, data[value.column], value.type)" variant="text">{{ getSelectLabel(value.column) }}</v-btn>
+                                :to="getSelectLink(key, data[value.column])" variant="text">{{ data[value.column + '_label'] ? data[value.column + '_label'] : data[value.column]  }}</v-btn>
                             <div v-else-if="value.type === 'select_multiple'" class="mx-5">
-                                <v-btn v-for="(v, k, index) in data[value.column]" :key="index" :to="getSelectLink(key, v, value.type)" variant="text">
+                                <v-btn v-for="(v, k, index) in data[value.column]" :key="index" :to="getSelectLink(key, v)" variant="text">
                                     {{ getOption(options[value.column], v).title }}
                                 </v-btn>
                             </div>
@@ -289,11 +289,8 @@ export default {
 
             return yearDiff;
         },
-        getSelectLabel: function (column) {
-            return this.options[column].find(item => item.value === this.data[column])?.title;
-        },
-        getSelectLink: function (field, value, type) {
-            let option = (type === 'select_parent') ? this.section : this.vars.options[field.replaceAll('_', ' ')];
+        getSelectLink: function (field, value) {
+            let option = this.vars.options[field.replaceAll('_', ' ')];
 
             if (typeof option === 'string') {
                 return '../../' + option.replaceAll('_', ' ') + '/' + value + '/';

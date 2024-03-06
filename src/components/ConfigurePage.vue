@@ -43,9 +43,9 @@
                                 <v-list>
                                     <v-list-item v-for="(col, key) in fields" :key="key">
                                         <v-list-item-title>{{ col.name }}</v-list-item-title>
-                                        <v-list-item-title>{{ col.type }}</v-list-item-title>
+                                        <v-list-item-subtitle>{{ col.type }}</v-list-item-subtitle>
                                         <template #append>
-                                            <v-btn icon="mdi-pencil" @click.stop="field = { ...col }; field.id = col.name; field.table = index; fieldDialog = true;"></v-btn>
+                                            <v-btn icon="mdi-pencil" @click.stop="field = { ...col }; field.id = col.name; field.table = index; field.required = col.required > 0 ? true : false; fieldDialog = true;"></v-btn>
                                             <v-btn icon="mdi-delete" @click.stop="deleteField(index, col.name)"></v-btn>
                                         </template>
                                     </v-list-item>
@@ -422,6 +422,10 @@ export default {
             if (Object.hasOwn(this.subsection, 'index')) {
                 this.data.vars.subsections[this.subsection.section][this.subsection.index] = value;
             } else {
+                if (!Array.isArray(this.data.vars.subsections[this.subsection.section])) {
+                    this.data.vars.subsections[this.subsection.section] = [];
+                }
+
                 this.data.vars.subsections[this.subsection.section].push(value);
             }
             this.subsectionDialog = false;

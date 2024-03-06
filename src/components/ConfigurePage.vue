@@ -42,8 +42,12 @@
                                 </v-card-actions>
                                 <v-list>
                                     <v-list-item v-for="(col, key) in fields" :key="key">
-                                        <v-list-item-title>{{ col.name }}</v-list-item-title>
-                                        <v-list-item-subtitle>{{ col.type }}</v-list-item-subtitle>
+                                        <v-list-item-title>
+                                            {{ col.name }}<strong v-if="col.required > 0">*</strong>
+                                        </v-list-item-title>
+                                        <v-list-item-subtitle>
+                                            {{ col.type }}                                            
+                                        </v-list-item-subtitle>
                                         <template #append>
                                             <v-btn icon="mdi-pencil" @click.stop="field = { ...col }; field.id = col.name; field.table = index; field.required = col.required > 0 ? true : false; fieldDialog = true;"></v-btn>
                                             <v-btn icon="mdi-delete" @click.stop="deleteField(index, col.name)"></v-btn>

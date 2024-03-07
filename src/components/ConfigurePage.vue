@@ -283,6 +283,10 @@ export default {
             const result = await api.get('config.php');
             let data = result.data;
 
+            if (!data.vars) {
+                data.vars = {};
+            }
+
             if (!data.vars.subsections) {
                 data.vars.subsections = {};
             }

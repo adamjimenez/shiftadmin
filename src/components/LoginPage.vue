@@ -3,15 +3,17 @@
         <v-card title="ShiftAdmin" subtitle="Sign in" :loading="loading">
             <v-alert v-if="error" type="error" :text="error" />
 
-            <v-card-text>
-                <v-text-field v-model="email" :rules="usernameRules" label="Email" required></v-text-field>
-                <v-text-field type="password" v-model="password" :rules="passwordRules" label="Password"
-                    required></v-text-field>
-            </v-card-text>
+            <v-form>
+                <v-card-text>
+                    <v-text-field v-model="email" :rules="usernameRules" label="Email" required></v-text-field>
+                    <v-text-field type="password" v-model="password" :rules="passwordRules" label="Password"
+                        required></v-text-field>
+                </v-card-text>
 
-            <v-card-actions>
-                <v-btn color="success" @click="login" variant="flat" text="Login" />
-            </v-card-actions>
+                <v-card-actions>
+                    <v-btn color="success" @click="login" variant="flat" text="Login" type="submit" />
+                </v-card-actions>
+            </v-form>
         </v-card>
     </v-form>
 </template>
@@ -32,6 +34,13 @@ export default {
     }),
 
     methods: {
+        fetchData: async function () {
+            const result = await api.post('?cmd=login');
+
+            if (result.data.code === 1) {
+                this.$router.push(util.base());
+            }
+        },
         login: async function() {
             this.error = '';
 
@@ -49,9 +58,12 @@ export default {
                 this.error = result.data.error;
             } else {
                 this.$router.push(util.base());
-            }
-            
+            }            
         },
     },
+
+    mounted: function () {
+        this.fetchData();
+    }
 };
 </script>

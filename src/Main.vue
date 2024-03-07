@@ -8,13 +8,14 @@
 					@update:model-value="afterSelection" @keydown.enter="quickSearch" label="Search" placeholder="Search"
 					ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded
 					variant="solo-filled" no-filter class="mx-5" style="max-width: 800px;">
-					<template v-slot:prepend>					
+					<template v-slot:prepend>
 						<v-btn :to=base variant="plain">
 							{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
 						</v-btn>
 					</template>
 					<template v-slot:append-inner>
-						<v-btn color="grey-lighten-1" @mousedown.stop @click="advancedSearch" :disabled="fields.length === 0" icon>						
+						<v-btn color="grey-lighten-1" @mousedown.stop @click="advancedSearch"
+							:disabled="fields.length === 0" icon>
 							<v-badge :content="searchParamCount" color="info" v-if="searchParamCount > 0">
 								<v-icon icon="mdi-tune" />
 							</v-badge>
@@ -79,30 +80,10 @@
 				<v-card-text>
 					<template v-for="field in fields" :key="field.type">
 						<v-list-item v-if="searchable.includes(field.type)">
-							<v-checkbox v-if="['checkbox', 'deleted'].includes(field.type)" :label="formatString(field.column)"
-								v-model="params[field.column]" />
-							<v-select v-else-if="['select'].includes(field.type)" :label="formatString(field.column)"
-								:items="options[field.column]" v-model="params[field.column]" />
-							<v-select v-else-if="['select_multiple'].includes(field.type)" :label="formatString(field.column)"
-								:items="options[field.column]" v-model="params[field.column]" multiple chips>
-								<template v-slot:prepend>
-									<v-select v-model="param.func[field.column]" :items="['in', 'not in']"
-										hide-details />
-								</template>
-							</v-select>
-							<v-autocomplete v-else-if="field.type === 'combo'" :label="formatString(field.column)"
-								v-model="params[field.column]" :items="options[field.column]"
-								@update:search="updateCombo($event, field.column)" />
-							<DateRange v-else-if="['date', 'datetime', 'timestamp'].includes(field.type)"
-								:label="formatString(field.column)" v-model="ranges[field.column]"
-								@update:modelValue="updateRange($event, field.column)" />
-							<v-text-field v-else :label="formatString(field.column)" v-model="params[field.column]"
-								:type="fieldType(field.type)" :step="fieldStep(field.type)">
-								<template v-slot:prepend v-if="['id', 'decimal', 'int', 'rating'].includes(field.type)">
-									<v-select v-model="params.func[field.column]" :items="['=', '>', '<']"
-										hide-details />
-								</template>
-							</v-text-field>
+							<SearchField :column="field.column" :type="field.type" :optionConfig="vars.options" :label="formatString(field.column)"
+								v-model="params[field.column]" :func="params?.func[field.column]"
+								@updateFunc="updateFunc"
+								></SearchField>
 						</v-list-item>
 					</template>
 				</v-card-text>
@@ -120,14 +101,14 @@
 import api from "./services/api";
 import util from "./services/util";
 import FileUploads from "./components/FileUploads";
-import DateRange from "./components/DateRange";
+import SearchField from "./components/SearchField";
 
 export default {
 	name: 'ShiftAdmin',
 
 	components: {
 		FileUploads,
-		DateRange
+		SearchField
 	},
 
 	data: function () {
@@ -142,8 +123,6 @@ export default {
 			fields: [],
 			params: { func: {} },
 			searchParams: {},
-			options: {},
-			ranges: {},
 			searchable: [
 				'checkbox',
 				'combo',
@@ -185,8 +164,11 @@ export default {
 				term: term
 			});
 
-			this.searchItems = result.data.data;			
+			this.searchItems = result.data.data;
 			this.searchParams = { s: this.search };
+		},
+		updateFunc: function (column, func) {
+			this.params.func[column] = func;
 		},
 		quickSearch: function () {
 			this.searchParams = { s: this.search };
@@ -202,7 +184,7 @@ export default {
 			}
 
 			for (const [k, v] of Object.entries(searchParams.func)) {
-				if ( v === '' || typeof searchParams[k] === 'undefined') {
+				if (v === '' || typeof searchParams[k] === 'undefined') {
 					delete searchParams.func[k];
 				}
 			}
@@ -230,36 +212,9 @@ export default {
 			this.fetchData();
 		},
 		advancedSearch: async function () {
-			this.options = await util.getAllOptions(this.fields, this.vars, this.section, {});
-
 			if (!this.params.func) {
 				this.params.func = {};
 			}
-
-			// add ranges
-			this.fields.forEach(field => {
-				if (!this.params.func[field.column]) {
-					this.params.func[field.column] = '';
-				}
-
-				if (['decimal', 'int', 'id', 'rating'].includes(field.type) && !this.params.func[field.column]) {
-					this.params.func[field.column] = '=';
-				}
-
-				if (['date', 'datetime', 'timestamp'].includes(field.type)) {
-					if (!this.ranges[field.column]) {
-						this.ranges[field.column] = [];
-
-						if (this.params[field.column]) {
-							this.ranges[field.column].push(this.params[field.column]);
-						}
-
-						if (this.params.func[field.column]) {
-							this.ranges[field.column].push(this.params.func[field.column]);
-						}
-					}
-				}
-			});
 
 			this.advancedDialog = true;
 		},
@@ -287,34 +242,6 @@ export default {
 			let title = this.vars?.branding?.title ? this.vars.branding.title : 'ADMIN';
 			document.title = title;
 		},
-		fieldType(type) {
-			switch (type) {
-				case 'dob':
-				case 'date':
-				case 'timestamp':
-					return 'date';
-				case 'int':
-				case 'decimal':
-					return 'number';
-				case 'datetime':
-					return 'datetime-local';
-			}
-
-			return ['email', 'password', 'dob', 'time'].includes(type) ? type : 'text'
-		},
-		fieldStep(type) {
-			switch (type) {
-				case 'int':
-					return 1;
-				case 'decimal':
-					return '0.01';
-			}
-			return '';
-		},
-		updateCombo: async function (term, column) {
-			const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
-			this.options[column] = result.data;
-		},
 		deleteFilter: async function (filter_id) {
 			if (!confirm('Are you sure?')) {
 				return;
@@ -322,15 +249,6 @@ export default {
 
 			await api.post('?cmd=filters', { delete: filter_id });
 			this.fetchData();
-		},
-		updateRange: function (value, column) {
-			this.params[column] = value[0];
-
-			if (!this.params.func) {
-				this.params.func = [];
-			}
-
-			this.params.func[column] = value[value.length - 1];
 		},
 		chooseFileUpload: function (column) {
 			this.$refs['fileUploads'].open(column);

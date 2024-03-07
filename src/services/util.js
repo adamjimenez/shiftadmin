@@ -3,7 +3,7 @@ import router from '../router';
 import moment from 'moment';
 
 export default {
-    getOptions: async function(option) {
+    getSelectOptions: async function(option) {
         let options = [];
         
         if (Array.isArray(option)) {
@@ -15,7 +15,7 @@ export default {
             });
         } else if (option) {
             if (typeof option === 'string') {
-                const result = await api.get('?cmd=options&table=' + option);    
+                const result = await api.get('?cmd=options&table=' + option);
                 option = result.data.options;
             }
 
@@ -31,30 +31,37 @@ export default {
 
         return options;
     },
-    getAllOptions: async function (fields, vars, section, data) {
+    getOptions: async function (column, type, optionConfig, data) {
+        let options = {};
+
+        // get options
+        if (['select', 'select_parent', 'select_multiple'].includes(type)) {
+            let option = optionConfig[column.replaceAll('_', ' ')];
+            options = await this.getSelectOptions(option);
+
+            // prepend selected value
+            if (type === 'select_multiple' && Array.isArray(data)) {
+                data.reverse().forEach((item) => {
+                    // check if already exists
+                    if (!options.some(option => option.value === item)) {
+                        options.unshift({
+                            value: item,
+                            title: item,
+                        });
+                    }
+                });
+            }
+
+            return options;
+        } else if (type === 'combo') {
+            return [];
+        }
+    },
+    getAllOptions: async function (fields, optionConfig, data) {
         let options = {};
 
         for (const [, field] of Object.entries(fields)) {
-            // get options
-            if (['select', 'select_parent', 'select_multiple'].includes(field.type)) {
-                let option = field.type === 'select_parent' ? section : vars.options[field.column.replaceAll('_', ' ')];
-                options[field.column] = await this.getOptions(option);
-
-                // prepend selected value
-                if (field.type === 'select_multiple' && Array.isArray(data[field.column])) {
-                    data[field.column].reverse().forEach((item) => {
-                        // check if already exists
-                        if (!options[field.column].some(option => option.value === item)) {
-                            options[field.column].unshift({
-                                value: item,
-                                title: item,
-                            });
-                        }
-                    });
-                }
-            } else if (field.type === 'combo') {
-                options[field.column] = [];
-            }
+            options[field.column] = await this.getOptions(field.column, field.type, optionConfig, data);
         }
 
         return options;

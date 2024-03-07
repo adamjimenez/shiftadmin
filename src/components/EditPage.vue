@@ -153,7 +153,7 @@ export default {
             this.$emit('changeFields', Object.values(fields));
 
             data = result.data.data ? result.data.data : {};
-            this.options = await util.getAllOptions(fields, this.vars, this.section, data);
+            this.options = await util.getAllOptions(fields, this.vars.options, data);
 
             if (result.data.data) {
                 for (const [, field] of Object.entries(fields)) {

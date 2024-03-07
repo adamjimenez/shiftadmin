@@ -100,8 +100,8 @@
             <div v-if="tab === 'general'">
                 <v-text-field label="From email" v-model="data.from_email"></v-text-field>
                 <v-text-field label="Title" v-model="data.vars.branding.title"></v-text-field>
-                <v-text-field label="Primary" v-model="data.vars.branding.colors.primary" type="color"></v-text-field>
-                <v-text-field label="Secondary" v-model="data.vars.branding.colors.secondary" type="color"></v-text-field>
+                <v-text-field label="Primary" v-model="data.vars.branding.colors.primary" type="color" @update:model-value="dirty =  true"></v-text-field>
+                <v-text-field label="Secondary" v-model="data.vars.branding.colors.secondary" type="color" @update:model-value="dirty =  true"></v-text-field>
             </div>
         </v-card>
 
@@ -291,7 +291,7 @@ export default {
                 data.vars.branding = {};
             }
 
-            if (!data.vars.branding.colors) {
+            if (!data.vars.branding.colors || Array.isArray(data.vars.branding.colors)) {
                 data.vars.branding.colors = {};
             }
 
@@ -314,7 +314,8 @@ export default {
             if (result.data.error) {
                 this.error = result.data.error;
             } else {
-                this.fetchData();
+                await this.fetchData();
+                this.$emit('saveConfig');
             }
         },
         saveTable: async function () {

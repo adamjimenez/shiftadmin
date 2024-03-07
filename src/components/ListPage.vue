@@ -115,7 +115,8 @@ export default {
                 fields: searchParams,
                 page: page,
                 itemsPerPage: itemsPerPage,
-                sortBy: sortBy
+                sortBy: sortBy,
+                columns: this.selectedHeaders
             };
 
             if (this.parentsection) {
@@ -226,20 +227,6 @@ export default {
 
             this.$router.push(link);
         },
-        /*
-        doAction: async function (action) {
-            let data = {
-                cmd: action,
-                section: this.section,
-                ids: this.selected,
-            };
-
-            this.loading = true;
-            await api.post('?cmd=' + action + '&section=' + this.internalSection, data);
-            this.selected = [];
-            this.reload();
-        },
-        */
         actionHandler: async function (button) {
             let data = {};
 
@@ -341,8 +328,23 @@ export default {
             this.internalSection = section;
             this.reload();
         },
-        selectedHeaders: function (newVal) {
-            localStorage['fields_' + this.internalSection] = JSON.stringify(Object.values(newVal));
+        selectedHeaders: function (newVal, oldVal) {            
+            if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+                localStorage['fields_' + this.internalSection] = JSON.stringify(Object.values(newVal));
+            }
+
+            // get active fields
+            if (this.data.fields) {
+                let fields = [];
+                
+                for (const [, field] of Object.entries(this.data.fields)) {
+                    if (newVal.includes(field.column)) {
+                        fields.push(field);
+                    }
+                }
+
+                this.$emit('changeFields', fields);
+            }
         },
         searchparams: function () {
             this.reload();
@@ -355,34 +357,24 @@ export default {
             let allHeaderKeys = headers.map(item => item.key);
             selectedHeaders = selectedHeaders.filter((header) => allHeaderKeys.includes(header));
 
-            if (JSON.stringify(selectedHeaders) !== JSON.stringify(this.selectedHeaders)) {
-                this.selectedHeaders = selectedHeaders;
-            }
-
-            // get active fields
-            let fields = [];
-            this.selectedHeaders.forEach(item => {
-                for (const [, field] of Object.entries(this.data.fields)) {
-                    if (item === field.column) {
-                        fields.push(field);
-                    }
-                }
-            });
-
-            this.$emit('changeFields', fields);
+            this.selectedHeaders = selectedHeaders;
         },
     },
     computed: {
         activeHeaders: function () { // turns selectedHeaders array into multidimensional array
             let activeHeaders = [];
-            
-            this.selectedHeaders.forEach(item => {
-                activeHeaders.push({
-                    title: this.formatString(item),
-                    value: item,
-                    sortable: true, // used by v-data-table
+
+            if (this.data.fields) {
+                Object.values(this.data.fields).forEach((item) => {
+                    if (this.selectedHeaders.includes(item.column)) {
+                        activeHeaders.push({
+                            title: this.formatString(item.column),
+                            value: item.column,
+                            sortable: true, // used by v-data-table
+                        });
+                    }
                 });
-            });
+            }
 
             return activeHeaders;
         },

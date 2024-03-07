@@ -100,8 +100,8 @@
             <div v-if="tab === 'general'">
                 <v-text-field label="From email" v-model="data.from_email"></v-text-field>
                 <v-text-field label="Title" v-model="data.vars.branding.title"></v-text-field>
-                <v-text-field label="Primary" v-model="data.vars.branding.colors.primary" type="color" @update:model-value="dirty =  true"></v-text-field>
-                <v-text-field label="Secondary" v-model="data.vars.branding.colors.secondary" type="color" @update:model-value="dirty =  true"></v-text-field>
+                <v-text-field label="Primary" v-model="data.vars.branding.colors.primary" type="color"></v-text-field>
+                <v-text-field label="Secondary" v-model="data.vars.branding.colors.secondary" type="color"></v-text-field>
             </div>
         </v-card>
 

@@ -22,7 +22,7 @@
         <v-spacer></v-spacer>
         
         <v-col class="text-grey-lighten-1 text-right">
-            {{ (data.page - 1) * data.itemsPerPage + 1 }}-{{ Math.min(data.page * data.itemsPerPage, data.totalItems) }} of {{ data.totalItems }}
+            {{ parseInt((data.page - 1) * data.itemsPerPage + 1)?.toLocaleString() }}-{{ Math.min(data.page * data.itemsPerPage, data.totalItems)?.toLocaleString() }} of {{ data.totalItems?.toLocaleString() }}
         </v-col>
 
         <v-btn variant="text" icon="mdi-chevron-left" :disabled="data.page === 1" @click="prevPage"></v-btn>

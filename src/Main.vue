@@ -62,6 +62,7 @@
 					</v-list-item>
 				</div>
 
+				<v-list-item title="Reports" prepend-icon="mdi-chart-line" :to="base + 'reports'" />
 				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" />
 				<v-list-item title="Configure" prepend-icon="mdi-cog" :to="base + 'configure'" />
 				<v-list-item title="Logout" href="/logout" prepend-icon="mdi-logout" />

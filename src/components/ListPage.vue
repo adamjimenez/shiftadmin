@@ -16,7 +16,7 @@
         </v-data-table-server>
 
         <ImportExport ref="importExport" :headers="headers" :section="internalSection" :fields="searchparams" :columns="selectedHeaders" @reload="reload" />
-        <BulkEdit ref="bulkEdit" :section="internalSection" :fields="data?.fields" @action="actionHandler" :vars="vars" />
+        <BulkEdit ref="bulkEdit" :section="internalSection" :fields="data?.fields" @action="actionHandler" :vars="vars" :count="selected.length" :defaultData="defaultData" />
 
         <v-dialog v-model="dialog" max-width="600" scrollable>
             <v-card title="Fields">
@@ -96,6 +96,7 @@ export default {
             file: [],
             filter: '',
             buttonData: {},
+            defaultData: {}, // used for bulk edit
         };
     },
     methods: {
@@ -237,6 +238,24 @@ export default {
                 this.$refs['importExport'].openImport();
                 return
             } else if (button === 'openBulkEdit') {
+
+                this.defaultData = {};
+
+                let i = 0;
+                this.selected.forEach(id => {
+                    let row = this.data.data.find(item => id == item.id);
+
+                    for (const [key, value] of Object.entries(row)) {
+                        if (i === 0) {
+                            this.defaultData[key] = value;
+                        } else if (this.defaultData[key] !== value) {
+                            this.defaultData[key] = null;
+                        }
+                    }
+
+                    i++;
+                })
+
                 this.$refs['bulkEdit'].open();
                 return
             } else if (button === 'openSortable') {

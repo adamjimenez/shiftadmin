@@ -2,6 +2,8 @@ import api from "./api";
 import router from '../router';
 import moment from 'moment';
 
+let edition = 'Standard';
+
 export default {
     getSelectOptions: async function(option) {
         let options = [];
@@ -93,5 +95,11 @@ export default {
     formatString: function (str) {
         str = str.replace(/_/g, ' ');
         return str.charAt(0).toUpperCase() + str.slice(1)
+    },
+    setEdition: function (value) {
+        edition = value;
+    },
+    getEdition: function () {
+        return edition;
     },
 }

@@ -232,9 +232,19 @@ export default {
             let data = {};
 
             if (button === 'export') {
+                if (!['Basic', 'Business'].includes(util.getEdition())) {
+                    this.$router.push(util.base() + 'upgrade');
+                    return;
+                }
+
                 this.$refs['importExport'].exportItems();
                 return
             } else if (button === 'import') {
+                if (!['Basic', 'Business'].includes(util.getEdition())) {
+                    this.$router.push(util.base() + 'upgrade');
+                    return;
+                }
+                
                 this.$refs['importExport'].openImport();
                 return
             } else if (button === 'openBulkEdit') {
@@ -292,6 +302,12 @@ export default {
                 this.loading = true;
                 await api.post('?cmd=' + button + '&section=' + this.internalSection, data);
                 this.reload();
+                return;
+            }
+
+            // custom button
+            if (!['Basic', 'Business'].includes(util.getEdition())) {
+                this.$router.push(util.base() + 'upgrade');
                 return;
             }
 

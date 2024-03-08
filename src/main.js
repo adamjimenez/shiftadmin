@@ -16,12 +16,14 @@ import router from './router';
 
 // get api url
 import api from './services/api';
+import util from './services/util';
 const response = await fetch('https://genieadmin.com/api/?host=' + location.host);
 const data = await response.json();
 
 if (data.api_root) {
   console.log('got api root');
   api.setWebUrl(data.api_root);
+  util.setEdition(data.edition);
 
   createApp(App)
     .use(vuetify)

@@ -21,6 +21,12 @@ const routes = [
             path: '/:base(admin[^/]*)?/configure',
             component: () => import('./components/ConfigurePage.vue')
         }, {
+            path: '/:base(admin[^/]*)?/upgrade',
+            component: () => import('./components/UpgradePage.vue')
+        }, {
+            path: '/:base(admin[^/]*)?/reports',
+            component: () => import('./components/ReportPage.vue')
+        }, {
             path: '/:base(admin[^/]*)?/',
             component: () => import('./components/HomePage.vue')
         }, {

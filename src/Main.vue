@@ -28,6 +28,7 @@
 
 		<v-navigation-drawer :rail="drawer" expand-on-hover permanent color="secondary">
 			<v-list>
+				<v-list-item :title="'Upgrade'" prepend-icon="mdi-rocket-launch" :to="base + 'upgrade'" base-color="red" v-if="edition !== 'Business'" />
 				<div v-for="item in vars?.menu" :key="item">
 					<v-list-group v-if="item.children" :prepend-icon="item.icon ? item.icon : 'mdi-minus'"
 						:value="item.title">
@@ -298,7 +299,10 @@ export default {
 		},
 		searchParamCount() {
 			return Object.keys(this.searchParams).filter(item => item !== 'func' && typeof this.searchParams[item] !== 'undefined').length
-		}
+		},
+		edition() {
+			return util.getEdition();
+		},
 	},
 
 	async mounted() {

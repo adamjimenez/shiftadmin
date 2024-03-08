@@ -221,6 +221,12 @@ export default {
             this.logs = result.data.data;
         },
         openPrivileges: async function () {
+
+            if (!['Business'].includes(util.getEdition())) {
+                this.$router.push(util.base() + 'upgrade');
+                return;
+            }
+
             this.privilegesDialog = true;
             this.loadingPrivileges = true;
             const result = await api.get('?cmd=privileges&user_id=' + this.id);

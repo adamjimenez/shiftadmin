@@ -309,7 +309,7 @@ export default {
 			return util.base();
 		},
 		searchParamCount() {
-			return Object.keys(this.searchParams).filter(item => item !== 'func' && typeof this.searchParams[item] !== 'undefined').length
+			return Object.keys(this.searchParams).filter(item => !['func', 's'].includes(item) && typeof this.searchParams[item] !== 'undefined').length
 		},
 		edition() {
 			return util.getEdition();

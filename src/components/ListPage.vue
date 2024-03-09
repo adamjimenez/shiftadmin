@@ -50,6 +50,13 @@
     height: 100px;
     flex-grow: 1;
 }
+
+.data-table-server .v-data-table__td {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 </style>
 
 <script>

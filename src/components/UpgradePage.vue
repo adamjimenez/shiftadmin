@@ -39,7 +39,7 @@
                         </v-card-title>
                         <v-card-text>
                             <ul style="min-height: 100px;" class="mx-3">
-                                <li v-for="feature in edition.features" :key="feature">{{ feature }}</li>
+                                <li v-for="feature, index in edition.features" :key="index">{{ feature }}</li>
                             </ul>
 
                             <div class="my-3">

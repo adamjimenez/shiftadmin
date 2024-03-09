@@ -1,18 +1,17 @@
 <template>
 	<v-app>
 		<v-app-bar color="secondary">
-			<v-app-bar-nav-icon variant="text" color="grey-lighten-1" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+			<v-app-bar-nav-icon variant="text" color="grey-lighten-1" @click.stop="if (mobile) { drawer = !drawer; } else { rail = !rail }"></v-app-bar-nav-icon>
+			
+			<v-btn v-if="!mobile" :to=base variant="plain">
+				{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
+			</v-btn>
 
 			<div class="text-align-center w-100 d-flex flex-row justify-center">
 				<v-combobox v-if="fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
 					@update:model-value="afterSelection" @keydown.enter="quickSearch" label="Search" placeholder="Search"
 					ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded
 					variant="solo-filled" no-filter class="mx-5" style="max-width: 800px;">
-					<template v-slot:prepend>
-						<v-btn :to=base variant="plain">
-							{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
-						</v-btn>
-					</template>
 					<template v-slot:append-inner>
 						<v-btn color="grey-lighten-1" @mousedown.stop @click="advancedSearch"
 							:disabled="fields.length === 0" icon>
@@ -26,8 +25,12 @@
 			</div>
 		</v-app-bar>
 
-		<v-navigation-drawer :rail="drawer" expand-on-hover permanent color="secondary">
+		<v-navigation-drawer v-model="drawer" :rail="rail" expand-on-hover :permanent="!mobile" color="secondary">
 			<v-list>
+				<v-list-item v-if="mobile" :to=base prepend-icon="mdi-home">
+					{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
+				</v-list-item>
+
 				<v-list-item :title="'Upgrade'" prepend-icon="mdi-rocket-launch" :to="base + 'upgrade'" base-color="red" v-if="edition !== 'Business'" />
 				<div v-for="item in vars?.menu" :key="item">
 					<v-list-group v-if="item.children" :prepend-icon="item.icon ? item.icon : 'mdi-minus'"
@@ -40,7 +43,7 @@
 							:to="base + child.to">
 
 							<template v-slot:prepend>
-								<v-badge :content="child.count" color="error" v-if="child.count > 0">
+								<v-badge :content="parseInt(child.count).toLocaleString()" color="error" v-if="child.count > 0">
 									<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" />
 								</v-badge>
 								<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" v-else />
@@ -54,7 +57,7 @@
 
 					<v-list-item v-else :title="item.title" :value="item.to" :to="base + item.to">
 						<template v-slot:prepend>
-							<v-badge :content="item.count" color="error" v-if="item.count > 0">
+							<v-badge :content="parseInt(child.count).toLocaleString()" color="error" v-if="item.count > 0">
 								<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" />
 							</v-badge>
 							<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" v-else />
@@ -104,6 +107,7 @@ import api from "./services/api";
 import util from "./services/util";
 import FileUploads from "./components/FileUploads";
 import SearchField from "./components/SearchField";
+import { useDisplay } from 'vuetify';
 
 export default {
 	name: 'ShiftAdmin',
@@ -119,6 +123,7 @@ export default {
 			search: '',
 			searchItems: [],
 			drawer: true,
+			rail: true,
 			vars: {},
 			data: {},
 			advancedDialog: false,
@@ -144,6 +149,7 @@ export default {
 			],
 			fileSelected: {},
 			fullScreen: false,
+			display: {},
 		};
 	},
 
@@ -292,6 +298,10 @@ export default {
 				this.$router.push({ path: this.base + 'section/' + this.$route.params.section, query: searchParams })
 			}
 		},
+		mobile(mobile) {
+			this.rail = !mobile;
+			this.drawer = !mobile;
+		}
 	},
 
 	computed: {
@@ -304,9 +314,15 @@ export default {
 		edition() {
 			return util.getEdition();
 		},
+		mobile: function () {
+			return this.display;
+		},
 	},
 
 	async mounted() {
+		const { mobile } = useDisplay();
+		this.display = mobile;
+
 		await this.$router.isReady()
 
 		// get params from qs

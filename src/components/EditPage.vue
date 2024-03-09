@@ -8,39 +8,43 @@
         </v-sheet>
 
         <v-card-text class="mt-10">
-            <v-form>
+            <v-form ref="form">
                 <v-list min-width="600">
                     <template v-for="(value, key, index) in fields" :key="index">
                         <v-list-item v-if="!['id', 'timestamp', 'deleted'].includes(value.type)">
-                            <v-checkbox v-if="value.type === 'checkbox'" :label="formatString(key)" v-model="data[value.column]"
-                                :error-messages="errors[key]" />
+                            <v-checkbox v-if="value.type === 'checkbox'" :label="formatString(key)"
+                                v-model="data[value.column]" :error-messages="errors[key]" />
                             <div v-else-if="['file', 'files'].includes(value.type)">
                                 <div v-if="data[value.column]?.length > 0" class="mb-3">
                                     <div class="mb-3">{{ formatString(key) }}</div>
-                                    <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" pill closable @click:close="delete data[value.column].splice(fileIndex, 1)">
+                                    <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" pill
+                                        closable @click:close="delete data[value.column].splice(fileIndex, 1)">
                                         <v-avatar start>
-                                          <v-img :src="apiRoot + '?cmd=file&f=' + file + '&w=320&h=240'"></v-img>
+                                            <v-img :src="apiRoot + '?cmd=file&f=' + file + '&w=320&h=240'"></v-img>
                                         </v-avatar>
                                         {{ file }}
                                     </v-chip>
                                 </div>
-                                <v-file-input v-if="value.type === 'files' || data[value.column]?.length === 0" :label="formatString(key)" v-model="files[value.column]"
-                                    :error-messages="errors[key]" :multiple="value.type === 'files'" />
+                                <v-file-input v-if="value.type === 'files' || data[value.column]?.length === 0"
+                                    :label="formatString(key)" v-model="files[value.column]" :error-messages="errors[key]"
+                                    :multiple="value.type === 'files'" />
                             </div>
                             <div v-else-if="['upload', 'uploads'].includes(value.type)">
                                 <div>{{ formatString(key) }}</div>
                                 <div v-if="data[value.column]?.length > 0" class="mb-3">
-                                    <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" closable @click:close="data[value.column].splice(fileIndex, 1)">
+                                    <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file"
+                                        closable @click:close="data[value.column].splice(fileIndex, 1)">
                                         <v-avatar start>
-                                          <v-img :src="apiRoot + '?cmd=file&f=' + file + '&w=320&h=240'"></v-img>
+                                            <v-img :src="apiRoot + '?cmd=file&f=' + file + '&w=320&h=240'"></v-img>
                                         </v-avatar>
                                         {{ file }}
                                     </v-chip>
                                 </div>
-                                <v-btn v-if="value.type === 'uploads' || data[value.column]?.length === 0" @click="chooseFileUpload(value.column)">Choose</v-btn>
+                                <v-btn v-if="value.type === 'uploads' || data[value.column]?.length === 0"
+                                    @click="chooseFileUpload(value.column)">Choose</v-btn>
                             </div>
-                            <v-textarea v-else-if="value.type === 'textarea'" :label="formatString(key)" v-model="data[value.column]"
-                                :error-messages="errors[key]" />                                
+                            <v-textarea v-else-if="value.type === 'textarea'" :label="formatString(key)"
+                                v-model="data[value.column]" :error-messages="errors[key]" />
                             <div v-else-if="value.type === 'editor'">
                                 <div class="ma-3">{{ formatString(key) }}</div>
                                 <editor v-model="data[value.column]" :init="{
@@ -53,15 +57,20 @@
                             </div>
                             <div v-else-if="value.type === 'rating'">
                                 <div class="px-3">{{ formatString(key) }}</div>
-                                <v-rating v-model="data[value.column]" :error-messages="errors[key]" hover :length="5" :size="32" />
+                                <v-rating v-model="data[value.column]" :error-messages="errors[key]" hover :length="5"
+                                    :size="32" />
                             </div>
-                            <v-select v-else-if="['select', 'select_parent', 'select_multiple'].includes(value.type)" :label="formatString(key)"
-                                v-model="data[value.column]" :error-messages="errors[key]" :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'" :chips="value.type === 'select_multiple'" />
-                            <v-autocomplete v-else-if="value.type === 'combo'" :label="formatString(key)" v-model="data[value.column]"
-                                :error-messages="errors[key]" :items="options[key]" @update:search="updateCombo($event, key)" />
-                            <v-text-field :label="formatString(key)" v-model="data[value.column]" :error-messages="errors[key]"
-                                :rules="rules[value.type] ? [rules[value.type]] : []" :type="fieldType(value.type)"
-                                :step="fieldStep(value.type)" autocomplete="new-password" v-else-if="key !== 'id'" />
+                            <v-select v-else-if="['select', 'select_parent', 'select_multiple'].includes(value.type)"
+                                :label="formatString(key)" v-model="data[value.column]" :error-messages="errors[key]"
+                                :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'"
+                                :chips="value.type === 'select_multiple'" />
+                            <v-autocomplete v-else-if="value.type === 'combo'" :label="formatString(key)"
+                                v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]"
+                                @update:search="updateCombo($event, key)" />
+                            <v-text-field :label="formatString(key)" v-model="data[value.column]"
+                                :error-messages="errors[key]" :rules="rules[value.type] ? [rules[value.type]] : []"
+                                :type="fieldType(value.type)" :step="fieldStep(value.type)" autocomplete="new-password"
+                                v-else-if="key !== 'id'" />
                         </v-list-item>
                     </template>
                 </v-list>
@@ -104,9 +113,9 @@ import 'tinymce/skins/content/default/content.js';
 
 export default {
     beforeRouteLeave(to, from, next) {
-      if (!this.dirty || confirm('You have unsaved changes. Do you want to continue?')) {
-        return next()
-      }
+        if (!this.dirty || confirm('You have unsaved changes. Do you want to continue?')) {
+            return next()
+        }
     },
     components: {
         'editor': Editor // <- Important part
@@ -164,7 +173,7 @@ export default {
                     } else if (field.type === 'select_multiple' && !Array.isArray(data[field.column])) {
                         // default to array
                         data[field.column] = [];
-                    } else if (['file', 'upload'].includes(field.type) && typeof data[field.column] === 'string') {                        
+                    } else if (['file', 'upload'].includes(field.type) && typeof data[field.column] === 'string') {
                         // default to array
                         data[field.column] = [data[field.column]];
                     }
@@ -216,9 +225,9 @@ export default {
                     })
                 } else {
                     formData.append(name, val);
-                }                
+                }
             }
-            
+
             // get file data
             for (const [name, value] of Object.entries(this.files)) {
                 value.forEach(function (file) {
@@ -238,7 +247,6 @@ export default {
                 },
             });
 
-            this.dirty = false;
             this.loading = false;
 
             if (!result) {
@@ -248,7 +256,18 @@ export default {
             if (Object.keys(result.data.errors).length || result.data.error) {
                 this.error = result.data?.error;
                 this.errors = result.data?.errors;
+                await this.$nextTick();
+
+                const invalidField = this.$refs['form'].items.find((e) => e.isValid === false);
+
+                if (invalidField) {
+                    document.getElementById(invalidField.id).scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                    })
+                }
             } else if (result.data.id) {
+                this.dirty = false;
                 this.$router.push('../' + result.data.id + '/');
             }
         },
@@ -296,7 +315,7 @@ export default {
         vars: function () {
             this.fetchData();
         },
-        data:  {
+        data: {
             handler() {
                 this.dirty = true;
             },

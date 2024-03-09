@@ -106,7 +106,7 @@ export default {
                 monthlyPricing: 14,
                 annualPricing: 10,
                 features: [
-                    'Everytbing in Starter',
+                    'Everything in Starter',
                     'Import/ Export',
                     'Custom CMS buttons',
                     'Menu navigation builder (coming soon!)',

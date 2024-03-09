@@ -32,7 +32,6 @@
     },
     computed: {
         chartData: function () {
-            console.log(this.items)
             return {
                 labels: this.items.map(({ label }) => label),
                 datasets: [{

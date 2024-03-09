@@ -32,6 +32,9 @@
                                                                 <v-list-item-title
                                                                     @click="deleteWidget(index, 'source')">Delete</v-list-item-title>
                                                             </v-list-item>
+                                                            <v-list-item>
+                                                                <v-list-item-title @click="openSortable(report.source)">Sort Order</v-list-item-title>
+                                                            </v-list-item>
                                                         </v-list>
                                                     </v-menu>
                                                 </div>
@@ -81,6 +84,9 @@
                                                                 <v-list-item-title
                                                                     @click="deleteWidget(index, 'kpi')">Delete</v-list-item-title>
                                                             </v-list-item>
+                                                            <v-list-item>
+                                                                <v-list-item-title @click="openSortable(report.kpi)">Sort Order</v-list-item-title>
+                                                            </v-list-item>
                                                         </v-list>
                                                     </v-menu>
                                                 </div>
@@ -116,6 +122,9 @@
                                                             <v-list-item>
                                                                 <v-list-item-title
                                                                     @click="deleteWidget(index, 'graph')">Delete</v-list-item-title>
+                                                            </v-list-item>
+                                                            <v-list-item>
+                                                                <v-list-item-title @click="openSortable(report.graph)">Sort Order</v-list-item-title>
                                                             </v-list-item>
                                                         </v-list>
                                                     </v-menu>
@@ -161,6 +170,9 @@
                                                             <v-list-item-title
                                                                 @click="deleteColumn(columnIndex, index)">Delete</v-list-item-title>
                                                         </v-list-item>
+                                                        <v-list-item>
+                                                            <v-list-item-title @click="openSortable(report.dataTable)">Sort Order</v-list-item-title>
+                                                        </v-list-item>
                                                     </v-list>
                                                 </v-menu>
                                             </td>
@@ -187,6 +199,9 @@
                                             <v-list-item>
                                                 <v-list-item-title
                                                     @click="deleteWidget(index, 'dataTable')">Delete</v-list-item-title>
+                                            </v-list-item>
+                                            <v-list-item>
+                                                <v-list-item-title @click="openSortable(widget.columns)">Sort Columns</v-list-item-title>
                                             </v-list-item>
                                         </v-list>
                                     </v-menu>
@@ -252,6 +267,18 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="sortDialog" max-width="600" scrollable>
+            <v-card title="Sort Order">
+                <v-card-text>
+                    <draggable :list="sortOrder" group="items" item-key>
+                        <template #item="{ element }">
+                            <v-sheet color="primary" class="ma-5 pa-5">{{ element.title }}</v-sheet>
+                        </template>
+                    </draggable>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -261,11 +288,13 @@ import util from "../services/util";
 import qs from "qs";
 import SearchField from "./SearchField";
 import ReportChart from "./ReportChart";
+import draggable from 'vuedraggable'
 
 export default {
     components: {
         SearchField,
         ReportChart,
+        draggable,
     },
     data: function () {
         return {
@@ -294,6 +323,8 @@ export default {
             itemsPerPage: 500,
             loading: false,
             error: '',
+            sortDialog: false,
+            sortOrder: [],
         }
     },
     methods: {
@@ -402,7 +433,6 @@ export default {
             this.report.dataTable[index].columns = this.report.dataTable[index].columns.splice(columnIndex, 1);
             this.saveReport();
         },
-
         sumRows(widget, data) {
             let total = 0;
             let value = 0;
@@ -508,11 +538,16 @@ export default {
             this.params.func[column] = func;
         },
         getFieldType: function (column, table) {
-            return this.config.tables[table].find(item => item.name === column).type;
+            return this.config.tables[table]?.find(item => item.name === column).type;
         },        
 		formatString: function (string) {
 			return util.formatString(string);
-		}
+		},
+        
+        openSortable: function (obj) {
+            this.sortOrder = obj;
+            this.sortDialog = true;
+        },
     },
     computed: {
         widgetValid: function () {

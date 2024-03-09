@@ -75,7 +75,7 @@
 		<v-main class="d-flex flex-column align-center justify-center">
 			<router-view ref="main" class="w-100 flex-grow-1" :vars="vars" :searchparams="searchParams"
 				@changeFields="changeFields" @chooseFileUpload="chooseFileUpload" :fileSelected="fileSelected"
-				@message="message" :class="fullScreen ? 'fullScreen' : ''" @saveConfig="fetchData" />
+				@message="message" :class="fullScreen ? 'fullScreen' : ''" :mobile="mobile" @saveConfig="fetchData" />
 		</v-main>
 
 		<v-dialog v-model="advancedDialog" max-width="600" scrollable>

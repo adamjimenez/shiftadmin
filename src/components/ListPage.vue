@@ -7,7 +7,7 @@
             <template v-slot:top>
                 <v-sheet color="secondary" class="w-100">
                     <ListButtons v-if="!hidebuttons" :selected="selected" :section="internalSection" @changeFields="dialog = true"
-                        @action="actionHandler" :vars="vars" :sortable="isSortable" :data="buttonData">
+                        @action="actionHandler" :vars="vars" :sortable="isSortable" :data="buttonData" :mobile="mobile">
                     </ListButtons>
                 </v-sheet>
             </template>
@@ -75,6 +75,7 @@ export default {
         parentsection: null,
         parentid: null,
         searchparams: null,
+        mobile: null,
     },
     data: function () {
         return {

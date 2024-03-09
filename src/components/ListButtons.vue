@@ -21,7 +21,7 @@
 
         <v-spacer></v-spacer>
         
-        <v-col class="text-grey-lighten-1 text-right">
+        <v-col v-if="!mobile" class="text-grey-lighten-1 text-right">
             {{ parseInt((data.page - 1) * data.itemsPerPage + 1)?.toLocaleString() }}-{{ Math.min(data.page * data.itemsPerPage, data.totalItems)?.toLocaleString() }} of {{ data.totalItems?.toLocaleString() }}
         </v-col>
 
@@ -42,6 +42,7 @@ export default {
         selected: null,
         data: null,
         headers: null,
+        mobile: null,
         sortable: Boolean,
     },
     data: function () {
@@ -110,7 +111,7 @@ export default {
             }
 
             return base;
-        }
+        },
     },
 
     created() {

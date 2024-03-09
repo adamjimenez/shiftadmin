@@ -13,7 +13,7 @@
 					ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded
 					variant="solo-filled" no-filter class="mx-5" style="max-width: 800px;">
 					<template v-slot:append-inner>
-						<v-btn color="grey-lighten-1" @mousedown.stop @click="advancedSearch"
+						<v-btn color="grey-lighten-1" @mousedown.stop @click.stop="advancedSearch"
 							:disabled="fields.length === 0" icon>
 							<v-badge :content="searchParamCount" color="info" v-if="searchParamCount > 0">
 								<v-icon icon="mdi-tune" />

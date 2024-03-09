@@ -102,6 +102,18 @@
 	</v-app>
 </template>
 
+<script setup>
+// react to dark mode change from device
+import { useTheme } from 'vuetify'
+
+const theme = useTheme();
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+	const newColorScheme = event.matches ? "dark" : "light";
+	theme.global.name.value = newColorScheme;
+});
+</script>
+
 <script>
 import api from "./services/api";
 import util from "./services/util";

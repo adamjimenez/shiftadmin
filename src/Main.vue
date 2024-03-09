@@ -1,5 +1,5 @@
 <template>
-	<v-app>
+	<v-app :class="mobile ? 'mobile' : 'desktop'">
 		<v-app-bar color="secondary">
 			<v-app-bar-nav-icon variant="text" color="grey-lighten-1" @click.stop="if (mobile) { drawer = !drawer; } else { rail = !rail }"></v-app-bar-nav-icon>
 			
@@ -346,7 +346,7 @@ export default {
 	min-height: 100% !important;
 }
 
-.v-navigation-drawer__content {
+.desktop .v-navigation-drawer__content {
 	overflow-y: hidden;
 }
 

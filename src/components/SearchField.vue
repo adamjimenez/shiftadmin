@@ -41,7 +41,7 @@ export default {
     },
     emits: ["update:modelValue", "updateFunc"],
     data: () => ({
-        func: '',
+        func: null,
         value: null,
         options: [],
         ranges: [],
@@ -90,7 +90,7 @@ export default {
         func: function (newVal) {
             this.$emit('updateFunc', this.column, newVal);
         },
-        field: async function () {
+        field: function () {
             this.getOptions();
         }
     },
@@ -102,6 +102,10 @@ export default {
             if (['decimal', 'int', 'id', 'rating'].includes(this.type)) {
                 this.func = '=';
             }
+        }
+
+        if (Array.isArray(this.value)) {
+            this.ranges = this.value;
         }
     }
 }

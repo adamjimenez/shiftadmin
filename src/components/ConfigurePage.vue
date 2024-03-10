@@ -25,6 +25,10 @@
             </v-card-actions>
 
             <div v-if="tab === 'tables'">
+                <v-card-text>
+                    These are the database tables which can be used to create administratable sections in the CMS.<br>
+                    Any changes will instantly affect the database so make sure that you have a back-up.
+                </v-card-text>
                 <v-expansion-panels style="max-width: 600px;">
                     <v-expansion-panel v-model="panel" multiple v-for="(fields, index) in data.tables" :key="index">
                         <v-expansion-panel-title>
@@ -58,6 +62,9 @@
                 </v-expansion-panels>
             </div>
             <div v-if="tab === 'sections'">
+                <v-card-text>
+                    Sections are areas that can be administered. They are derived from tables or ad-hoc pages and can also contain subsections.
+                </v-card-text>
                 <v-expansion-panels v-model="panel" multiple style="max-width: 600px;">
                     <v-expansion-panel v-for="(sectionName, key) in data.vars.sections" :key="key" :value="key">
                         <v-expansion-panel-title>
@@ -86,6 +93,9 @@
                 </v-expansion-panels>
             </div>
             <div v-if="tab === 'options'">
+                <v-card-text>
+                    Options are used by dropdown menus. They can either be a list of values or rows from a table.
+                </v-card-text>
                 <v-list max-width="600">
                     <v-list-item v-for="(options, key, index) in data.vars.options" :key="index" :value="key" :title="key">
                         <template #append>
@@ -96,6 +106,9 @@
                 </v-list>
             </div>
             <div v-if="tab === 'general'">
+                <v-card-text>
+                    Customise the look of the CMS and where automatic emails are sent from.
+                </v-card-text>
                 <v-text-field label="From email" v-model="data.from_email"></v-text-field>
                 <v-text-field label="Title" v-model="data.vars.branding.title"></v-text-field>
                 <v-text-field label="Primary" v-model="data.vars.branding.colors.primary" type="color"></v-text-field>

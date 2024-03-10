@@ -9,9 +9,12 @@
 
 			<div class="text-align-center w-100 d-flex flex-row justify-center">
 				<v-combobox v-if="fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
-					@update:model-value="afterSelection" @keydown.enter="quickSearch" label="Search" placeholder="Search"
+					@update:model-value="afterSelection" @keydown.enter="quickSearch"
 					ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded
-					variant="solo-filled" no-filter class="mx-5" style="max-width: 800px;">
+					variant="solo-filled" no-filter class="mx-5" style="max-width: 800px;"
+					:label="'Search ' + section"
+					:placeholder="'Search ' + section"
+					>
 					<template v-slot:append-inner>
 						<v-btn color="grey-lighten-1" @mousedown.stop @click.stop="advancedSearch"
 							:disabled="fields.length === 0" icon>
@@ -132,7 +135,7 @@ export default {
 	data: function () {
 		return {
 			section: '',
-			search: '',
+			search: null,
 			searchItems: [],
 			drawer: true,
 			rail: true,

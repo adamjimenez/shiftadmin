@@ -25,23 +25,21 @@
             </v-card-actions>
 
             <div v-if="tab === 'tables'">
-                <v-expansion-panels>
+                <v-expansion-panels style="max-width: 600px;">
                     <v-expansion-panel v-model="panel" multiple v-for="(fields, index) in data.tables" :key="index">
                         <v-expansion-panel-title>
                             {{ index }}<v-spacer></v-spacer>
 
-                            <v-btn icon="mdi-sort" title="Sort" @click="openSortable(index, fields)"></v-btn>
+                            <v-btn icon="mdi-plus" @click.stop="field = { name: '', type: 'text', table: index }; fieldDialog = true;"></v-btn>
+                            <v-btn icon="mdi-sort" title="Sort" @click.stop="openSortable(index, fields)"></v-btn>
                             <v-btn icon="mdi-pencil"
                                 @click.stop="table = { id: index, name: index }; tableDialog = true;"></v-btn>
                             <v-btn icon="mdi-delete" @click.stop="deleteTable(index)"></v-btn>
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
-                            <v-card max-width="600">
-                                <v-card-actions>
-                                    <v-btn icon="mdi-plus" @click="field = { name: '', type: 'text', table: index }; fieldDialog = true;"></v-btn>
-                                </v-card-actions>
+                            <v-card>
                                 <v-list>
-                                    <v-list-item v-for="(col, key) in fields" :key="key">
+                                    <v-list-item v-for="(col, key) in fields" :key="key" :value="key">
                                         <v-list-item-title>
                                             {{ col.name }}<strong v-if="col.required > 0">*</strong>
                                         </v-list-item-title>
@@ -60,8 +58,8 @@
                 </v-expansion-panels>
             </div>
             <div v-if="tab === 'sections'">
-                <v-expansion-panels v-model="panel" multiple>
-                    <v-expansion-panel v-for="(sectionName, key) in data.vars.sections" :key="key">
+                <v-expansion-panels v-model="panel" multiple style="max-width: 600px;">
+                    <v-expansion-panel v-for="(sectionName, key) in data.vars.sections" :key="key" :value="key">
                         <v-expansion-panel-title>
                             {{ sectionName }}
                             <v-spacer></v-spacer>
@@ -89,7 +87,7 @@
             </div>
             <div v-if="tab === 'options'">
                 <v-list max-width="600">
-                    <v-list-item v-for="(options, key, index) in data.vars.options" :key="index" :title="key">
+                    <v-list-item v-for="(options, key, index) in data.vars.options" :key="index" :value="key" :title="key">
                         <template #append>
                             <v-btn icon="mdi-pencil" @click.stop="editOption(key)"></v-btn>
                             <v-btn icon="mdi-delete" @click.stop="deleteOption(key)"></v-btn>

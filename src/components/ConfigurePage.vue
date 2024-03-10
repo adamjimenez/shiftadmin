@@ -197,11 +197,11 @@
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
                     <v-text-field label="Name" v-model="option.name"></v-text-field>
                     <v-radio-group v-model="option.type">
-                        <v-radio label="Section" value="section"></v-radio>
+                        <v-radio label="Table" value="table"></v-radio>
                         <v-radio label="Options" value="options"></v-radio>
                     </v-radio-group>
-                    <v-select v-if="option.type === 'section'" label="section" v-model="option.options" :items="data.vars.sections"></v-select>
-                    <v-textarea v-else-if="option.type === 'options'" label="options" v-model="option.options"></v-textarea>
+                    <v-select v-if="option.type === 'table'" label="table" v-model="option.options" :items="data.vars.tables"></v-select>
+                    <v-textarea v-else-if="option.type === 'options'" label="Options" v-model="option.options"></v-textarea>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn variant="flat" color="primary" :disabled="option.name === ''" @click="saveOption">Edit</v-btn>
@@ -496,8 +496,8 @@ export default {
                 type : 'options',
             };
 
-            if (typeof options === 'string') {
-                this.option.type = 'section';
+            if (typeof this.data.vars.options[key] === 'string') {
+                this.option.type = 'table';
             }
 
             this.option.options = this.optionsToString(this.data.vars.options[key]);
@@ -507,7 +507,7 @@ export default {
         saveOption: function () {
             let value;
 
-            if (this.option.type === 'section') {
+            if (this.option.type === 'table') {
                 value = this.option.options;
             } else {
                 let lines = this.option.options.split("\n");

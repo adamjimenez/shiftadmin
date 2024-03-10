@@ -109,6 +109,7 @@ export default {
                     'Everything in Starter',
                     'Import/ Export',
                     'Custom CMS buttons',
+                    'Custom pages',
                     'Menu navigation builder (coming soon!)',
                 ],
             },

@@ -7,6 +7,7 @@
 
 <script>
 import api from "../services/api";
+import util from "../services/util";
 
 export default {
 	data: function () {
@@ -31,6 +32,11 @@ export default {
         }
     },
 	async mounted() {
+        if (!['Basic', 'Business'].includes(util.getEdition())) {
+            this.$router.push(util.base() + 'upgrade');
+            return;
+        }
+
         this.webUrl = api.getWebUrl();
         window.addEventListener('message', this.receiveMessage);
 

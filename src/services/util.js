@@ -88,6 +88,10 @@ export default {
     },
     formatData: function(value, fieldType) {
         switch(fieldType) {
+            case 'checkbox':
+            case 'read':
+            case 'deleted':
+                return value > 0 ? 'Yes' : 'No';
             case 'password':
                 return '';
             case 'date':

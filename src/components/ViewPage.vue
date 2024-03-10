@@ -71,9 +71,7 @@
                                 :src="apiRoot + '?cmd=upload&f=' + data[value.column] + '&w=320&h=240'" />
                             <div v-else-if="value.type === 'editor'" v-html="data[value.column]"></div>
                             <span v-else>
-                                <span v-if="['checkbox', 'deleted'].includes(value.type)">{{ data[value.column] > 0 ? 'Yes' : 'No'
-                                }}</span>
-                                <span v-else>{{ formatData(data[value.column], value.type) }}</span>
+                                <span>{{ formatData(data[value.column], value.type) }}</span>
                                 <span v-if="value.type === 'dob'">({{ age(data[value.column]) }})</span>
                             </span>
                         </v-card-text>

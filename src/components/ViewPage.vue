@@ -86,15 +86,17 @@
         <v-dialog v-model="logsDialog" max-width="600" scrollable>
             <v-card title="Logs" :loading="loadingLogs">
                 <v-list>
-                    <v-card-item v-for="item in logs" :key="item.id">
-                        <v-card-title>
-                            {{ item.task }} on {{ item.date }} by <v-btn variant="text"
-                                :to="'../../users/' + item.user" @click="logsDialog = false">{{ item.name }}</v-btn>
-                        </v-card-title>
-                        <v-card-subtitle>
+                    <v-list-item v-for="item in logs" :key="item.id" class="unclamp mb-3">
+                        <v-list-item-title>
+                            {{ formatString(item.task) }} on {{ formatDateTime(item.date) }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle>
                             <div v-html="item.details" style="white-space: pre;"></div>
-                        </v-card-subtitle>
-                    </v-card-item>
+                        </v-list-item-subtitle>
+                        <div v-if="item.user > 0">
+                            <v-btn variant="text" :to="'../../users/' + item.user" @click="logsDialog = false">{{ item.name ? item.name : item.user }}</v-btn>
+                        </div>
+                    </v-list-item>
                 </v-list>
             </v-card>
         </v-dialog>
@@ -116,6 +118,13 @@
         </v-dialog>
     </v-card>
 </template>
+
+<style scoped>
+.unclamp .v-list-item-title,
+.unclamp .v-list-item-subtitle {
+    -webkit-line-clamp: unset;
+}
+</style>
 
 <script>
 import api from "../services/api";
@@ -333,6 +342,9 @@ export default {
         },
         formatData: function (value, fieldType) {
             return util.formatData(value, fieldType);
+        },
+        formatDateTime: function (value) {
+            return util.formatDateTime(value);
         },
         formatString: function (string) {
             return util.formatString(string);

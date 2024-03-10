@@ -78,6 +78,11 @@ export default {
     },
     formatDate: function(value) {
         if (value) {
+            return moment(value).format('DD-MMM-YYYY')
+        }
+    },
+    formatDateTime: function(value) {
+        if (value) {
             return moment(value).format('DD-MMM-YYYY HH:mm')
         }
     },
@@ -85,9 +90,11 @@ export default {
         switch(fieldType) {
             case 'password':
                 return '';
+            case 'date':
+                return this.formatDate(value);
             case 'datetime':
             case 'timestamp':
-                return this.formatDate(value);
+                return this.formatDateTime(value);
         }
 
         return value;

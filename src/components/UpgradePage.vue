@@ -13,7 +13,7 @@
                 </p>
                 <p v-if="data.subscription_end != '0000-00-00'">
                     License end:
-                    {{ data.subscription_end }}
+                    {{ formatDate(data.subscription_end) }}
                 </p>
             </v-card-text>
         </v-card>
@@ -79,9 +79,7 @@
 </template>
 
 <script>
-/*
-paypal webhook
-*/
+import util from "../services/util";
 
 export default {
     data: () => ({
@@ -134,6 +132,9 @@ export default {
 
             this.data = data;
         },
+        formatDate: function (value) {
+            return util.formatDate(value);
+        }
     },
 
     mounted: async function () {

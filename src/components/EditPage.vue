@@ -9,7 +9,7 @@
 
         <v-card-text class="mt-10">
             <v-form ref="form">
-                <v-list min-width="600">
+                <v-list>
                     <template v-for="(value, key, index) in fields" :key="index">
                         <v-list-item v-if="!['id', 'timestamp', 'deleted'].includes(value.type)">
                             <v-checkbox v-if="value.type === 'checkbox'" :label="formatString(key)"

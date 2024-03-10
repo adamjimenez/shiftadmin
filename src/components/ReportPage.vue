@@ -225,7 +225,7 @@
                         :items="report.source" v-model="widget.source" item-title="table" item-value="table"></v-select>
                     <v-select label="Columns" v-if="['source'].includes(widget.type)" :items="config.tables[widget.table]"
                         v-model="widget.columns" item-title="name" item-value="name" :disabled="!widget.table" multiple
-                        chips></v-select>
+                        chips clearable></v-select>
                     <v-select label="Filters" v-if="['source'].includes(widget.type)" :items="config.tables[widget.table]"
                         v-model="widget.filters" item-title="name" item-value="name" :disabled="!widget.table" multiple
                         chips></v-select>

@@ -24,7 +24,7 @@
                 </span>
             </v-card-actions>
 
-            <div v-if="tab === 'tables'" min-width="600">
+            <div v-if="tab === 'tables'">
                 <v-expansion-panels>
                     <v-expansion-panel v-model="panel" multiple v-for="(fields, index) in data.tables" :key="index">
                         <v-expansion-panel-title>
@@ -36,7 +36,7 @@
                             <v-btn icon="mdi-delete" @click.stop="deleteTable(index)"></v-btn>
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
-                            <v-card>
+                            <v-card max-width="600">
                                 <v-card-actions>
                                     <v-btn icon="mdi-plus" @click="field = { name: '', type: 'text', table: index }; fieldDialog = true;"></v-btn>
                                 </v-card-actions>
@@ -72,7 +72,7 @@
                             <v-btn icon="mdi-delete" @click.stop="deleteSection(key)"></v-btn>
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
-                            <v-list>
+                            <v-list max-width="600">
                                 <template v-if="data.vars.subsections">
                                     <v-list-item v-for="(subsectionName, key2) in data.vars.subsections[sectionName]" :key="key2" :title="subsectionName">
                                         <template #append>
@@ -88,7 +88,7 @@
                 </v-expansion-panels>
             </div>
             <div v-if="tab === 'options'">
-                <v-list>
+                <v-list max-width="600">
                     <v-list-item v-for="(options, key, index) in data.vars.options" :key="index" :title="key">
                         <template #append>
                             <v-btn icon="mdi-pencil" @click.stop="editOption(key)"></v-btn>
@@ -163,7 +163,7 @@
                     <v-combobox label="Section" v-model="section.section" :items="Object.keys(data.tables)"></v-combobox>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn variant="flat" color="primary" :disabled="section.section === ''" @click="saveSection">Save</v-btn>
+                    <v-btn variant="flat" color="primary" :disabled="section.section === ''" @click="saveSection">Edit</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -175,7 +175,7 @@
                     <v-combobox label="Subsection" v-model="subsection.subsection" :items="data.vars.sections"></v-combobox>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn variant="flat" color="primary" :disabled="subsection.section === ''" @click="saveSubsection">Save</v-btn>
+                    <v-btn variant="flat" color="primary" :disabled="subsection.section === ''" @click="saveSubsection">Edit</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -193,7 +193,7 @@
                     <v-textarea v-else-if="option.type === 'options'" label="options" v-model="option.options"></v-textarea>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn variant="flat" color="primary" :disabled="option.name === ''" @click="saveOption">Save</v-btn>
+                    <v-btn variant="flat" color="primary" :disabled="option.name === ''" @click="saveOption">Edit</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

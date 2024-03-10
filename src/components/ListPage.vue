@@ -256,7 +256,6 @@ export default {
                 this.$refs['importExport'].openImport();
                 return
             } else if (button === 'openBulkEdit') {
-
                 this.defaultData = {};
 
                 let i = 0;
@@ -363,6 +362,11 @@ export default {
         },
     },
     watch: {
+        internalSection: function () {
+            if (localStorage['fields_' + this.internalSection]) {
+                this.selectedHeaders = JSON.parse(localStorage['fields_' + this.internalSection]);
+            }
+        },
         $route(route) {
             this.internalSection = route.params.section;
             this.reload();
@@ -435,10 +439,6 @@ export default {
     },
     created() {
         this.internalSection = this.section ? this.section : this.$route.params.section;
-
-        if (localStorage['fields_' + this.internalSection]) {
-            this.selectedHeaders = JSON.parse(localStorage['fields_' + this.internalSection]);
-        }
     },
 };
 </script>

@@ -44,7 +44,6 @@
 
 						<v-list-item v-for="child in item.children" :key="child.to" :title="child.title" :value="child.to"
 							:to="base + child.to">
-
 							<template v-slot:prepend>
 								<v-badge :content="parseInt(child.count).toLocaleString()" color="error" v-if="child.count > 0">
 									<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" />
@@ -78,7 +77,7 @@
 		<v-main class="d-flex flex-column align-center justify-center">
 			<router-view ref="main" class="w-100 flex-grow-1" :vars="vars" :searchparams="searchParams"
 				@changeFields="changeFields" @chooseFileUpload="chooseFileUpload" :fileSelected="fileSelected"
-				@message="message" :class="fullScreen ? 'fullScreen' : ''" :mobile="mobile" @saveConfig="fetchData" />
+				@message="message" :class="fullScreen ? 'fullScreen' : ''" :mobile="mobile" @saveConfig="fetchData" @updateCount="updateCount" />
 		</v-main>
 
 		<v-dialog v-model="advancedDialog" max-width="600" scrollable>
@@ -306,6 +305,15 @@ export default {
 		},
 		formatString: function (string) {
 			return util.formatString(string);
+		},
+		updateCount: function (count) {
+			this.vars?.menu?.forEach(menu => {
+				menu.children?.forEach(child => {
+					if (location.href.endsWith(child.to)) {
+						child.count = count;
+					}
+				})
+			})
 		}
 	},
 

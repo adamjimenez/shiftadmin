@@ -172,6 +172,8 @@ export default {
             this.data = result.data;
             this.totalItems = this.data.total;
 
+            this.$emit('updateCount', this.totalItems);
+
             // pagination
             this.buttonData = {
                 page: page,

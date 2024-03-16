@@ -258,7 +258,7 @@
                     <v-text-field label="Expression" v-model="column.expression"
                         placeholder="JS expression to apply to each row"></v-text-field>
                     <v-select label="Table formula" :items="funcs" v-model="column.table_func"></v-select>
-                    <v-text-field v-if="column.func === 'custom'" label="Custom" v-model="column.custom"
+                    <v-text-field v-if="column.table_func === 'custom'" label="Custom" v-model="column.custom"
                         :disabled="column.func !== 'custom'"></v-text-field>
                     <v-select label="Format" :items="['currency']" v-model="column.format"></v-select>
                 </v-card-text>
@@ -553,13 +553,13 @@ export default {
         widgetValid: function () {
             switch (this.widget.type) {
                 case 'kpi':
-                    return this.widget.title && this.widget.key && this.widget.func
+                    return this.widget.title && this.widget.key && this.widget.table_func
             }
 
             return true;
         },
         columnValid: function () {
-            return this.column.title && this.column.key && this.column.func;
+            return this.column.title && this.column.key && this.column.table_func;
         },
     },
     watch: {

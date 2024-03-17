@@ -29,6 +29,7 @@
 
 <script>
 import api from "../services/api";
+import util from "../services/util";
 
 export default {
     data: function () {
@@ -67,7 +68,7 @@ export default {
                 let filepath = item.item.id;
 
                 if (typeof this.column === 'function') {
-                    filepath = api.getBaseUrl() + 'uploads' + filepath
+                    filepath = util.base() + 'uploads' + filepath
                     this.column(filepath, { title: filepath });
                 } else {
                     this.$emit('fileSelected', { value: filepath, column: this.column });

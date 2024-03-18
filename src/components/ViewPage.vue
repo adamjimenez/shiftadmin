@@ -252,7 +252,7 @@ export default {
             this.privilegesDialog = false;
         },
         restoreItem: async function () {
-            if (!confirm('Are you sure?')) {
+            if (!confirm('Are you sure you want to restore?')) {
                 return;
             }
 
@@ -264,7 +264,7 @@ export default {
             this.fetchData();
         },
         deleteItem: async function () {
-            if (!confirm('Are you sure?')) {
+            if (!confirm('Are you sure to delete?')) {
                 return;
             }
 

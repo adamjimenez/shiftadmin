@@ -40,6 +40,7 @@
                                         {{ file }}
                                     </v-chip>
                                 </div>
+
                                 <v-btn v-if="value.type === 'uploads' || data[value.column]?.length === 0"
                                     @click="chooseFileUpload(value.column)">Choose</v-btn>
                             </div>
@@ -164,25 +165,26 @@ export default {
             data = result.data.data ? result.data.data : {};
             this.options = await util.getAllOptions(fields, this.vars.options, data);
 
-            if (result.data.data) {
-                for (const [, field] of Object.entries(fields)) {
-                    if (field.type === 'password') {
-                        data[field.column] = '';
-                    } else if (field.type === 'checkbox') {
-                        data[field.column] = data[field.column] = data[field.column] > 0 ? true : false;
-                    } else if (field.type === 'select_multiple' && !Array.isArray(data[field.column])) {
-                        // default to array
-                        data[field.column] = [];
-                    } else if (['file', 'upload'].includes(field.type) && typeof data[field.column] === 'string') {
-                        // default to array
+            for (const [, field] of Object.entries(fields)) {
+                if (field.type === 'password') {
+                    data[field.column] = '';
+                } else if (field.type === 'checkbox') {
+                    data[field.column] = data[field.column] = data[field.column] > 0 ? true : false;
+                } else if (field.type === 'select_multiple' && !Array.isArray(data[field.column])) {
+                    // default to array
+                    data[field.column] = [];
+                } else if (['file', 'upload'].includes(field.type)) {
+                    // default to array
+                    if (typeof data[field.column] === 'string') {
                         data[field.column] = [data[field.column]];
+                    } else {
+                        data[field.column] = [];
                     }
                 }
-
-                this.data = data;
-                await this.$nextTick();
-                this.dirty = false;
             }
+
+            this.data = data;
+            await this.$nextTick();
 
             this.fields = fields;
 

@@ -270,7 +270,7 @@ export default {
                 }
             } else if (result.data.id) {
                 this.dirty = false;
-                this.$router.push(util.base() + this.section + '/' + result.data.id + '/');
+                this.$router.push(util.base() + 'section/' + this.section + '/' + result.data.id + '/');
             }
         },
         fieldType(type) {

@@ -280,6 +280,7 @@ export default {
                 case 'dob':
                     return 'date';
                 case 'int':
+                case 'position':
                 case 'decimal':
                     return 'number';
                 case 'datetime':
@@ -291,6 +292,7 @@ export default {
         fieldStep(type) {
             switch (type) {
                 case 'int':
+                case 'position':
                     return 1;
                 case 'decimal':
                     return '0.01';

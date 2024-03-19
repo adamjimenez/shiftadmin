@@ -344,6 +344,9 @@ export default {
 		mobile(mobile) {
 			this.rail = !mobile;
 			this.drawer = !mobile;
+		},
+		rail(newVal) {
+			localStorage.rail = newVal;
 		}
 	},
 
@@ -380,6 +383,10 @@ export default {
 		}
 
 		await this.fetchData();
+
+		if (localStorage.rail === 'false') {
+			this.rail = false;
+		}
 	}
 }
 </script>

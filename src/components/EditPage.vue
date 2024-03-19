@@ -209,6 +209,8 @@ export default {
                     this.back = '../' + parentsection + '/' + parentid + '/';
                 }
             }
+
+            this.dirty = false;
         },
         save: async function () {
             const formData = new FormData();

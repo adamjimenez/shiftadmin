@@ -67,7 +67,7 @@
                                 <v-carousel>
                                     <v-carousel-item
                                         v-for="image in data[value.column]" :key="image"
-                                        :src="apiRoot + '?cmd=file&f=' + image + '&w=320&h=240'"
+                                        :src="apiRoot + '?cmd=file&f=' + image"
                                         cover
                                     ></v-carousel-item>
                                 </v-carousel>

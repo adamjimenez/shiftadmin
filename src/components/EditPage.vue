@@ -175,7 +175,7 @@ export default {
                     data[field.column] = [];
                 } else if (['file', 'upload'].includes(field.type)) {
                     // default to array
-                    if (typeof data[field.column] === 'string') {
+                    if (typeof data[field.column] === 'string' && data[field.column] !== '0') {
                         data[field.column] = [data[field.column]];
                     } else {
                         data[field.column] = [];

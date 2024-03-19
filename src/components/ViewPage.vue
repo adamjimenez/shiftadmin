@@ -36,7 +36,7 @@
                 </template>
             </v-tabs>
 
-            <v-card v-if="tab === 'summary'" min-width="600" style="overflow: scroll;">
+            <v-card v-if="tab === 'summary'" min-width="600" style="overflow: auto;">
                 <template v-for="(value, key, index) in fields" :key="index">
                     <div v-if="data[value.column] && !['password'].includes(value.type) && (!['file', 'select', 'select_parent', 'combo'].includes(value.type) || data[value.column] > 0)">
                         <v-card-title>

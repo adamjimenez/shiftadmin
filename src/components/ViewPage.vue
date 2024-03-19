@@ -53,7 +53,7 @@
                                 :to="getSelectLink(key, data[value.column])" variant="text">{{ data[value.column + '_label'] ? data[value.column + '_label'] : data[value.column]  }}</v-btn>
                             <div v-else-if="value.type === 'select_multiple'" class="mx-5">
                                 <v-btn v-for="(v, k, index) in data[value.column]" :key="index" :to="getSelectLink(key, v)" variant="text">
-                                    {{ getOption(options[value.column], v).title }}
+                                    {{ getOption(options[value.column], v)?.title }}
                                 </v-btn>
                             </div>
                             <span v-else-if="value.type === 'rating'">

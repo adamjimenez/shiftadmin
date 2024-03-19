@@ -64,8 +64,13 @@
                                 <div>{{ data[value.column] }}</div>
                             </a>
                             <div v-else-if="['files', 'uploads'].includes(value.type)">
-                                <img v-for="image in data[value.column]" :key="image"
-                                    :src="apiRoot + '?cmd=file&f=' + image + '&w=320&h=240'" class="d-block mb-5" />                            
+                                <v-carousel>
+                                    <v-carousel-item
+                                        v-for="image in data[value.column]" :key="image"
+                                        :src="apiRoot + '?cmd=file&f=' + image + '&w=320&h=240'"
+                                        cover
+                                    ></v-carousel-item>
+                                </v-carousel>
                             </div>
                             <img v-else-if="value.type === 'upload'"
                                 :src="apiRoot + '?cmd=upload&f=' + data[value.column] + '&w=320&h=240'" />

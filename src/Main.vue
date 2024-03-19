@@ -7,7 +7,7 @@
 				{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
 			</v-btn>
 
-			<div class="text-align-center w-100 d-flex flex-row justify-center">
+			<div class="text-align-center w-100 d-flex flex-row justify-center" v-if="fields.find(item => item.type === 'id')">
 				<v-combobox v-if="fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
 					@update:model-value="afterSelection" @keydown.enter="quickSearch"
 					ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded

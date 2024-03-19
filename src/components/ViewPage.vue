@@ -199,6 +199,8 @@ export default {
                 }
 
                 this.data = data;
+            } else {
+                this.data = {};
             }
 
             this.fields = result.data.fields;

@@ -37,7 +37,7 @@ export default {
         fetchData: async function () {
             const result = await api.post('?cmd=login');
 
-            if (result.data.code === 1) {
+            if (result.data.code === 1 && result.data.admin > 0) {
                 this.$router.push(util.base());
             }
         },

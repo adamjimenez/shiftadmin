@@ -2,7 +2,9 @@
     <v-layout>
         <v-data-table-server v-model="selected" :headers="activeHeaders" :items="data.data" item-value="id" show-select
             @click:row="rowClick" :loading="loading" @update:options="loadItems" :items-length="totalItems"
-            v-model:items-per-page="itemsPerPage" :search="search" fixed-header fixed-footer class="data-table-server" :page="page">
+            v-model:items-per-page="itemsPerPage" :search="search" fixed-header fixed-footer class="data-table-server" :page="page"
+            v-model:sort-by="sortBy" @update:sortBy="updateSortBy"
+            >
 
             <template v-slot:top>
                 <v-sheet color="secondary" class="w-100">
@@ -105,6 +107,7 @@ export default {
             filter: '',
             buttonData: {},
             defaultData: {}, // used for bulk edit
+            sortBy: []
         };
     },
     methods: {
@@ -362,11 +365,18 @@ export default {
         reload: function () {
             this.search = String(Date.now())
         },
+        updateSortBy: function (newVal) {
+            localStorage['sortBy_' + this.internalSection] = JSON.stringify(newVal);
+        }
     },
     watch: {
         internalSection: function () {
             if (localStorage['fields_' + this.internalSection]) {
                 this.selectedHeaders = JSON.parse(localStorage['fields_' + this.internalSection]);
+            }
+
+            if (localStorage['sortBy_' + this.internalSection]) {
+                this.sortBy = JSON.parse(localStorage['sortBy_' + this.internalSection]);
             }
         },
         $route(route) {

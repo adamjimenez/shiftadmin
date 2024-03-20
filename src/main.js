@@ -1,10 +1,16 @@
 import { createApp } from 'vue'
 import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as labsComponents from 'vuetify/labs/components'
 import App from './App.vue'
 
 // get dark mode setting from device
 let dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 let vuetify = createVuetify({
+  components: {
+    ...components,
+    ...labsComponents,
+  },
   theme: {
     defaultTheme: dark ? 'dark' : 'light',
   },

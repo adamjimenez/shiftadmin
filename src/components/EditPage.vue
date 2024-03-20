@@ -68,9 +68,10 @@
                             <v-autocomplete v-else-if="value.type === 'combo'" :label="formatString(key)"
                                 v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]"
                                 @update:search="updateCombo($event, key)" />
+                            <v-number-input v-else-if="['int', 'position', 'decimal'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]" :step="fieldStep(value.type)"></v-number-input>
                             <v-text-field :label="formatString(key)" v-model="data[value.column]"
                                 :error-messages="errors[key]" :rules="rules[value.type] ? [rules[value.type]] : []"
-                                :type="fieldType(value.type)" :step="fieldStep(value.type)" autocomplete="new-password"
+                                :type="fieldType(value.type)" autocomplete="new-password"
                                 v-else-if="key !== 'id'" />
                         </v-list-item>
                     </template>

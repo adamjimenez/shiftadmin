@@ -26,7 +26,7 @@
                     </td>
                     <td v-for="header in activeHeaders" :key="header" class="v-data-table__td v-data-table-column--align-start">
                         <span v-if="data?.fields[header.value.replaceAll('_', ' ')]?.type === 'files'">
-                            <v-img :src="apiRoot + '?cmd=file&f=' + item[header.value]?.[0] + '&w=320&h=240'"></v-img>
+                            <v-img :src="apiRoot + '?cmd=file&f=' + item[header.value]?.[0] + '&w=320&h=240'" style="max-width: 160px; max-height: 120px;"></v-img>
                         </span>
                         <span v-else>
                             {{ item[header.value] }}

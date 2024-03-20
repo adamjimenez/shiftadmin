@@ -12,6 +12,27 @@
                         @action="actionHandler" :vars="vars" :sortable="isSortable" :data="buttonData" :mobile="mobile">
                     </ListButtons>
                 </v-sheet>
+            </template>        
+        
+            <template v-slot:item="{ item, internalItem, isSelected, toggleSelect}">
+                <tr class="v-data-table__tr v-data-table__tr--clickable" @click="rowClick($event, item)">
+                    <td class="v-data-table__td v-data-table-column--no-padding v-data-table-column--align-start" style="width:  48px;">
+                        <v-checkbox-btn
+                        :model-value="isSelected(internalItem)"
+                        hide-details
+                        @click="toggleSelect(internalItem,!isSelected(internalItem))"
+                        >                   
+                        </v-checkbox-btn>
+                    </td>
+                    <td v-for="header in activeHeaders" :key="header" class="v-data-table__td v-data-table-column--align-start">
+                        <span v-if="data?.fields[header.value.replaceAll('_', ' ')]?.type === 'files'">
+                            <v-img :src="apiRoot + '?cmd=file&f=' + item[header.value]?.[0] + '&w=320&h=240'"></v-img>
+                        </span>
+                        <span v-else>
+                            {{ item[header.value] }}
+                        </span>
+                    </td>
+                </tr>
             </template>
 
             <template v-slot:bottom></template>
@@ -233,7 +254,7 @@ export default {
                 base += this.$route.params.base + '/';
             }
 
-            let link = base + 'section/' + this.internalSection + '/' + item.item.id + '/';
+            let link = base + 'section/' + this.internalSection + '/' + item.id + '/';
 
             if (this.parentsection) {
                 link += '?parentsection=' + this.parentsection + '&parentid=' + this.parentid;
@@ -377,6 +398,8 @@ export default {
 
             if (localStorage['sortBy_' + this.internalSection]) {
                 this.sortBy = JSON.parse(localStorage['sortBy_' + this.internalSection]);
+            } else {
+                this.sortBy = [];
             }
         },
         $route(route) {
@@ -451,6 +474,7 @@ export default {
     },
     created() {
         this.internalSection = this.section ? this.section : this.$route.params.section;
+        this.apiRoot = api.getApiRoot()
     },
 };
 </script>

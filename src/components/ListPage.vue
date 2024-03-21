@@ -25,7 +25,7 @@
                         </v-checkbox-btn>
                     </td>
                     <td v-for="header in activeHeaders" :key="header" class="v-data-table__td v-data-table-column--align-start">
-                        <span v-if="getFieldType(header.value) === 'files'">
+                        <span v-if="['files', 'uploads'].includes(getFieldType(header.value))">
                             <v-img :src="apiRoot + '?cmd=file&f=' + item[header.value]?.[0] + '&w=320&h=240'" style="max-width: 160px; max-height: 120px;"></v-img>
                         </span>
                         <span v-else>

@@ -20,16 +20,16 @@
                         <v-checkbox-btn
                         :model-value="isSelected(internalItem)"
                         hide-details
-                        @click="toggleSelect(internalItem,!isSelected(internalItem))"
+                        @click.stop="toggleSelect(internalItem,!isSelected(internalItem))"
                         >                   
                         </v-checkbox-btn>
                     </td>
                     <td v-for="header in activeHeaders" :key="header" class="v-data-table__td v-data-table-column--align-start">
-                        <span v-if="data?.fields[header.value.replaceAll('_', ' ')]?.type === 'files'">
+                        <span v-if="getFieldType(header.value) === 'files'">
                             <v-img :src="apiRoot + '?cmd=file&f=' + item[header.value]?.[0] + '&w=320&h=240'" style="max-width: 160px; max-height: 120px;"></v-img>
                         </span>
                         <span v-else>
-                            {{ item[header.value] }}
+                            {{ formatData(item[header.value], getFieldType(header.value)) }}
                         </span>
                     </td>
                 </tr>
@@ -187,8 +187,6 @@ export default {
                 for (const [, field] of Object.entries(result.data.fields)) {
                     if (item[field.column + '_label']) {
                         item[field.column] = item[field.column + '_label'];
-                    } else {
-                        item[field.column] = util.formatData(item[field.column], field.type);
                     }
                 }
             });
@@ -388,6 +386,12 @@ export default {
         },
         updateSortBy: function (newVal) {
             localStorage['sortBy_' + this.internalSection] = JSON.stringify(newVal);
+        },
+        getFieldType: function (header) {
+            return this.data?.fields[header.replaceAll('_', ' ')]?.type
+        },
+        formatData: function (data, type) {
+            return util.formatData(data, type);
         }
     },
     watch: {

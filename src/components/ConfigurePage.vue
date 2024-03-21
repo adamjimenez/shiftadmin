@@ -16,7 +16,7 @@
                 <v-btn v-if="tab === 'tables'" icon="mdi-plus" @click="table = {}; tableDialog = true;"></v-btn>
 
                 <span v-if="tab === 'menu'">
-                    <v-btn icon="mdi-plus" @click="menuItem = {}; menuDialog = true;"></v-btn>
+                    <v-btn icon="mdi-plus" @click="menuItem = { type: 'Table' }; menuDialog = true;"></v-btn>
                     <v-btn icon="mdi-sort" title="Sort" @click="openSectionSortable(data.vars.menu)"></v-btn>
                 </span>
                 <span v-if="tab === 'options'">
@@ -73,10 +73,10 @@
                             {{ item.title }}
                             <v-spacer></v-spacer>
                             
-                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Section'" @click.stop="subsection = { section: item.title}; subsectionDialog = true;"></v-btn>
-                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Section'"  title="Sort" @click.stop="openSectionSortable(data.vars.subsections[item.title])" :disabled="!data.vars.subsections[item.title] || !data.vars.subsections[sectionName].length"></v-btn>
+                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Table'" @click.stop="subsection = { section: item.title}; subsectionDialog = true;"></v-btn>
+                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Table'"  title="Sort" @click.stop="openSectionSortable(data.vars.subsections[item.title])" :disabled="!data.vars.subsections[item.title] || !data.vars.subsections[sectionName].length"></v-btn>
 
-                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Folder'" @click.stop="menuItem = { parent: item }; menuDialog = true;"></v-btn>
+                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Folder'" @click.stop="menuItem = { parent: item, type: 'Table' }; menuDialog = true;"></v-btn>
                             <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Folder'"  title="Sort" @click.stop="openSectionSortable(item.children)" :disabled="!item.children?.length"></v-btn>
 
                             <v-btn icon="mdi-pencil" @click.stop="menuItem = {...item}; menuItem.index = key; menuItem.type = getMenuItemType(item); menuDialog = true;"></v-btn>
@@ -84,7 +84,7 @@
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
                             <v-list max-width="600">
-                                <template v-if="getMenuItemType(item) === 'Section' && data.vars.subsections">
+                                <template v-if="getMenuItemType(item) === 'Table' && data.vars.subsections">
                                     <v-list-item v-for="(subsectionName, key2) in data.vars.subsections[item.title]" :key="key2" :title="item.title">
                                         <template #append>
                                             <v-btn icon="mdi-pencil" @click.stop="subsection = { section: item.title, subsection: subsectionName, index: key2}; subsectionDialog = true;"></v-btn>
@@ -187,9 +187,15 @@
             <v-card title="Menu item">
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-select label="Type" v-model="menuItem.type" :items="menuTypes"></v-select>
-                    <v-combobox label="Section" v-model="menuItem.section" :items="getSections()" v-if="menuItem.type === 'Section'" @update:model-value="if (!menuItem.title) { menuItem.title = menuItem.section; }"></v-combobox>
-                    <v-text-field label="Link" v-model="menuItem.to" v-else-if="menuItem.type === 'Frame'"></v-text-field>
+
+                    <v-tabs v-model="menuItem.type">
+                        <v-tab value="Table">Table</v-tab>
+                        <v-tab value="Custom">Custom</v-tab>
+                        <v-tab value="Folder" v-if="!menuItem.parent">Folder</v-tab>
+                    </v-tabs>
+
+                    <v-combobox label="Table" v-model="menuItem.section" :items="getSections()" v-if="menuItem.type === 'Table'" @update:model-value="menuItem.title = formatString(menuItem.section);"></v-combobox>
+                    <v-text-field label="Link" v-model="menuItem.to" v-else-if="menuItem.type === 'Custom'"></v-text-field>
                     <v-text-field label="Title" v-model="menuItem.title"></v-text-field>
                     <v-text-field label="Icon" v-model="menuItem.icon" placeholder="mdi-"></v-text-field>
                 </v-card-text>
@@ -233,7 +239,8 @@
 
 <script>
 import api from "../services/api";
-import draggable from 'vuedraggable'
+import draggable from 'vuedraggable';
+import util from "../services/util";
 
 export default {
     components: {
@@ -445,9 +452,9 @@ export default {
 
             if (this.menuItem.type === 'Folder') {
                 item.children = this.menuItem.children ? this.menuItem.children : [];
-            } else if (this.menuItem.type === 'Section') {
+            } else if (this.menuItem.type === 'Table') {
                 item.section = this.menuItem.section;
-            } else if (this.menuItem.type === 'Frame') {
+            } else if (this.menuItem.type === 'Custom') {
                 item.to = this.menuItem.to;
             }
 
@@ -578,14 +585,17 @@ export default {
             if (Array.isArray(menuItem.children)) {
                 return 'Folder';
             } else if (menuItem.section) {
-                return 'Section';
+                return 'Table';
             } else {
-                return 'Frame';
+                return 'Custom';
             }
         },
         getSections: function () {
-            return Object.keys(this.data.tables).map(item => item.replace("_", " "));
-        }
+            return Object.keys(this.data.tables).map(item => item.replaceAll("_", " "));
+        },        
+		formatString: function (string) {
+			return util.formatString(string);
+		},
     },
     computed: {
         isMenuValid: function () {
@@ -593,18 +603,18 @@ export default {
                 return false;
             }
             
-            if (this.menuItem.type === 'Section' && !this.menuItem.section) {
+            if (this.menuItem.type === 'Table' && !this.menuItem.section) {
                 return false;
             }
 
-            if (this.menuItem.type === 'Frame' && !this.menuItem.to) {
+            if (this.menuItem.type === 'Custom' && !this.menuItem.to) {
                 return false;
             }
 
             return true;
         },
         menuTypes: function () {
-            let types = ['Section', 'Frame'];
+            let types = ['Table', 'Custom'];
 
             if (!this.menuItem.parent) {
                 types.push('Folder');

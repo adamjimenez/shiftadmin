@@ -2,7 +2,7 @@
     <div class="w-100">
         <v-tabs v-model="tab">
             <v-tab value="tables">Tables</v-tab>
-            <v-tab value="sections">Sections</v-tab>
+            <v-tab value="menu">Menu</v-tab>
             <v-tab value="options">Options</v-tab>
             <v-tab value="general">General</v-tab>
         </v-tabs>
@@ -15,9 +15,9 @@
                 
                 <v-btn v-if="tab === 'tables'" icon="mdi-plus" @click="table = {}; tableDialog = true;"></v-btn>
 
-                <span v-if="tab === 'sections'">
-                    <v-btn icon="mdi-plus" @click="section = {}; sectionDialog = true;"></v-btn>
-                    <v-btn icon="mdi-sort" title="Sort" @click="openSectionSortable(data.vars.sections)"></v-btn>
+                <span v-if="tab === 'menu'">
+                    <v-btn icon="mdi-plus" @click="menuItem = {}; menuDialog = true;"></v-btn>
+                    <v-btn icon="mdi-sort" title="Sort" @click="openSectionSortable(data.vars.menu)"></v-btn>
                 </span>
                 <span v-if="tab === 'options'">
                     <v-btn icon="mdi-plus" @click="option = { name: '' }; optionDialog = true;"></v-btn>
@@ -61,29 +61,45 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
             </div>
-            <div v-if="tab === 'sections'">
+            <div v-if="tab === 'menu'">
                 <v-card-text>
-                    Sections are areas that can be administered. They are derived from tables or ad-hoc pages and can also contain subsections.
+                    Manage the admin menu and define subsections.
                 </v-card-text>
                 <v-expansion-panels v-model="panel" multiple style="max-width: 600px;">
-                    <v-expansion-panel v-for="(sectionName, key) in data.vars.sections" :key="key" :value="key">
+                    <v-expansion-panel v-for="(item, key) in data.vars.menu" :key="key" :value="key">
                         <v-expansion-panel-title>
-                            {{ sectionName }}
+							<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" class="mr-3" />
+
+                            {{ item.title }}
                             <v-spacer></v-spacer>
                             
-                            <v-btn icon="mdi-plus" @click.stop="subsection = { section: sectionName}; subsectionDialog = true;"></v-btn>
-                            <v-btn icon="mdi-sort" title="Sort" @click.stop="openSectionSortable(data.vars.subsections[sectionName])" :disabled="!data.vars.subsections[sectionName] || !data.vars.subsections[sectionName].length"></v-btn>
-                            <v-btn icon="mdi-pencil" @click.stop="section = { section: sectionName, index: key}; sectionDialog = true;"></v-btn>
-                            <v-btn icon="mdi-delete" @click.stop="deleteSection(key)"></v-btn>
+                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Section'" @click.stop="subsection = { section: item.title}; subsectionDialog = true;"></v-btn>
+                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Section'"  title="Sort" @click.stop="openSectionSortable(data.vars.subsections[item.title])" :disabled="!data.vars.subsections[item.title] || !data.vars.subsections[sectionName].length"></v-btn>
+
+                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Folder'" @click.stop="menuItem = { parent: item }; menuDialog = true;"></v-btn>
+                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Folder'"  title="Sort" @click.stop="openSectionSortable(item.children)" :disabled="!item.children?.length"></v-btn>
+
+                            <v-btn icon="mdi-pencil" @click.stop="menuItem = {...item}; menuItem.index = key; menuItem.type = getMenuItemType(item); menuDialog = true;"></v-btn>
+                            <v-btn icon="mdi-delete" @click.stop="deleteMenuItem(key, data.vars.menu)"></v-btn>
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
                             <v-list max-width="600">
-                                <template v-if="data.vars.subsections">
-                                    <v-list-item v-for="(subsectionName, key2) in data.vars.subsections[sectionName]" :key="key2" :title="subsectionName">
+                                <template v-if="getMenuItemType(item) === 'Section' && data.vars.subsections">
+                                    <v-list-item v-for="(subsectionName, key2) in data.vars.subsections[item.title]" :key="key2" :title="item.title">
                                         <template #append>
-                                            <v-btn icon="mdi-pencil" @click.stop="subsection = { section: sectionName, subsection: subsectionName, index: key2}; subsectionDialog = true;"></v-btn>
+                                            <v-btn icon="mdi-pencil" @click.stop="subsection = { section: item.title, subsection: subsectionName, index: key2}; subsectionDialog = true;"></v-btn>
 
-                                            <v-btn icon="mdi-delete" @click.stop="deleteSubsection(sectionName, key2)"></v-btn>
+                                            <v-btn icon="mdi-delete" @click.stop="deleteSubsection(item.title, key2)"></v-btn>
+                                        </template>                        
+                                    </v-list-item>
+                                </template>
+
+                                <template v-if="getMenuItemType(item) === 'Folder'">
+                                    <v-list-item v-for="(child, key2) in item.children" :key="key2" :title="child.title" :prepend-icon="child.icon ? child.icon : 'mdi-minus'">
+                                        <template #append>
+                                            <v-btn icon="mdi-pencil" @click.stop="menuItem = {...child}; menuItem.index = key2; menuItem.type = getMenuItemType(child); menuItem.parent = item; menuDialog = true;"></v-btn>
+
+                                            <v-btn icon="mdi-delete" @click.stop="deleteMenuItem(key2, item.children)"></v-btn>
                                         </template>                        
                                     </v-list-item>
                                 </template>
@@ -160,21 +176,25 @@
                 <v-card-text>
                     <draggable :list="sortOrder" group="items" item-key @end="dirty = true">
                         <template #item="{ element }">
-                            <v-sheet color="primary" class="ma-5 pa-5">{{ element }}</v-sheet>
+                            <v-sheet color="primary" class="ma-5 pa-5">{{ element.title }}</v-sheet>
                         </template>
                     </draggable>
                 </v-card-text>
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="sectionDialog" max-width="600">
-            <v-card title="Section">
+        <v-dialog v-model="menuDialog" max-width="600">
+            <v-card title="Menu item">
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-combobox label="Section" v-model="section.section" :items="Object.keys(data.tables)"></v-combobox>
+                    <v-select label="Type" v-model="menuItem.type" :items="menuTypes"></v-select>
+                    <v-combobox label="Section" v-model="menuItem.section" :items="getSections()" v-if="menuItem.type === 'Section'" @update:model-value="if (!menuItem.title) { menuItem.title = menuItem.section; }"></v-combobox>
+                    <v-text-field label="Link" v-model="menuItem.to" v-else-if="menuItem.type === 'Frame'"></v-text-field>
+                    <v-text-field label="Title" v-model="menuItem.title"></v-text-field>
+                    <v-text-field label="Icon" v-model="menuItem.icon" placeholder="mdi-"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn variant="flat" color="primary" :disabled="section.section === ''" @click="saveSection">Edit</v-btn>
+                    <v-btn variant="flat" color="primary" :disabled="!isMenuValid" @click="saveMenuItem">OK</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -279,8 +299,8 @@ export default {
             sortFieldsDialog: false,
             sortTable: '',
             sortOrder: [],
-            sectionDialog: false,
-            section: {},
+            menuDialog: false,
+            menuItem: {},
             subsectionDialog: false,
             subsection: {},
             optionDialog: false,
@@ -417,23 +437,37 @@ export default {
                 this.fetchData();
             }
         },
-        saveSection: function () {
-            let value = this.section.section.replaceAll('_', ' ');
+        saveMenuItem: function () {
+            let item = {
+                title: this.menuItem.title,
+                icon: this.menuItem.icon,
+            };
 
-            if (Object.hasOwn(this.section, 'index')) {
-                this.data.vars.sections[this.section.index] = value;
-            } else {
-                this.data.vars.sections.push(value);
+            if (this.menuItem.type === 'Folder') {
+                item.children = this.menuItem.children ? this.menuItem.children : [];
+            } else if (this.menuItem.type === 'Section') {
+                item.section = this.menuItem.section;
+            } else if (this.menuItem.type === 'Frame') {
+                item.to = this.menuItem.to;
             }
-            this.sectionDialog = false;
+
+            let menu = this.menuItem.parent ? this.menuItem.parent.children : this.data.vars.menu;
+
+            if (Object.hasOwn(this.menuItem, 'index')) {
+                menu[this.menuItem.index] = item;
+            } else {
+                menu.push(item);
+            }
+
+            this.menuDialog = false;
             this.dirty = true;
         },
-        deleteSection: function (index) {
-            if (!confirm('Delete section')) {
+        deleteMenuItem: function (index, menu) {
+            if (!confirm('Delete menu item')) {
                 return;
             }
 
-            this.data.vars.sections.splice(index, 1);
+            menu.splice(index, 1);
             this.dirty = true;
         },
         saveSubsection: function () {
@@ -540,6 +574,44 @@ export default {
             delete this.data.vars.options[key];
             this.dirty = true;
         },
+        getMenuItemType: function (menuItem) {
+            if (Array.isArray(menuItem.children)) {
+                return 'Folder';
+            } else if (menuItem.section) {
+                return 'Section';
+            } else {
+                return 'Frame';
+            }
+        },
+        getSections: function () {
+            return Object.keys(this.data.tables).map(item => item.replace("_", " "));
+        }
+    },
+    computed: {
+        isMenuValid: function () {
+            if (!this.menuItem.title || !this.menuItem.type) {
+                return false;
+            }
+            
+            if (this.menuItem.type === 'Section' && !this.menuItem.section) {
+                return false;
+            }
+
+            if (this.menuItem.type === 'Frame' && !this.menuItem.to) {
+                return false;
+            }
+
+            return true;
+        },
+        menuTypes: function () {
+            let types = ['Section', 'Frame'];
+
+            if (!this.menuItem.parent) {
+                types.push('Folder');
+            }
+
+            return types;
+        }
     },
     watch: {
         vars: function () {

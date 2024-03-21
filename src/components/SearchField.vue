@@ -1,6 +1,6 @@
 <template>
     <span>
-        <v-checkbox v-if="['checkbox', 'deleted'].includes(type)" :label="label" v-model="value" />
+        <v-checkbox v-if="['checkbox', 'deleted'].includes(type)" :label="label" v-model="value" true-value="1" false-value="0" />
         <v-select v-else-if="['select'].includes(type)" :label="label" :items="options" v-model="value" />
         <v-select v-else-if="['select_multiple'].includes(type)" :label="label" :items="options" v-model="value" multiple
             chips>

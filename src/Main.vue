@@ -247,9 +247,7 @@ export default {
 
 			// default search field values
 			fields.forEach(field => {
-				if (typeof this.params[field.column] === 'string' && field.type === 'checkbox') {
-					this.params[field.column] = this.params[field.column] === 'true' ? true : false;
-				} else if (typeof this.params[field.column] === 'string' && typeof this.params.func[field.column] === 'string' && ['date', 'datetime', 'timestamp'].includes(field.type)) {
+				if (typeof this.params[field.column] === 'string' && typeof this.params.func?.[field.column] === 'string' && ['date', 'datetime', 'timestamp'].includes(field.type)) {
 					let currentDate = new Date(this.params[field.column]);
 					let endDate = new Date(this.params.func[field.column]);
 					let dates = [];					

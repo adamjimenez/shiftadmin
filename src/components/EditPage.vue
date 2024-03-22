@@ -69,6 +69,7 @@
                                 v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]"
                                 @update:search="updateCombo($event, key)" />
                             <v-number-input v-else-if="['int', 'position', 'decimal'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]" :step="fieldStep(value.type)"></v-number-input>
+                            <polygon-field v-else-if="['polygon'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"></polygon-field>
                             <v-text-field :label="formatString(key)" v-model="data[value.column]"
                                 :error-messages="errors[key]" :rules="rules[value.type] ? [rules[value.type]] : []"
                                 :type="fieldType(value.type)" autocomplete="new-password"
@@ -84,6 +85,7 @@
 <script>
 import api from "../services/api";
 import util from "../services/util";
+import PolygonField from "./PolygonField";
 
 import 'tinymce'
 import Editor from '@tinymce/tinymce-vue';
@@ -114,13 +116,14 @@ import 'tinymce/skins/ui/oxide/content.js';
 import 'tinymce/skins/content/default/content.js';
 
 export default {
+    components: {
+        PolygonField,
+        'editor': Editor
+    },
     beforeRouteLeave(to, from, next) {
         if (!this.dirty || confirm('You have unsaved changes. Do you want to continue?')) {
             return next()
         }
-    },
-    components: {
-        'editor': Editor // <- Important part
     },
     props: {
         vars: null,

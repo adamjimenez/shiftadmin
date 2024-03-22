@@ -13,14 +13,17 @@
                         <v-checkbox v-if="['checkbox'].includes(field.type)" :label="formatString(field.column)"
                             v-model="params[field.column]" :disabled="!enabled[field.column]" />
                         <v-select v-else-if="['select'].includes(field.type)" :label="formatString(field.column)"
-                            :items="options[field.column]" v-model="params[field.column]" :disabled="!enabled[field.column]" />
-                        <v-select v-else-if="['select_multiple'].includes(field.type)" :label="formatString(field.column)"
-                            :items="options[field.column]" v-model="params[field.column]" multiple chips :disabled="!enabled[field.column]">
+                            :items="options[field.column]" v-model="params[field.column]"
+                            :disabled="!enabled[field.column]" />
+                        <v-select v-else-if="['select_multiple'].includes(field.type)"
+                            :label="formatString(field.column)" :items="options[field.column]"
+                            v-model="params[field.column]" multiple chips :disabled="!enabled[field.column]">
                         </v-select>
                         <v-autocomplete v-else-if="field.type === 'combo'" :label="formatString(field.column)"
                             v-model="params[field.column]" :items="options[field.column]"
                             @update:search="updateCombo($event, field.column)" :disabled="!enabled[field.column]" />
-                        <v-text-field v-else :label="formatString(field.column)" v-model="params[field.column]" :disabled="!enabled[field.column]" />
+                        <v-text-field v-else :label="formatString(field.column)" v-model="params[field.column]"
+                            :disabled="!enabled[field.column]" />
                     </v-list-item>
                 </template>
             </v-card-text>
@@ -54,7 +57,7 @@ export default {
     },
     methods: {
         open: async function () {
-			this.options = await util.getAllOptions(this.fields, this.vars.options, {});
+            this.options = await util.getAllOptions(this.fields, this.vars.options, {});
             console.log(this.defaultData)
             this.params = this.defaultData;
             this.dialog = true;
@@ -63,12 +66,13 @@ export default {
             return util.formatString(string);
         },
         save: function () {
-            this.$emit('action', 'bulkedit', {data: this.params});
+            this.$emit('action', 'bulkedit', { data: this.params });
+            this.dialog = false;
         },
-		updateCombo: async function (term, column) {
-			const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
-			this.options[column] = result.data;
-		},
+        updateCombo: async function (term, column) {
+            const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
+            this.options[column] = result.data;
+        },
     },
     computed: {
         hasChanges: function () {

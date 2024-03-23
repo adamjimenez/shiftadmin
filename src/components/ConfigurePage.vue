@@ -73,7 +73,7 @@
                             {{ item.title }}
                             <v-spacer></v-spacer>
                             
-                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Table'" @click.stop="subsection = { section: item.title}; subsectionDialog = true;"></v-btn>
+                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Table'" @click.stop="subsection = { section: item.title.toLowerCase()}; subsectionDialog = true;"></v-btn>
                             <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Table'"  title="Sort" @click.stop="openSectionSortable(data.vars.subsections[item.title])" :disabled="!data.vars.subsections[item.title] || !data.vars.subsections[sectionName].length"></v-btn>
 
                             <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Folder'" @click.stop="menuItem = { parent: item, type: 'Table' }; menuDialog = true;"></v-btn>
@@ -85,11 +85,11 @@
                         <v-expansion-panel-text>
                             <v-list max-width="600">
                                 <template v-if="getMenuItemType(item) === 'Table' && data.vars.subsections">
-                                    <v-list-item v-for="(subsectionName, key2) in data.vars.subsections[item.title]" :key="key2" :title="item.title">
+                                    <v-list-item v-for="(subsectionName, key2) in data.vars.subsections[item.title.toLowerCase()]" :key="key2" :title="subsectionName">
                                         <template #append>
-                                            <v-btn icon="mdi-pencil" @click.stop="subsection = { section: item.title, subsection: subsectionName, index: key2}; subsectionDialog = true;"></v-btn>
+                                            <v-btn icon="mdi-pencil" @click.stop="subsection = { section: item.title.toLowerCase(), subsection: subsectionName, index: key2}; subsectionDialog = true;"></v-btn>
 
-                                            <v-btn icon="mdi-delete" @click.stop="deleteSubsection(item.title, key2)"></v-btn>
+                                            <v-btn icon="mdi-delete" @click.stop="deleteSubsection(item.title.toLowerCase(), key2)"></v-btn>
                                         </template>                        
                                     </v-list-item>
                                 </template>

@@ -1,5 +1,6 @@
 <template>
     <v-layout>
+
         <v-data-table-server v-model="selected" :headers="activeHeaders" :items="data.data" item-value="id" show-select
             @click:row="rowClick" :loading="loading" @update:options="loadItems" :items-length="totalItems"
             v-model:items-per-page="itemsPerPage" :search="search" fixed-header fixed-footer class="data-table-server" :page="page"
@@ -7,6 +8,7 @@
             >
 
             <template v-slot:top>
+                <v-alert :title="error" type="error" v-if="error" style="max-height: 60px;"></v-alert>
                 <v-sheet color="secondary" class="w-100">
                     <ListButtons v-if="!hidebuttons" :selected="selected" :section="internalSection" @changeFields="dialog = true"
                         @action="actionHandler" :vars="vars" :sortable="isSortable" :data="buttonData" :mobile="mobile">
@@ -35,7 +37,8 @@
                 </tr>
             </template>
 
-            <template v-slot:bottom></template>
+            <template v-slot:bottom>
+            </template>
         </v-data-table-server>
 
         <ImportExport ref="importExport" :headers="headers" :section="internalSection" :fields="searchparams" :columns="selectedHeaders" @reload="reload" />
@@ -128,7 +131,8 @@ export default {
             filter: '',
             buttonData: {},
             defaultData: {}, // used for bulk edit
-            sortBy: []
+            sortBy: [],
+            error: '',
         };
     },
     methods: {
@@ -163,12 +167,17 @@ export default {
             const params = qs.stringify(data);
 
             this.loading = true;
+            this.error = '';
 
             let result = {};
             try {
                 result = await api.get('?' + params.toString(), data);
             } catch (error) {
                 console.log(error)
+            }
+
+            if (result.data.error) {
+                this.error = result.data.error;
             }
 
             this.loading = false;

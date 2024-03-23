@@ -75,8 +75,6 @@
                                 :src="apiRoot + '?cmd=upload&f=' + data[value.column] + '&w=320&h=240'" />
                             <div v-else-if="value.type === 'editor'" v-html="data[value.column]"></div>
                             <span v-else>
-                                <span>{{ formatData(data[value.column], value.type) }}</span>
-                                <span v-if="value.type === 'dob'">({{ age(data[value.column]) }})</span>
                             </span>
                         </v-card-text>
                     </div>
@@ -286,27 +284,6 @@ export default {
         },
         actionHandler: function () {
             this.$refs['listPage'].actionHandler(...arguments);
-        },
-        age: function (dateString) {
-            const today = new Date();
-            const birthDate = new Date(dateString);
-
-            // Check for invalid date format
-            if (isNaN(birthDate.getTime())) {
-                return "Invalid date format. Please use YYYY-MM-DD.";
-            }
-
-            // Get the difference in years, months, and days
-            let yearDiff = today.getFullYear() - birthDate.getFullYear();
-            const monthDiff = today.getMonth() - birthDate.getMonth();
-            const dayDiff = today.getDate() - birthDate.getDate();
-
-            // Adjust for different month lengths and leap years
-            if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-                yearDiff--;
-            }
-
-            return yearDiff;
         },
         getSelectLink: function (field, value) {
             let option = this.vars.options[field.replaceAll('_', ' ')];

@@ -96,6 +96,8 @@ export default {
                 return '';
             case 'date':
                 return this.formatDate(value);
+            case 'dob':
+                return this.formatDate(value) + ' ' + '(' + this.age(value) + ')';
             case 'datetime':
             case 'timestamp':
                 return this.formatDateTime(value);
@@ -112,5 +114,26 @@ export default {
     },
     getEdition: function () {
         return edition;
+    },
+    age: function (dateString) {
+        const today = new Date();
+        const birthDate = new Date(dateString);
+
+        // Check for invalid date format
+        if (isNaN(birthDate.getTime())) {
+            return "Invalid date format. Please use YYYY-MM-DD.";
+        }
+
+        // Get the difference in years, months, and days
+        let yearDiff = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        const dayDiff = today.getDate() - birthDate.getDate();
+
+        // Adjust for different month lengths and leap years
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+            yearDiff--;
+        }
+
+        return yearDiff;
     },
 }

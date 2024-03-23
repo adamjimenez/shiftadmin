@@ -289,6 +289,8 @@ export default {
                     return 'number';
                 case 'datetime':
                     return 'datetime-local';
+                case 'color':
+                    return 'color';
             }
 
             return ['email', 'password', 'date', 'dob', 'time'].includes(type) ? type : 'text'

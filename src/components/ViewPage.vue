@@ -75,6 +75,9 @@
                                 :src="apiRoot + '?cmd=upload&f=' + data[value.column] + '&w=320&h=240'" />
                             <div v-else-if="value.type === 'editor'" v-html="data[value.column]"></div>
                             <span v-else>
+                                {{ formatData(data[value.column], value.type) }}
+
+                                <span v-if="value.type === 'color'" :style="'background-color: ' + data[value.column]" class="ml-3 px-2"></span>
                             </span>
                         </v-card-text>
                     </div>

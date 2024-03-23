@@ -196,6 +196,7 @@
 
                     <v-combobox label="Table" v-model="menuItem.section" :items="getSections()" v-if="menuItem.type === 'Table'" @update:model-value="menuItem.title = formatString(menuItem.section);"></v-combobox>
                     <v-text-field label="Link" v-model="menuItem.to" v-else-if="menuItem.type === 'Custom'"></v-text-field>
+                    <v-checkbox label="Open in new window" v-model="menuItem.target_blank" v-if="menuItem.type === 'Custom'"></v-checkbox>
                     <v-text-field label="Title" v-model="menuItem.title"></v-text-field>
                     <v-text-field label="Icon" v-model="menuItem.icon" placeholder="mdi-"></v-text-field>
                 </v-card-text>
@@ -456,6 +457,7 @@ export default {
                 item.section = this.menuItem.section;
             } else if (this.menuItem.type === 'Custom') {
                 item.to = this.menuItem.to;
+                item.target_blank = this.menuItem.target_blank;
             }
 
             let menu = this.menuItem.parent ? this.menuItem.parent.children : this.data.vars.menu;

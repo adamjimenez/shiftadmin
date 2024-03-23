@@ -57,7 +57,7 @@
 						</v-list-item>
 					</v-list-group>
 
-					<v-list-item v-else :title="item.title" :value="item.to" :to="base + item.to">
+					<v-list-item v-else :title="item.title" :value="item.to" :to="base + item.to" :target="item.target_blank ? '_blank' : ''">
 						<template v-slot:prepend>
 							<v-badge :content="parseInt(child.count).toLocaleString()" color="error" v-if="item.count > 0">
 								<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" />

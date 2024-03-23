@@ -14,7 +14,7 @@
 
                 <v-data-table :items="items" :headers="headers" show-select v-model="selected" @click:row="rowClick" :loading="loading">
                     <template v-slot:[`item.thumb`]="{ item }">
-                        <img v-if="item.thumb" :src="apiRoot + '../..' + item.thumb">
+                        <v-img v-if="item.thumb" :src="apiRoot + '?cmd=file&f=' + item.id" style="max-width: 160px; max-height: 120px;"></v-img>
                     </template>
                 </v-data-table>
             </v-card>

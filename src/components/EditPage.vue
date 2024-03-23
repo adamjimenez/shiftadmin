@@ -13,7 +13,7 @@
                     <template v-for="(value, key, index) in fields" :key="index">
                         <v-list-item v-if="!['id', 'timestamp', 'deleted'].includes(value.type)">
                             <v-checkbox v-if="value.type === 'checkbox'" :label="formatString(key)"
-                                v-model="data[value.column]" :error-messages="errors[key]" true-value="1" false-value="0"  />
+                                v-model="data[value.column]" :error-messages="errors[key]" :true-value="'1'" :false-value="'0'"  />
                             <div v-else-if="['file', 'files'].includes(value.type)">
                                 <div v-if="data[value.column]?.length > 0" class="mb-3">
                                     <div class="mb-3">{{ formatString(key) }}</div>
@@ -173,8 +173,6 @@ export default {
             for (const [, field] of Object.entries(fields)) {
                 if (field.type === 'password') {
                     data[field.column] = '';
-                } else if (field.type === 'checkbox') {
-                    data[field.column] = data[field.column] = data[field.column] > 0 ? true : false;
                 } else if (field.type === 'select_multiple' && !Array.isArray(data[field.column])) {
                     // default to array
                     data[field.column] = [];

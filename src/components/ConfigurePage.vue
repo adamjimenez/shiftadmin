@@ -74,7 +74,7 @@
                             <v-spacer></v-spacer>
                             
                             <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Table'" @click.stop="subsection = { section: item.title.toLowerCase()}; subsectionDialog = true;"></v-btn>
-                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Table'"  title="Sort" @click.stop="openSectionSortable(data.vars.subsections[item.title])" :disabled="!data.vars.subsections[item.title] || !data.vars.subsections[sectionName].length"></v-btn>
+                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Table'"  title="Sort" @click.stop="openSectionSortable(data.vars.subsections[item.title.toLowerCase()])" :disabled="!data.vars.subsections[item.title.toLowerCase()]?.length"></v-btn>
 
                             <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Folder'" @click.stop="menuItem = { parent: item, type: 'Table' }; menuDialog = true;"></v-btn>
                             <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Folder'"  title="Sort" @click.stop="openSectionSortable(item.children)" :disabled="!item.children?.length"></v-btn>
@@ -176,7 +176,7 @@
                 <v-card-text>
                     <draggable :list="sortOrder" group="items" item-key @end="dirty = true">
                         <template #item="{ element }">
-                            <v-sheet color="primary" class="ma-5 pa-5">{{ element.title }}</v-sheet>
+                            <v-sheet color="primary" class="ma-5 pa-5">{{ element.title ? element.title : element }}</v-sheet>
                         </template>
                     </draggable>
                 </v-card-text>

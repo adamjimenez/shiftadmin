@@ -262,9 +262,7 @@ export default {
             error: '',
             loading: false,
             fieldTypes: [
-                'avg_rating',
                 'checkbox',
-                'checkboxes',
                 'color',
                 'combo',
                 'coords',
@@ -282,7 +280,6 @@ export default {
                 'integer',
                 'ip',
                 'mobile',
-                'month',
                 'page_name',
                 'password',
                 'polygon',

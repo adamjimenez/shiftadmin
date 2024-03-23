@@ -5,10 +5,11 @@
         <v-dialog v-model="dialog" scrollable>
             <v-card>
                 <v-card-actions>
-                    <v-btn title="Up level" :disabled="path === ''" icon="mdi-arrow-up" @click="upLevel"></v-btn>
                     <v-btn title="Create folder" icon="mdi-folder-outline" @click="createFolder"></v-btn>
                     <v-btn title="Delete" icon="mdi-delete" :disabled="selected.length === 0" @click="deleteItems"></v-btn>
                     <v-file-input v-model="file" @update:modelValue="uploadFile" prepend-icon="mdi-upload" hide-details class="hide-input mx-3"></v-file-input>
+                    <v-btn title="Up level" :disabled="path === '/'" icon="mdi-arrow-up" @click="upLevel"></v-btn>
+                    <v-text-field v-model="path" hide-details readonly density="compact"></v-text-field>
                 </v-card-actions>
 
                 <v-data-table :items="items" :headers="headers" show-select v-model="selected" @click:row="rowClick" :loading="loading">
@@ -70,7 +71,7 @@ export default {
                     filepath = '/uploads' + filepath
                     this.column(filepath, { title: filepath });
                 } else {
-                    this.$emit('fileSelected', { value: filepath, column: this.column });
+                    this.$emit('fileSelected', { value: filepath.substr(1), column: this.column });
                 }
 
                 this.dialog = false;

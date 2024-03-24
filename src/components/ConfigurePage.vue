@@ -85,9 +85,9 @@
                         <v-expansion-panel-text>
                             <v-list max-width="600">
                                 <template v-if="getMenuItemType(item) === 'Table' && data.vars.subsections">
-                                    <v-list-item v-for="(subsectionName, key2) in data.vars.subsections[item.title.toLowerCase()]" :key="key2" :title="subsectionName">
+                                    <v-list-item v-for="(child, key2) in data.vars.subsections[item.title.toLowerCase()]" :key="key2" :title="child.title" :prepend-icon="child.icon ? child.icon : 'mdi-minus'">
                                         <template #append>
-                                            <v-btn icon="mdi-pencil" @click.stop="subsection = { section: item.title.toLowerCase(), subsection: subsectionName, index: key2}; subsectionDialog = true;"></v-btn>
+                                            <v-btn icon="mdi-pencil" @click.stop="subsection = {...child}; subsection.section = item.title.toLowerCase(); subsection.index = key2; subsectionDialog = true;"></v-btn>
 
                                             <v-btn icon="mdi-delete" @click.stop="deleteSubsection(item.title.toLowerCase(), key2)"></v-btn>
                                         </template>                        
@@ -206,11 +206,20 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="subsectionDialog" max-width="600">
-            <v-card title="Subsection">
+        <v-dialog v-model="subsectionDialog" max-width="600" persistent>
+            <v-card>
+                <v-card-title class="d-flex justify-space-between align-center">
+                    <div class="text-h5 text-medium-emphasis ps-2">
+                        Subsection
+                    </div>
+
+                    <v-btn icon="mdi-close" @click="subsectionDialog = false;"></v-btn>
+                </v-card-title>
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-select label="Subsection" v-model="subsection.subsection" :items="Object.keys(data.tables)"></v-select>
+                    <v-select label="Subsection" v-model="subsection.subsection" :items="Object.keys(data.tables)" @update:model-value="subsection.title = formatString(subsection.section);"></v-select>
+                    <v-text-field label="Title" v-model="subsection.title"></v-text-field>
+                    <v-text-field label="Icon" v-model="subsection.icon" placeholder="mdi-"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn variant="flat" color="primary" :disabled="subsection.section === ''" @click="saveSubsection">OK</v-btn>
@@ -310,7 +319,7 @@ export default {
             subsection: {},
             optionDialog: false,
             option: {},
-            sortSectionsDialog : false,
+            sortSectionsDialog: false,
             dirty: false,
         }
     },
@@ -325,6 +334,18 @@ export default {
 
             if (!data.vars.subsections) {
                 data.vars.subsections = {};
+            }
+
+            // backcompat subsections
+            for (let [section, subsections] of Object.entries(data.vars.subsections)) {
+                subsections.forEach((subsection, index) => {
+                    if (typeof subsection === 'string') {
+                        data.vars.subsections[section][index] = {
+                            title: this.formatString(subsection),
+                            subsection: subsection,
+                        };
+                    }
+                });
             }
 
             if (!data.vars.branding) {
@@ -477,16 +498,20 @@ export default {
             this.dirty = true;
         },
         saveSubsection: function () {
-            let value = this.subsection.subsection.replaceAll('_', ' ');
+            this.subsection.subsection = this.subsection.subsection.replaceAll('_', ' ');
+
+            let subsection = { ...this.subsection };
+            delete subsection.index;
+            delete subsection.section;
 
             if (Object.hasOwn(this.subsection, 'index')) {
-                this.data.vars.subsections[this.subsection.section][this.subsection.index] = value;
+                this.data.vars.subsections[this.subsection.section][this.subsection.index] = subsection;
             } else {
                 if (!Array.isArray(this.data.vars.subsections[this.subsection.section])) {
                     this.data.vars.subsections[this.subsection.section] = [];
                 }
 
-                this.data.vars.subsections[this.subsection.section].push(value);
+                this.data.vars.subsections[this.subsection.section].push(subsection);
             }
             this.subsectionDialog = false;
             this.dirty = true;

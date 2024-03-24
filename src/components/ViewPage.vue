@@ -30,8 +30,9 @@
             <v-tabs v-model="tab" style="min-height: 50px;">
                 <v-tab value="summary">Summary</v-tab>
                 <template v-if="vars.subsections && vars.subsections[section]?.length">
-                    <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection" :value="subsection">
-                        {{ subsection }}
+                    <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection.subsection" :value="subsection.subsection">
+                        <v-icon v-if="subsection.icon" :icon="subsection.icon" start></v-icon>
+                        {{ subsection.title }}
                     </v-tab>
                 </template>
             </v-tabs>

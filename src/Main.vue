@@ -268,7 +268,23 @@ export default {
 				console.log(error)
 			}
 
-			this.vars = result.data?.vars;
+			let data = result.data;
+
+			// backcompat subsections
+			if (data?.vars) {
+				for (let [section, subsections] of Object.entries(data.vars.subsections)) {
+					subsections.forEach((subsection, index) => {
+						if (typeof subsection === 'string') {
+							data.vars.subsections[section][index] = {
+								title: this.formatString(subsection),
+								subsection: subsection,
+							};
+						}
+					});
+				}
+			}
+
+			this.vars = data?.vars;
 
 			let colors = {
 				primary: '#007bff',

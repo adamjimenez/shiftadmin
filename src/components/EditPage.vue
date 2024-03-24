@@ -300,7 +300,7 @@ export default {
                 case 'position':
                     return 1;
                 case 'decimal':
-                    return '0.01';
+                    return 0.01;
             }
 
             return '';

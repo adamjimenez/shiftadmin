@@ -3,7 +3,7 @@
         <v-sheet color="secondary" class="w-100 d-flex">
             <v-btn title="Back" icon="mdi-arrow-left" :to="back" color="grey-lighten-1" variant="text" v-if="back"></v-btn>
             <span v-if="tab === 'summary'" class="w-100">
-                <v-btn title="Edit" icon="mdi-pencil" color="grey-lighten-1" to="edit" variant="text"></v-btn>
+                <v-btn title="Edit" icon="mdi-pencil" color="grey-lighten-1" variant="text" @click="edit"></v-btn>
                 <v-btn v-if="data['deleted'] > 0" title="Restore" icon="mdi-delete-restore" color="success" @click="restoreItem"
                     variant="text"></v-btn>
                 <v-btn v-else title="Delete" icon="mdi-delete" color="grey-lighten-1" @click="deleteItem" variant="text"></v-btn>
@@ -217,10 +217,10 @@ export default {
             if (parentsection) {                
                 const parentid = urlParams.get('parentid');
                 this.back = '../../' + parentsection + '/' + parentid + '/';
-            }
-
-            if (!fields.id) {
+            } else if (!fields.id) {
                 this.back = '';
+            } else {
+                this.back = '../';
             }
         },
         openLogs: async function () {
@@ -236,7 +236,6 @@ export default {
             this.logs = result.data.data;
         },
         openPrivileges: async function () {
-
             if (!['Business'].includes(util.getEdition())) {
                 this.$router.push(util.base() + 'upgrade');
                 return;
@@ -337,6 +336,9 @@ export default {
         loaded: function () {            
             let data = this.$refs['listPage']?.buttonData;
             this.buttonData = data ? data : {};
+        },
+        edit: function () {
+            this.$router.push('edit' + location.search);
         }
     },
 
@@ -355,7 +357,7 @@ export default {
         },
         isSortable: function () {
             return this.$refs['listPage']?.isSortable;
-        }
+        },
     },
 
     watch: {

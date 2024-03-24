@@ -148,7 +148,6 @@ export default {
             },
             dirty: false,
             apiRoot: '',
-            back: './',
         };
     },
     methods: {
@@ -206,10 +205,6 @@ export default {
                             this.data[name] = parentid;
                         }
                     }
-                }
-
-                if (parentsection) {
-                    this.back = '../' + parentsection + '/' + parentid + '/';
                 }
             }
 
@@ -275,7 +270,7 @@ export default {
                 }
             } else if (result.data.id) {
                 this.dirty = false;
-                this.$router.push(util.base() + 'section/' + this.section + '/' + result.data.id + '/');
+                this.$router.push(util.base() + 'section/' + this.section + '/' + result.data.id + '/' + location.search);
             }
         },
         fieldType(type) {
@@ -331,6 +326,12 @@ export default {
                 this.dirty = true;
             },
             deep: true
+        }
+    },
+
+    computed: {
+        back: function () {
+            return './' + location.search;
         }
     },
 

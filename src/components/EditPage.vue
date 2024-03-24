@@ -148,6 +148,7 @@ export default {
             },
             dirty: false,
             apiRoot: '',
+            back: './',
         };
     },
     methods: {
@@ -194,11 +195,11 @@ export default {
             document.title = title + ' | ' + this.section + ' | ' + this.id;
 
             // parent fields
-            if (!this.id) {
-                const urlParams = new URLSearchParams(window.location.search);
-                const parentsection = urlParams.get('parentsection');
-                const parentid = urlParams.get('parentid');
+            const urlParams = new URLSearchParams(window.location.search);
+            const parentsection = urlParams.get('parentsection');
+            const parentid = urlParams.get('parentid');
 
+            if (!this.id) {
                 for (const [name] of Object.entries(this.fields)) {
                     for (const [option, values] of Object.entries(this.vars.options)) {
                         if (name === option && values === parentsection) {
@@ -206,6 +207,17 @@ export default {
                         }
                     }
                 }
+            }
+
+            if (parentsection) {
+                if (this.id) {                    
+                    this.back = './' + location.search;
+                } else {
+                    const parentid = urlParams.get('parentid');
+                    this.back = '../' + parentsection + '/' + parentid + '/';
+                }
+            } else {
+                this.back = './' + location.search;
             }
 
             this.dirty = false;
@@ -328,13 +340,6 @@ export default {
             deep: true
         }
     },
-
-    computed: {
-        back: function () {
-            return './' + location.search;
-        }
-    },
-
     async mounted() {
         this.section = this.$route.params.section;
         if (this.$route.params.id) {

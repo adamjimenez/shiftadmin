@@ -136,7 +136,7 @@
             <v-card title="Table">
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-text-field label="Name" v-model="table.name"></v-text-field>
+                    <v-text-field label="Name" v-model="table.name" autofocus></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn variant="flat" color="primary" :disabled="table.name === ''" @click="saveTable">Save</v-btn>
@@ -148,7 +148,7 @@
             <v-card title="Field">
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-text-field label="Name" v-model="field.name"></v-text-field>
+                    <v-text-field label="Name" v-model="field.name" autofocus></v-text-field>
                     <v-select label="Field" v-model="field.type" :items="fieldTypes"></v-select>
                     <v-text-field label="Label" v-model="field.label"></v-text-field>
                     <v-checkbox label="Required" v-model="field.required"></v-checkbox>
@@ -194,10 +194,10 @@
                         <v-tab value="Folder" v-if="!menuItem.parent">Folder</v-tab>
                     </v-tabs>
 
-                    <v-combobox label="Table" v-model="menuItem.section" :items="getSections()" v-if="menuItem.type === 'Table'" @update:model-value="menuItem.title = formatString(menuItem.section);"></v-combobox>
-                    <v-text-field label="Link" v-model="menuItem.to" v-else-if="menuItem.type === 'Custom'"></v-text-field>
+                    <v-combobox label="Table" v-model="menuItem.section" :items="getSections()" v-if="menuItem.type === 'Table'" @update:model-value="menuItem.title = formatString(menuItem.section);" autofocus></v-combobox>
+                    <v-text-field label="Link" v-model="menuItem.to" v-else-if="menuItem.type === 'Custom'" autofocus></v-text-field>
                     <v-checkbox label="Open in new window" v-model="menuItem.target_blank" v-if="menuItem.type === 'Custom'"></v-checkbox>
-                    <v-text-field label="Title" v-model="menuItem.title"></v-text-field>
+                    <v-text-field label="Title" v-model="menuItem.title" :autofocus="menuItem.type === 'Folder'"></v-text-field>
                     <v-text-field label="Icon" v-model="menuItem.icon" placeholder="mdi-"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
@@ -217,7 +217,7 @@
                 </v-card-title>
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-select label="Subsection" v-model="subsection.subsection" :items="Object.keys(data.tables)" @update:model-value="subsection.title = formatString(subsection.subsection);"></v-select>
+                    <v-select label="Subsection" v-model="subsection.subsection" :items="Object.keys(data.tables)" @update:model-value="subsection.title = formatString(subsection.subsection);" autofocus></v-select>
                     <v-text-field label="Title" v-model="subsection.title"></v-text-field>
                     <v-text-field label="Icon" v-model="subsection.icon" placeholder="mdi-"></v-text-field>
                 </v-card-text>
@@ -231,7 +231,7 @@
             <v-card title="Option">
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-text-field label="Name" v-model="option.name"></v-text-field>
+                    <v-text-field label="Name" v-model="option.name" autofocus></v-text-field>
                     <v-radio-group v-model="option.type">
                         <v-radio label="Table" value="table"></v-radio>
                         <v-radio label="Options" value="options"></v-radio>

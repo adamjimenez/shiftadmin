@@ -110,7 +110,7 @@
             </div>
             <div v-if="tab === 'options'">
                 <v-card-text>
-                    Options are used by dropdown menus. They can either be a list of values or rows from a table.
+                    Options are used by "select" and "select multiple" fields. They can either be a list of values or rows from a table.
                 </v-card-text>
                 <v-list max-width="600">
                     <v-list-item v-for="(options, key, index) in data.vars.options" :key="index" :value="key" :title="key">
@@ -217,7 +217,7 @@
                 </v-card-title>
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-select label="Subsection" v-model="subsection.subsection" :items="Object.keys(data.tables)" @update:model-value="subsection.title = formatString(subsection.section);"></v-select>
+                    <v-select label="Subsection" v-model="subsection.subsection" :items="Object.keys(data.tables)" @update:model-value="subsection.title = formatString(subsection.subsection);"></v-select>
                     <v-text-field label="Title" v-model="subsection.title"></v-text-field>
                     <v-text-field label="Icon" v-model="subsection.icon" placeholder="mdi-"></v-text-field>
                 </v-card-text>
@@ -294,7 +294,6 @@ export default {
                 'polygon',
                 'position',
                 'postcode',
-                'radio',
                 'rating',
                 'read',
                 'select',

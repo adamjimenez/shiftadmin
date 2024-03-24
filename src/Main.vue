@@ -243,22 +243,6 @@ export default {
 		},
 		changeFields: function (fields) {
 			this.fields = fields;
-
-			// default search field values
-			fields.forEach(field => {
-				if (typeof this.params[field.column] === 'string' && typeof this.params.func?.[field.column] === 'string' && ['date', 'datetime', 'timestamp'].includes(field.type)) {
-					let currentDate = new Date(this.params[field.column]);
-					let endDate = new Date(this.params.func[field.column]);
-					let dates = [];					
-
-					while (currentDate <= endDate) {
-						dates.push(new Date(currentDate));
-						currentDate.setDate(currentDate.getDate() + 1);
-					}
-
-					this.params[field.column] = dates;
-				}
-			}) 
 		},
 		fetchData: async function () {
 			let result = {};

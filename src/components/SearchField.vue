@@ -5,16 +5,15 @@
         <v-select v-else-if="['select_multiple'].includes(type)" :label="label" :items="options" v-model="value" multiple
             chips>
             <template v-slot:prepend>
-                <v-select v-model="func" :items="['in', 'not in']" hide-details />
+                <v-select v-model="localFunc" :items="['in', 'not in']" hide-details />
             </template>
         </v-select>
         <v-autocomplete v-else-if="type === 'combo'" :label="label" v-model="value" :items="options"
             @update:search="updateCombo($event, column)" />
-        <DateRange v-else-if="['date', 'datetime', 'timestamp'].includes(type)" :label="label" v-model="ranges"
-            @update:modelValue="updateRange" />
+        <DateRange v-else-if="['date', 'datetime', 'timestamp'].includes(type)" :label="label" v-model="value" />
         <v-text-field v-else :label="label" v-model="value" :type="fieldType(type)" :step="fieldStep(type)">
             <template v-slot:prepend v-if="['id', 'decimal', 'int', 'rating'].includes(type)">
-                <v-select v-model="func" :items="['=', '>', '<']" hide-details />
+                <v-select v-model="localFunc" :items="['=', '>', '<']" hide-details />
             </template>
         </v-text-field>
     </span>
@@ -38,10 +37,11 @@ export default {
         column: null,
         type: null,
         optionConfig: null,
+        func: null,
     },
     emits: ["update:modelValue", "updateFunc"],
     data: () => ({
-        func: null,
+        localFunc: null,
         value: null,
         options: [],
         ranges: [],
@@ -77,7 +77,7 @@ export default {
         },
         updateRange: function (value) {
             this.value = value[0];
-            this.func = value[value.length - 1];
+            this.localFunc = value[value.length - 1];
         },
         getOptions: async function () {
             this.options = await util.getOptions(this.column, this.type, this.optionConfig, {});
@@ -87,25 +87,22 @@ export default {
         value: function (newVal) {
             this.$emit('update:modelValue', newVal);
         },
-        func: function (newVal) {
+        localFunc: function (newVal) {
             this.$emit('updateFunc', this.column, newVal);
         },
         field: function () {
             this.getOptions();
-        }
+        },
     },
     mounted: function () {
         this.getOptions();
         this.value = this.modelValue;
+        this.localFunc = this.func;
 
-        if (!this.func) {
+        if (!this.localFunc) {
             if (['decimal', 'int', 'id', 'rating'].includes(this.type)) {
-                this.func = '=';
+                this.localFunc = '=';
             }
-        }
-
-        if (Array.isArray(this.value)) {
-            this.ranges = this.value;
         }
     }
 }

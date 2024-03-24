@@ -210,10 +210,10 @@
             <v-card title="Subsection">
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-combobox label="Subsection" v-model="subsection.subsection" :items="data.vars.sections"></v-combobox>
+                    <v-select label="Subsection" v-model="subsection.subsection" :items="Object.keys(data.tables)"></v-select>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn variant="flat" color="primary" :disabled="subsection.section === ''" @click="saveSubsection">Edit</v-btn>
+                    <v-btn variant="flat" color="primary" :disabled="subsection.section === ''" @click="saveSubsection">OK</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -227,11 +227,11 @@
                         <v-radio label="Table" value="table"></v-radio>
                         <v-radio label="Options" value="options"></v-radio>
                     </v-radio-group>
-                    <v-select v-if="option.type === 'table'" label="table" v-model="option.options" :items="data.vars.tables"></v-select>
+                    <v-select v-if="option.type === 'table'" label="table" v-model="option.options" :items="Object.keys(data.tables)"></v-select>
                     <v-textarea v-else-if="option.type === 'options'" label="Options" v-model="option.options"></v-textarea>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn variant="flat" color="primary" :disabled="option.name === ''" @click="saveOption">Edit</v-btn>
+                    <v-btn variant="flat" color="primary" :disabled="option.name === ''" @click="saveOption">OK</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

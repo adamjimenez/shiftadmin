@@ -42,7 +42,7 @@
                                                 <div v-for="filter in widget.filters" :key="filter">
                                                     <SearchField :column="filter" :type="getFieldType(filter, widget.table)"
                                                         :optionConfig="config.vars.options" :label="filter"
-                                                        v-model="params[filter]" :func="params?.func?.[filter]"
+                                                        v-model="report.params[filter]" :func="report.params?.func?.[filter]"
                                                         @updateFunc="updateFunc"></SearchField>
                                                 </div>
                                                 
@@ -216,7 +216,7 @@
         <v-dialog v-model="widgetDialog" max-width="600">
             <v-card title="Widget">
                 <v-card-text>
-                    <v-select label="Type" :items="['source', 'kpi', 'dataTable', 'graph', /*'filter', 'keyValue'*/]"
+                    <v-select label="Type" :items="['source', 'kpi', 'dataTable', 'graph', /*'keyValue'*/]"
                         v-model="widget.type"></v-select>
                     <v-select label="Table" v-if="['source'].includes(widget.type)" v-model="widget.table"
                         :items="Object.keys(config.tables)" />
@@ -309,6 +309,7 @@ export default {
                 dataTable: [], // group by + heading: title, key, func, conditions
                 filter: [], // keys
                 graph: [], // heading, type, value, group by
+                params: {},
             },
             source: {},
             widget: {},
@@ -317,9 +318,6 @@ export default {
             columnDialog: false,
             funcs: ['count', 'sum', 'avg', 'custom'],
             editing: {}, // ref to the widget being edited
-            params: {
-                func: {},
-            },
             itemsPerPage: 500,
             loading: false,
             error: '',
@@ -343,7 +341,7 @@ export default {
             let data = {
                 cmd: 'get',
                 section: this.report.source[0].table,
-                fields: this.params,
+                fields: this.report.params,
                 itemsPerPage: this.itemsPerPage,
                 columns: this.report.source[0].columns,
             };
@@ -381,7 +379,6 @@ export default {
         },
         deleteWidget: function (index, key) {
             this.report[key] = this.report[key].splice(index, 1);
-            this.saveReport();
         },
         saveWidget: function () {
             let widget = { ...this.widget };
@@ -393,7 +390,6 @@ export default {
             }
             this.widgetDialog = false;
 
-            this.saveReport();
             this.fetchData();
         },
         addColumn: function (widget) {
@@ -426,12 +422,10 @@ export default {
                 this.widget.columns.push(this.column);
             }
 
-            this.saveReport();
             this.columnDialog = false;
         },
         deleteColumn: function (columnIndex, index) {
             this.report.dataTable[index].columns = this.report.dataTable[index].columns.splice(columnIndex, 1);
-            this.saveReport();
         },
         sumRows(widget, data) {
             let total = 0;
@@ -532,10 +526,11 @@ export default {
             }
 
             this.report = JSON.parse(localStorage.report);
+
             this.fetchData();
         },
         updateFunc: function (column, func) {
-            this.params.func[column] = func;
+            this.report.params.func[column] = func;
         },
         getFieldType: function (column, table) {
             return this.config.tables[table]?.find(item => item.name === column).type;
@@ -563,7 +558,13 @@ export default {
         },
     },
     watch: {
-        params: {
+        report: {
+            handler: function () {
+                this.saveReport();
+            },
+            deep: true
+        },
+        'report.params': {
             handler: function () {
                 this.fetchData();
             },

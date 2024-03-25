@@ -116,6 +116,8 @@ export default {
                 } else {
                     this.special = [modelValue];
                 }
+            } else {
+                value = modelValue;
             }
 
             if (!value?.[0]) {

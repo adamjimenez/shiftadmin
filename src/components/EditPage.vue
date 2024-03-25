@@ -68,7 +68,7 @@
                             <v-autocomplete v-else-if="value.type === 'combo'" :label="formatString(key)"
                                 v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]"
                                 @update:search="updateCombo($event, key)" />
-                            <v-number-input v-else-if="['int', 'position', 'decimal'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]" :step="fieldStep(value.type)"></v-number-input>
+                            <!--<v-number-input v-else-if="['int', 'position', 'decimal'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"  :step="fieldStep(value.type)"></v-number-input>-->
                             <polygon-field v-else-if="['polygon'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"></polygon-field>
                             <v-text-field :label="formatString(key)" v-model="data[value.column]"
                                 :error-messages="errors[key]" :rules="rules[value.type] ? [rules[value.type]] : []"

@@ -67,18 +67,21 @@ export default {
             if (item.item.leaf) {
                 let filepath = item.item.id;
 
-                if (typeof this.column === 'function') {
-                    filepath = '/uploads' + filepath
-                    this.column(filepath, { title: filepath });
-                } else {
-                    this.$emit('fileSelected', { value: filepath.substr(1), column: this.column });
-                }
-
-                this.dialog = false;
+                this.selectFile(filepath);
             } else {
                 this.path = item.item.id + '/';
                 this.fetchData();
             }
+        },
+        selectFile: function (filepath) {
+            if (typeof this.column === 'function') {
+                filepath = '/uploads' + filepath
+                this.column(filepath, { title: filepath });
+            } else {
+                this.$emit('fileSelected', { value: filepath.substr(1), column: this.column });
+            }
+
+            this.dialog = false;
         },
         upLevel: function () {
             let index = this.path.substr(0, this.path.length - 1).lastIndexOf("/");
@@ -146,7 +149,7 @@ export default {
                 alert(result.data?.error);
             }
 
-            this.fetchData();
+            this.selectFile(result.data.file);
         }
     },
 

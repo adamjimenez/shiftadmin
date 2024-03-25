@@ -3,17 +3,50 @@
         <template v-slot:activator="{ props }">
             <v-text-field v-model="dateRangeText" :label="label" readonly v-bind="props"></v-text-field>
         </template>
-        <v-date-picker v-model="value" no-title bg-color="black" multiple="range" v-bind="$attrs">
-			<template #actions>
-                <div>
-                    <v-btn
-                        variant="text"
-                        @click="menu = false"
-                        text="OK"
-                    />
-                </div>
-			</template>
-        </v-date-picker>
+        <v-card v-bind="$attrs">
+                <v-container class="bg-black">
+                    <v-row>
+                        <v-col>
+                            <v-list v-model:selected="special">
+                                <v-list-item value="custom">
+                                    Custom
+                                </v-list-item>
+                                <v-list-item value="last7d">
+                                    Last 7 days
+                                </v-list-item>
+                                <v-list-item value="last28d">
+                                    Last 28 days
+                                </v-list-item>
+                                <v-list-item value="today">
+                                    Today
+                                </v-list-item>
+                                <v-list-item value="yesterday">
+                                    Yesterday
+                                </v-list-item>
+                                <v-list-item value="thismonth">
+                                    This month
+                                </v-list-item>
+                                <v-list-item value="lastmonth">
+                                    Last month
+                                </v-list-item>
+                                <v-list-item value="thisyear">
+                                    This year
+                                </v-list-item>
+                                <v-list-item value="lastyear">
+                                    Last year
+                                </v-list-item>
+                            </v-list>
+                        </v-col>
+                        <v-date-picker v-model="value" no-title bg-color="black" multiple="range">
+                            <template #actions>
+                                <div>
+                                    <v-btn variant="text" @click="menu = false" text="OK" />
+                                </div>
+                            </template>
+                        </v-date-picker>
+                    </v-row>
+                </v-container>
+        </v-card>
     </v-menu>
 </template>
 
@@ -28,14 +61,16 @@ export default {
     },
     emits: ["update:modelValue"],
     data: () => ({
+        special: ['custom'],
         menu: false,
         value: [],
+        specialPressed: false,
     }),
     methods: {
         parseDate: function (dateString) {
             const date = new Date(dateString);
-            
-            if(!date) {
+
+            if (!date) {
                 return;
             }
 
@@ -46,31 +81,69 @@ export default {
             const formattedDay = day.toString().padStart(2, '0');
             return `${year}-${formattedMonth}-${formattedDay}`;
         },
-        createDateRange: function () {
+        createDateRange: async function () {
             let value = this.modelValue;
 
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+
             if (typeof value === 'string') {
-                value = [value];
+                if (value === 'today') {
+                    value = [today];
+                } else if (value === 'yesterday') {
+                    value = [new Date(Date.now() - 1 * 86400000)];
+                } else if (value === 'thismonth') {
+                    value = [new Date(year, month, 1), new Date(year, month + 1, 0)];
+                } else if (value === 'lastmonth') {
+                    value = [new Date(year, month - 1, 1), new Date(year, month, 0)];
+                } else if (value === 'thisyear') {
+                    value = [new Date(year, 0, 1), new Date(year, 11, 31)];
+                } else if (value === 'lastyear') {
+                    value = [new Date(year-1, 0, 1), new Date(year-1, 11, 31)];
+                } else {
+                    const match = value.match(/^last([0-9]+)d$/);
+
+                    if (match) {
+                        const daysAgo = parseInt(match[1]) - 1;
+                        value = [new Date(Date.now() - daysAgo * 86400000), today];
+                    } else {
+                        value = [value];
+                    }
+                }
             }
 
             if (!value?.[0]) {
                 return false;
             }
 
-			// default search field values
+            // default search field values
             let currentDate = new Date(value[0]);
-            let endDate = new Date(value[1]);
-            let dates = [];
+            let endDate = new Date(value[value.length-1]);
 
+            let days = [];
             while (currentDate <= endDate) {
-                dates.push(new Date(currentDate));
+                days.push(new Date(currentDate));
                 currentDate.setDate(currentDate.getDate() + 1);
             }
 
-            this.value = dates;
+            this.specialPressed = true;
+            this.value = days;
+            await this.$nextTick();
+            this.specialPressed = false;
+        },
+        setValue: function (value) {
+            this.$emit('update:modelValue', value);
         }
     },
     watch: {
+        special: function (newVal) {
+            if (newVal[0] === 'custom') {
+                return;
+            }
+            
+            this.$emit('update:modelValue', newVal[0]);
+        },
         value: function (newVal) {
             let value;
 
@@ -83,6 +156,10 @@ export default {
             if (JSON.stringify(value) != JSON.stringify(this.modelValue)) {
                 this.$emit('update:modelValue', value);
             }
+
+            if (!this.specialPressed) {
+                this.special = ['custom'];
+            }
         },
         modelValue: function () {
             // convert to full date array
@@ -91,7 +168,7 @@ export default {
     },
     computed: {
         dateRangeText() {
-            return this.modelValue?.[0] ? this.parseDate(this.modelValue[0]) + ' - ' + this.parseDate(this.modelValue[this.modelValue.length-1]) : '-';
+            return this.modelValue?.[0] ? this.parseDate(this.modelValue[0]) + ' - ' + this.parseDate(this.modelValue[this.modelValue.length - 1]) : '-';
         },
     },
     mounted: function () {

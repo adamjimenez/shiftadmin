@@ -75,10 +75,6 @@ export default {
             const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
             this.options = result.data.options;
         },
-        updateRange: function (value) {
-            this.value = value[0];
-            this.localFunc = value[value.length - 1];
-        },
         getOptions: async function () {
             this.options = await util.getOptions(this.column, this.type, this.optionConfig, {});
         }
@@ -96,6 +92,7 @@ export default {
     },
     mounted: function () {
         this.getOptions();
+        
         this.value = this.modelValue;
         this.localFunc = this.func;
 

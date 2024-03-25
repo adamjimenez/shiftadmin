@@ -82,34 +82,39 @@ export default {
             return `${year}-${formattedMonth}-${formattedDay}`;
         },
         createDateRange: async function () {
-            let value = this.modelValue;
+            let modelValue = this.modelValue;
+            let value;
 
             const today = new Date();
             const year = today.getFullYear();
             const month = today.getMonth();
 
-            if (typeof value === 'string') {
-                if (value === 'today') {
+            if (typeof modelValue === 'string') {
+                if (modelValue === 'today') {
                     value = [today];
-                } else if (value === 'yesterday') {
+                } else if (modelValue === 'yesterday') {
                     value = [new Date(Date.now() - 1 * 86400000)];
-                } else if (value === 'thismonth') {
+                } else if (modelValue === 'thismonth') {
                     value = [new Date(year, month, 1), new Date(year, month + 1, 0)];
-                } else if (value === 'lastmonth') {
+                } else if (modelValue === 'lastmonth') {
                     value = [new Date(year, month - 1, 1), new Date(year, month, 0)];
-                } else if (value === 'thisyear') {
+                } else if (modelValue === 'thisyear') {
                     value = [new Date(year, 0, 1), new Date(year, 11, 31)];
-                } else if (value === 'lastyear') {
+                } else if (modelValue === 'lastyear') {
                     value = [new Date(year-1, 0, 1), new Date(year-1, 11, 31)];
                 } else {
-                    const match = value.match(/^last([0-9]+)d$/);
+                    const match = modelValue.match(/^last([0-9]+)d$/);
 
                     if (match) {
                         const daysAgo = parseInt(match[1]) - 1;
                         value = [new Date(Date.now() - daysAgo * 86400000), today];
-                    } else {
-                        value = [value];
                     }
+                }
+
+                if (!value) {
+                    value = [modelValue];
+                } else {
+                    this.special = [modelValue];
                 }
             }
 
@@ -129,11 +134,9 @@ export default {
 
             this.specialPressed = true;
             this.value = days;
+            
             await this.$nextTick();
             this.specialPressed = false;
-        },
-        setValue: function (value) {
-            this.$emit('update:modelValue', value);
         }
     },
     watch: {
@@ -145,20 +148,20 @@ export default {
             this.$emit('update:modelValue', newVal[0]);
         },
         value: function (newVal) {
-            let value;
-
-            if (!newVal[0]) {
-                value = null;
-            } else {
-                value = [this.parseDate(newVal[0]), this.parseDate(newVal[newVal.length - 1])];
-            }
-
-            if (JSON.stringify(value) != JSON.stringify(this.modelValue)) {
-                this.$emit('update:modelValue', value);
-            }
+            let modelValue;
 
             if (!this.specialPressed) {
                 this.special = ['custom'];
+            }
+
+            if (this.special[0] !== 'custom') {
+                modelValue = this.special[0];
+            } else {
+                modelValue = [this.parseDate(newVal[0]), this.parseDate(newVal[newVal.length - 1])];
+            }
+
+            if (JSON.stringify(modelValue) != JSON.stringify(this.modelValue)) {
+                this.$emit('update:modelValue', modelValue);
             }
         },
         modelValue: function () {
@@ -168,7 +171,7 @@ export default {
     },
     computed: {
         dateRangeText() {
-            return this.modelValue?.[0] ? this.parseDate(this.modelValue[0]) + ' - ' + this.parseDate(this.modelValue[this.modelValue.length - 1]) : '-';
+            return this.value?.[0] ? this.parseDate(this.value[0]) + ' - ' + this.parseDate(this.value[this.value.length - 1]) : '-';
         },
     },
     mounted: function () {

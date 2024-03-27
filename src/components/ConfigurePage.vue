@@ -10,9 +10,10 @@
         <v-card :loading="loading">
             <v-alert v-if="error" type="error" :text="error"></v-alert>
 
-            <v-card-actions>                
-                <v-btn v-if="tab !== 'tables'" color="primary" variant="flat" @click="save" :disabled="!dirty">Save</v-btn>
-                
+            <v-card-actions>
+                <v-btn v-if="tab !== 'tables'" color="primary" variant="flat" @click="save"
+                    :disabled="!dirty">Save</v-btn>
+
                 <v-btn v-if="tab === 'tables'" icon="mdi-plus" @click="table = {}; tableDialog = true;"></v-btn>
 
                 <span v-if="tab === 'menu'">
@@ -30,15 +31,17 @@
                     Any changes will instantly affect the database so make sure that you have a back-up.
                 </v-card-text>
                 <v-expansion-panels style="max-width: 600px;">
-                    <v-expansion-panel v-model="panel" multiple v-for="(fields, index) in data.tables" :key="index">
+                    <v-expansion-panel v-model="panel" multiple v-for="(fields, index) in filteredTables" :key="index">
                         <v-expansion-panel-title>
                             {{ index }}<v-spacer></v-spacer>
 
-                            <v-btn icon="mdi-plus" @click.stop="field = { name: '', type: 'text', table: index }; fieldDialog = true;"></v-btn>
+                            <v-btn icon="mdi-plus"
+                                @click.stop="field = { name: '', type: 'text', table: index }; fieldDialog = true;"></v-btn>
                             <v-btn icon="mdi-sort" title="Sort" @click.stop="openSortable(index, fields)"></v-btn>
                             <v-btn icon="mdi-pencil"
                                 @click.stop="table = { id: index, name: index }; tableDialog = true;"></v-btn>
-                            <v-btn icon="mdi-delete" @click.stop="deleteTable(index)"></v-btn>
+                            <v-btn icon="mdi-delete" @click.stop="deleteTable(index)"
+                                :disabled="['users'].includes(index)"></v-btn>
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
                             <v-card>
@@ -48,10 +51,11 @@
                                             {{ col.name }}<strong v-if="col.required > 0">*</strong>
                                         </v-list-item-title>
                                         <v-list-item-subtitle>
-                                            {{ col.type }}                                            
+                                            {{ col.type }}
                                         </v-list-item-subtitle>
                                         <template #append>
-                                            <v-btn icon="mdi-pencil" @click.stop="field = { ...col }; field.id = col.name; field.table = index; field.required = col.required > 0 ? true : false; fieldDialog = true;"></v-btn>
+                                            <v-btn icon="mdi-pencil"
+                                                @click.stop="field = { ...col }; field.id = col.name; field.table = index; field.required = col.required > 0 ? true : false; fieldDialog = true;"></v-btn>
                                             <v-btn icon="mdi-delete" @click.stop="deleteField(index, col.name)"></v-btn>
                                         </template>
                                     </v-list-item>
@@ -68,39 +72,54 @@
                 <v-expansion-panels v-model="panel" multiple style="max-width: 600px;">
                     <v-expansion-panel v-for="(item, key) in data.vars.menu" :key="key" :value="key">
                         <v-expansion-panel-title>
-							<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" class="mr-3" />
+                            <v-icon :icon="item.icon ? item.icon : 'mdi-minus'" class="mr-3" />
 
                             {{ item.title }}
                             <v-spacer></v-spacer>
-                            
-                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Table'" @click.stop="subsection = { section: item.title.toLowerCase()}; subsectionDialog = true;"></v-btn>
-                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Table'"  title="Sort" @click.stop="openSectionSortable(data.vars.subsections[item.title.toLowerCase()])" :disabled="!data.vars.subsections[item.title.toLowerCase()]?.length"></v-btn>
 
-                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Folder'" @click.stop="menuItem = { parent: item, type: 'Table' }; menuDialog = true;"></v-btn>
-                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Folder'"  title="Sort" @click.stop="openSectionSortable(item.children)" :disabled="!item.children?.length"></v-btn>
+                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Table'"
+                                @click.stop="subsection = { section: item.title.toLowerCase() }; subsectionDialog = true;"></v-btn>
+                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Table'" title="Sort"
+                                @click.stop="openSectionSortable(data.vars.subsections[item.title.toLowerCase()])"
+                                :disabled="!data.vars.subsections[item.title.toLowerCase()]?.length"></v-btn>
 
-                            <v-btn icon="mdi-pencil" @click.stop="menuItem = {...item}; menuItem.index = key; menuItem.type = getMenuItemType(item); menuDialog = true;"></v-btn>
+                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Folder'"
+                                @click.stop="menuItem = { parent: item, type: 'Table' }; menuDialog = true;"></v-btn>
+                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Folder'" title="Sort"
+                                @click.stop="openSectionSortable(item.children)"
+                                :disabled="!item.children?.length"></v-btn>
+
+                            <v-btn icon="mdi-pencil"
+                                @click.stop="menuItem = { ...item }; menuItem.index = key; menuItem.type = getMenuItemType(item); menuDialog = true;"></v-btn>
                             <v-btn icon="mdi-delete" @click.stop="deleteMenuItem(key, data.vars.menu)"></v-btn>
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
                             <v-list max-width="600">
                                 <template v-if="getMenuItemType(item) === 'Table' && data.vars.subsections">
-                                    <v-list-item v-for="(child, key2) in data.vars.subsections[item.title.toLowerCase()]" :key="key2" :title="child.title" :prepend-icon="child.icon ? child.icon : 'mdi-minus'">
+                                    <v-list-item
+                                        v-for="(child, key2) in data.vars.subsections[item.title.toLowerCase()]"
+                                        :key="key2" :title="child.title"
+                                        :prepend-icon="child.icon ? child.icon : 'mdi-minus'">
                                         <template #append>
-                                            <v-btn icon="mdi-pencil" @click.stop="subsection = {...child}; subsection.section = item.title.toLowerCase(); subsection.index = key2; subsectionDialog = true;"></v-btn>
+                                            <v-btn icon="mdi-pencil"
+                                                @click.stop="subsection = { ...child }; subsection.section = item.title.toLowerCase(); subsection.index = key2; subsectionDialog = true;"></v-btn>
 
-                                            <v-btn icon="mdi-delete" @click.stop="deleteSubsection(item.title.toLowerCase(), key2)"></v-btn>
-                                        </template>                        
+                                            <v-btn icon="mdi-delete"
+                                                @click.stop="deleteSubsection(item.title.toLowerCase(), key2)"></v-btn>
+                                        </template>
                                     </v-list-item>
                                 </template>
 
                                 <template v-if="getMenuItemType(item) === 'Folder'">
-                                    <v-list-item v-for="(child, key2) in item.children" :key="key2" :title="child.title" :prepend-icon="child.icon ? child.icon : 'mdi-minus'">
+                                    <v-list-item v-for="(child, key2) in item.children" :key="key2" :title="child.title"
+                                        :prepend-icon="child.icon ? child.icon : 'mdi-minus'">
                                         <template #append>
-                                            <v-btn icon="mdi-pencil" @click.stop="menuItem = {...child}; menuItem.index = key2; menuItem.type = getMenuItemType(child); menuItem.parent = item; menuDialog = true;"></v-btn>
+                                            <v-btn icon="mdi-pencil"
+                                                @click.stop="menuItem = { ...child }; menuItem.index = key2; menuItem.type = getMenuItemType(child); menuItem.parent = item; menuDialog = true;"></v-btn>
 
-                                            <v-btn icon="mdi-delete" @click.stop="deleteMenuItem(key2, item.children)"></v-btn>
-                                        </template>                        
+                                            <v-btn icon="mdi-delete"
+                                                @click.stop="deleteMenuItem(key2, item.children)"></v-btn>
+                                        </template>
                                     </v-list-item>
                                 </template>
                             </v-list>
@@ -110,10 +129,13 @@
             </div>
             <div v-if="tab === 'options'">
                 <v-card-text>
-                    Options are used by "select" and "select multiple" fields. They can either be a list of values or rows from a table.
+                    Options are used by "select" and "select multiple" fields. They can either be a list of values or
+                    rows from a
+                    table.
                 </v-card-text>
                 <v-list max-width="600">
-                    <v-list-item v-for="(options, key, index) in data.vars.options" :key="index" :value="key" :title="key">
+                    <v-list-item v-for="(options, key, index) in data.vars.options" :key="index" :value="key"
+                        :title="key">
                         <template #append>
                             <v-btn icon="mdi-pencil" @click.stop="editOption(key)"></v-btn>
                             <v-btn icon="mdi-delete" @click.stop="deleteOption(key)"></v-btn>
@@ -128,7 +150,8 @@
                 <v-text-field label="From email" v-model="data.from_email"></v-text-field>
                 <v-text-field label="Title" v-model="data.vars.branding.title"></v-text-field>
                 <v-text-field label="Primary" v-model="data.vars.branding.colors.primary" type="color"></v-text-field>
-                <v-text-field label="Secondary" v-model="data.vars.branding.colors.secondary" type="color"></v-text-field>
+                <v-text-field label="Secondary" v-model="data.vars.branding.colors.secondary"
+                    type="color"></v-text-field>
             </div>
         </v-card>
 
@@ -176,7 +199,8 @@
                 <v-card-text>
                     <draggable :list="sortOrder" group="items" item-key @end="dirty = true">
                         <template #item="{ element }">
-                            <v-sheet color="primary" class="ma-5 pa-5">{{ element.title ? element.title : element }}</v-sheet>
+                            <v-sheet color="primary" class="ma-5 pa-5">{{ element.title ? element.title : element
+                                }}</v-sheet>
                         </template>
                     </draggable>
                 </v-card-text>
@@ -194,10 +218,15 @@
                         <v-tab value="Folder" v-if="!menuItem.parent">Folder</v-tab>
                     </v-tabs>
 
-                    <v-combobox label="Table" v-model="menuItem.section" :items="getSections()" v-if="menuItem.type === 'Table'" @update:model-value="menuItem.title = formatString(menuItem.section);" autofocus></v-combobox>
-                    <v-text-field label="Link" v-model="menuItem.to" v-else-if="menuItem.type === 'Custom'" autofocus></v-text-field>
-                    <v-checkbox label="Open in new window" v-model="menuItem.target_blank" v-if="menuItem.type === 'Custom'"></v-checkbox>
-                    <v-text-field label="Title" v-model="menuItem.title" :autofocus="menuItem.type === 'Folder'"></v-text-field>
+                    <v-combobox label="Table" v-model="menuItem.section" :items="getSections()"
+                        v-if="menuItem.type === 'Table'"
+                        @update:model-value="menuItem.title = formatString(menuItem.section);" autofocus></v-combobox>
+                    <v-text-field label="Link" v-model="menuItem.to" v-else-if="menuItem.type === 'Custom'"
+                        autofocus></v-text-field>
+                    <v-checkbox label="Open in new window" v-model="menuItem.target_blank"
+                        v-if="menuItem.type === 'Custom'"></v-checkbox>
+                    <v-text-field label="Title" v-model="menuItem.title"
+                        :autofocus="menuItem.type === 'Folder'"></v-text-field>
                     <v-text-field label="Icon" v-model="menuItem.icon" placeholder="mdi-"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
@@ -217,12 +246,15 @@
                 </v-card-title>
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-select label="Subsection" v-model="subsection.subsection" :items="Object.keys(data.tables)" @update:model-value="subsection.title = formatString(subsection.subsection);" autofocus></v-select>
+                    <v-select label="Subsection" v-model="subsection.subsection" :items="Object.keys(filteredTables)"
+                        @update:model-value="subsection.title = formatString(subsection.subsection);"
+                        autofocus></v-select>
                     <v-text-field label="Title" v-model="subsection.title"></v-text-field>
                     <v-text-field label="Icon" v-model="subsection.icon" placeholder="mdi-"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn variant="flat" color="primary" :disabled="subsection.section === ''" @click="saveSubsection">OK</v-btn>
+                    <v-btn variant="flat" color="primary" :disabled="subsection.section === ''"
+                        @click="saveSubsection">OK</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -231,13 +263,15 @@
             <v-card title="Option">
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
-                    <v-text-field label="Name" v-model="option.name" autofocus></v-text-field>
+                    <v-combobox label="Name" v-model="option.name" autofocus :items="optionKeys"></v-combobox>
                     <v-radio-group v-model="option.type">
                         <v-radio label="Table" value="table"></v-radio>
                         <v-radio label="Options" value="options"></v-radio>
                     </v-radio-group>
-                    <v-select v-if="option.type === 'table'" label="table" v-model="option.options" :items="Object.keys(data.tables)"></v-select>
-                    <v-textarea v-else-if="option.type === 'options'" label="Options" v-model="option.options"></v-textarea>
+                    <v-select v-if="option.type === 'table'" label="table" v-model="option.options"
+                        :items="Object.keys(filteredTables)"></v-select>
+                    <v-textarea v-else-if="option.type === 'options'" label="Options"
+                        v-model="option.options"></v-textarea>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn variant="flat" color="primary" :disabled="option.name === ''" @click="saveOption">OK</v-btn>
@@ -320,11 +354,18 @@ export default {
             option: {},
             sortSectionsDialog: false,
             dirty: false,
+            hideConfigTables: true,
+            configTables: ['cms_activation', 'cms_filters', 'cms_login_attempts', 'cms_logs', 'cms_privileges', 'email_templates', 'files']
         }
     },
     methods: {
         fetchData: async function () {
             const result = await api.get('config.php');
+
+            if (result.data.error) {
+                this.error = result.data.error;
+            }
+
             let data = result.data;
 
             if (!data.vars) {
@@ -525,8 +566,8 @@ export default {
         },
         renameObjKey: function (oldObj, oldKey, newKey) {
             const keys = Object.keys(oldObj);
-            const newObj = keys.reduce((acc, val)=>{
-                if(val === oldKey){
+            const newObj = keys.reduce((acc, val) => {
+                if (val === oldKey) {
                     acc[newKey] = oldObj[oldKey];
                 }
                 else {
@@ -539,14 +580,14 @@ export default {
         },
         optionsToString: function (options) {
             let value = '';
-			if (Array.isArray(options)) {
-				options.forEach(function(item) {
-					value += item + "\n";
-				})
-			} else if (typeof options === 'object') {				
-				for (let [k, v] of Object.entries(options)) {
-					value += k.replace('#', '') + '=' + v + "\n";
-				}
+            if (Array.isArray(options)) {
+                options.forEach(function (item) {
+                    value += item + "\n";
+                })
+            } else if (typeof options === 'object') {
+                for (let [k, v] of Object.entries(options)) {
+                    value += k.replace('#', '') + '=' + v + "\n";
+                }
             } else {
                 value = options;
             }
@@ -555,9 +596,9 @@ export default {
         },
         editOption: function (key) {
             this.option = {
-                name: key, 
+                name: key,
                 index: key,
-                type : 'options',
+                type: 'options',
             };
 
             if (typeof this.data.vars.options[key] === 'string') {
@@ -576,7 +617,7 @@ export default {
             } else {
                 let lines = this.option.options.split("\n");
 
-                value = lines[0].includes('=') ? {} :  [];
+                value = lines[0].includes('=') ? {} : [];
 
                 lines.forEach((line) => {
                     if (Array.isArray(value)) {
@@ -614,18 +655,18 @@ export default {
             }
         },
         getSections: function () {
-            return Object.keys(this.data.tables).map(item => item.replaceAll("_", " "));
-        },        
-		formatString: function (string) {
-			return util.formatString(string);
-		},
+            return Object.keys(this.filteredTables).map(item => item.replaceAll("_", " "));
+        },
+        formatString: function (string) {
+            return util.formatString(string);
+        },
     },
     computed: {
         isMenuValid: function () {
             if (!this.menuItem.title || !this.menuItem.type) {
                 return false;
             }
-            
+
             if (this.menuItem.type === 'Table' && !this.menuItem.section) {
                 return false;
             }
@@ -644,6 +685,40 @@ export default {
             }
 
             return types;
+        },
+        filteredTables: function () {
+            let tables = {};
+
+            if (!this.data.tables) {
+                return tables;
+            }
+
+            for (let [index, table] of Object.entries(this.data.tables)) {
+                if (this.hideConfigTables && this.configTables.includes(index)) {
+                    continue;
+                }
+
+                tables[index] = table;
+            }
+
+            return tables;
+        },
+        optionKeys: function () {
+            let keys = [];
+
+            if (!this.data.tables) {
+                return keys;
+            }
+
+            for (let [, table] of Object.entries(this.data.tables)) {
+                table.forEach(col => {
+                    if (['select', 'multiple_select'].includes(col.type) && !this.data.vars.options[col.name]) {
+                        keys.push(col.name);
+                    }
+                });
+            }
+
+            return keys;
         }
     },
     watch: {
@@ -651,16 +726,14 @@ export default {
             this.fetchData();
         },
         data: {
-            handler : function () {
+            handler: function () {
                 this.dirty = true;
             },
             deep: true,
         }
     },
     async mounted() {
-        if (this.vars.sections) {
-            this.fetchData();
-        }
+        this.fetchData();
     }
 }
 </script>

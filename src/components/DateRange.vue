@@ -37,13 +37,7 @@
                                 </v-list-item>
                             </v-list>
                         </v-col>
-                        <v-date-picker v-model="value" no-title bg-color="black" multiple="range">
-                            <template #actions>
-                                <div>
-                                    <v-btn variant="text" @click="menu = false" text="OK" />
-                                </div>
-                            </template>
-                        </v-date-picker>
+                        <v-date-picker v-model="value" no-title bg-color="black" multiple="range"></v-date-picker>
                     </v-row>
                 </v-container>
         </v-card>

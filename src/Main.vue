@@ -26,6 +26,29 @@
 					</template>
 				</v-combobox>
 			</div>
+
+			<v-spacer></v-spacer>
+
+			<v-menu>
+				<template v-slot:activator="{ props }">
+					<v-btn
+					color="primary"
+					v-bind="props"
+					>
+						<v-avatar color="primary">
+							{{ user?.initials ? user.initials : '??' }}
+						</v-avatar>
+					</v-btn>
+				</template>
+				<v-list>
+					<v-list-item
+						to="/logout"
+						title="Logout"
+						prepend-icon="mdi-logout" 
+					>
+					</v-list-item>
+				</v-list>
+			</v-menu>
 		</v-app-bar>
 
 		<v-navigation-drawer v-model="drawer" :rail="rail" expand-on-hover :permanent="!mobile" color="secondary">
@@ -67,9 +90,8 @@
 				</div>
 
 				<v-list-item title="Reports" prepend-icon="mdi-chart-line" :to="base + 'reports'" />
-				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" />
-				<v-list-item title="Configure" prepend-icon="mdi-cog" :to="base + 'configure'" />
-				<v-list-item title="Logout" href="/logout" prepend-icon="mdi-logout" />
+				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" v-if="user.admin === 1 || user?.privileges?.uploads > 0" />
+				<v-list-item title="Configure" prepend-icon="mdi-cog" :to="base + 'configure'" v-if="user.admin === 1" />
 			</v-list>
 		</v-navigation-drawer>
 
@@ -139,6 +161,7 @@ export default {
 			rail: true,
 			vars: {},
 			data: {},
+			user: {},
 			advancedDialog: false,
 			fields: [],
 			params: { func: {} },
@@ -269,6 +292,7 @@ export default {
 			}
 
 			this.vars = data?.vars;
+			this.user = data?.user;
 
 			let colors = {
 				primary: '#007bff',

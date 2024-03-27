@@ -4,6 +4,8 @@
 
         <v-dialog v-model="dialog" scrollable>
             <v-card>
+                <v-alert :title="error" type="error" v-if="error"></v-alert>
+
                 <v-card-actions>
                     <v-btn title="Create folder" icon="mdi-folder-outline" @click="createFolder"></v-btn>
                     <v-btn title="Delete" icon="mdi-delete" :disabled="selected.length === 0" @click="deleteItems"></v-btn>
@@ -49,12 +51,18 @@ export default {
             selected: [],
             loading: false,
             file: [],
+            error: '',
         }
     },
     methods: {
         fetchData: async function () {
             this.loading = true;
             const result = await api.get('?cmd=uploads&path=' + this.path);
+
+            if (result.data.error) {
+                this.error = result.data.error;
+            }
+
             this.loading = false;
             this.items = result.data.items;
         },
@@ -105,7 +113,7 @@ export default {
             this.loading = false;
 
             if (result.data.error) {
-                alert(result.data.error);
+                this.error = result.data.error;
             }
 
             this.fetchData();
@@ -122,7 +130,7 @@ export default {
             this.loading = false;
 
             if (result.data.error) {
-                alert(result.data.error);
+                this.error = result.data.error;
             }
 
             this.fetchData();

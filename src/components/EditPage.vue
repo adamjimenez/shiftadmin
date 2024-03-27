@@ -267,8 +267,9 @@ export default {
                 return false;
             }
 
-            if (Object.keys(result.data.errors).length || result.data.error) {
+            if (result.data.error) {
                 this.error = result.data?.error;
+            } else if (typeof result.data.errors === 'object') {
                 this.errors = result.data?.errors;
                 await this.$nextTick();
 

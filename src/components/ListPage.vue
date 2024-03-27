@@ -340,8 +340,15 @@ export default {
                 }
 
                 this.loading = true;
-                await api.post('?cmd=' + button + '&section=' + this.internalSection, data);
-                this.reload();
+                const result = await api.post('?cmd=' + button + '&section=' + this.internalSection, data);
+                this.loading = false;
+
+                if (result.data.error) {
+                    this.error = result.data.error;
+                } else {
+                    this.reload();
+                }
+
                 return;
             }
 
@@ -363,7 +370,7 @@ export default {
             this.loading = false;
 
             if (result.data.error) {
-                alert(result.data.error);
+                this.error = result.data.error;
             }
 
             if (result.data.result?.redirect) {

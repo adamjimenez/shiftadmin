@@ -268,8 +268,9 @@ export default {
             }
 
             if (result.data.error) {
+                console.l
                 this.error = result.data?.error;
-            } else if (typeof result.data.errors === 'object') {
+            } else if (typeof result.data.errors === 'object' && Object.keys(result.data.errors).length) {
                 this.errors = result.data?.errors;
                 await this.$nextTick();
 

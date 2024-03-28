@@ -187,7 +187,7 @@ export default {
             if (result.data.data) {
                 let data = result.data.data;
 
-                this.options = await util.getAllOptions(fields, this.vars, this.section, data);
+                this.options = await util.getAllOptions(fields, this.vars.options, this.section, data);
 
                 for (const [, field] of Object.entries(fields)) {
                     if (field.type === 'password') {

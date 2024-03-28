@@ -138,6 +138,74 @@
                                 </v-row>
                             </v-container>
 
+                            <v-table v-for="widget, index in report.keyValue" :key="widget.title" @mouseover="widget.hover = true" @mouseout="widget.hover = false">
+                                <template v-slot:[`top`]>
+                                    <h2 style="overflow: visible; position: relative;">
+                                        {{ widget.title }}
+                                        <v-menu>
+                                            <template v-slot:activator="{ props }">
+                                                <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
+                                                    v-show="widget.hover || props['aria-expanded'] === 'true'"
+                                                    style="position: absolute; top: 0; right: 0;">
+                                                </v-btn>
+                                            </template>
+
+                                            <v-list>
+                                                <v-list-item>
+                                                    <v-list-item-title @click="addColumn(widget)">Add row</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item>
+                                                    <v-list-item-title
+                                                        @click="editWidget(index, report.keyValue)">Configure</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item>
+                                                    <v-list-item-title
+                                                        @click="deleteWidget(index, 'keyValue')">Delete</v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item>
+                                                    <v-list-item-title @click="openSortable(widget.columns)">Sort Rows</v-list-item-title>
+                                                </v-list-item>
+                                            </v-list>
+                                        </v-menu>
+                                    </h2>
+                                </template>
+
+                                <tbody>
+                                    <tr
+                                        v-for="column, columnIndex in widget.columns" :key="column.key"
+                                    >
+                                        <td>{{ column.title }}</td>
+                                        <td>
+                                            {{ applyFunc(column, data) }}
+                                        </td>
+                                        <td>
+                                            <v-menu v-if="columnIndex > 0">
+                                                <template v-slot:activator="{ props }">
+                                                    <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
+                                                        v-show="column.hover || props['aria-expanded'] === 'true'"
+                                                        style="position: absolute; top: 0; right: 10px;">
+                                                    </v-btn>
+                                                </template>
+
+                                                <v-list>
+                                                    <v-list-item>
+                                                        <v-list-item-title
+                                                            @click="editColumn(columnndex - 1, index)">Configure</v-list-item-title>
+                                                    </v-list-item>
+                                                    <v-list-item>
+                                                        <v-list-item-title
+                                                            @click="deleteColumn(columnIndex, index)">Delete</v-list-item-title>
+                                                    </v-list-item>
+                                                    <v-list-item>
+                                                        <v-list-item-title @click="openSortable(report.dataTable)">Sort Order</v-list-item-title>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </v-menu>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </v-table>
+
                             <v-data-table v-for="widget, index in report.dataTable" :key="widget.title"
                                 :items="getItems(widget)" @mouseover="widget.hover = true" @mouseout="widget.hover = false"
                                 items-per-page-text="">
@@ -216,12 +284,12 @@
         <v-dialog v-model="widgetDialog" max-width="600">
             <v-card title="Widget">
                 <v-card-text>
-                    <v-select label="Type" :items="['source', 'kpi', 'dataTable', 'graph', /*'keyValue'*/]"
+                    <v-select label="Type" :items="['source', 'kpi', 'dataTable', 'graph', 'keyValue']"
                         v-model="widget.type"></v-select>
                     <v-select label="Table" v-if="['source'].includes(widget.type)" v-model="widget.table"
                         :items="Object.keys(config.tables)" />
-                    <v-text-field label="Title" v-if="['kpi', 'graph'].includes(widget.type)" v-model="widget.title"></v-text-field>
-                    <v-select label="Source" v-if="['kpi', 'dataTable', 'graph', 'filter'].includes(widget.type)"
+                    <v-text-field label="Title" v-if="['kpi', 'graph', 'keyValue'].includes(widget.type)" v-model="widget.title"></v-text-field>
+                    <v-select label="Source" v-if="['kpi', 'dataTable', 'graph', 'filter', 'keyValue'].includes(widget.type)"
                         :items="report.source" v-model="widget.source" item-title="table" item-value="table"></v-select>
                     <v-select label="Columns" v-if="['source'].includes(widget.type)" :items="config.tables[widget.table]"
                         v-model="widget.columns" item-title="name" item-value="name" :disabled="!widget.table" multiple
@@ -240,6 +308,7 @@
                     <v-select label="Group By" v-if="['dataTable', 'graph',].includes(widget.type)"
                         :items="report.source[0].columns" v-model="widget.groupBy" item-title="name"
                         item-value="name"></v-select>
+                    <v-text-field label="Group by formula" v-if="['dataTable', 'graph',].includes(widget.type)" v-model="widget.groupby_formula"  messages="e.g. new Date(date).toLocaleString('default', { month: 'long', year: 'numeric' })"></v-text-field>
                     <v-select label="Format" v-if="['kpi'].includes(widget.type)" :items="['currency']"
                         v-model="widget.format"></v-select>
                 </v-card-text>
@@ -250,10 +319,10 @@
         </v-dialog>
 
         <v-dialog v-model="columnDialog" max-width="600">
-            <v-card title="Column">
+            <v-card :title="widget.type === 'keyValue' ? 'Row' : 'Column'">
                 <v-card-text>
                     <v-text-field label="Title" v-model="column.title"></v-text-field>
-                    <v-select label="Key" :items="config.tables[widget.source]" v-model="column.key" item-title="name"
+                    <v-select label="Key" :items="report.source[0].columns" v-model="column.key" item-title="name"
                         item-value="name"></v-select>
                     <v-text-field label="Expression" v-model="column.expression"
                         placeholder="JS expression to apply to each row"></v-text-field>
@@ -310,6 +379,7 @@ export default {
                 filter: [], // keys
                 graph: [], // heading, type, value, group by
                 params: {},
+                keyValue: {},
             },
             source: {},
             widget: {},
@@ -386,6 +456,10 @@ export default {
             if (typeof this.editing.index !== 'undefined') {
                 this.editing.arr[this.editing.index] = { ...this.editing.arr[this.editing.index], ...widget };
             } else {
+                if (!Array.isArray(this.report[widget.type])) {
+                    this.report[widget.type] = [];
+                }
+
                 this.report[widget.type].push(widget);
             }
             this.widgetDialog = false;
@@ -432,17 +506,7 @@ export default {
             let value = 0;
             data.forEach(item => {
                 if (widget.key === 'custom') {
-                    for (const key in item) {
-                        let type = this.config.tables[widget.source].find(column => column.name === key).type;
-
-                        if (['id', 'int', 'decimal'].includes(type)) {
-                            window[key] = parseFloat(item[key]);
-                        } else {
-                            window[key] = item[key];
-                        }
-                    }
-
-                    value = eval(widget.row_formula);
+                    value = this.applyFormula(widget.row_formula, item);
                 } else {
                     value = parseFloat(item[widget.key]);
                 }
@@ -486,10 +550,27 @@ export default {
 
             return total.toLocaleString(undefined, formatOptions);
         },
+        applyFormula: function (formula, item) {
+            for (const key in item) {
+                if (!isNaN(item[key])) {
+                    window[key] = parseFloat(item[key]);
+                } else {
+                    window[key] = item[key];
+                }
+            }
+
+            return eval(formula);
+        },
         getItems: function (widget) {
             let groups = {};
+
+            // put values into each group
             this.data?.forEach(item => {
                 let value = item[widget.groupBy + '_label'] ? item[widget.groupBy + '_label'] : item[widget.groupBy]
+
+                if (widget.groupby_formula) {
+                    value = this.applyFormula(widget.groupby_formula, item);
+                }
 
                 if (!groups[value]) {
                     groups[value] = [];

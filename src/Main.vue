@@ -1,22 +1,29 @@
 <template>
 	<v-app :class="mobile ? 'mobile' : 'desktop'">
 		<v-app-bar color="secondary">
-			<v-app-bar-nav-icon variant="text" color="grey-lighten-1" @click.stop="if (mobile) { drawer = !drawer; } else { rail = !rail }"></v-app-bar-nav-icon>
+			<v-app-bar-nav-icon v-if="!mobile || !showSearch" variant="text" color="grey-lighten-1" @click.stop="if (mobile) { drawer = !drawer; } else { rail = !rail }"></v-app-bar-nav-icon>
 			
 			<v-btn v-if="!mobile" :to=base variant="plain">
 				{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
 			</v-btn>
 
-			<div class="text-align-center w-100 d-flex flex-row justify-center" v-if="fields.find(item => item.type === 'id')">
+			<div class="text-align-center w-100 d-flex flex-row justify-center" v-if="showSearch">
 				<v-combobox v-if="section && fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
 					@update:model-value="afterSelection" @keydown.enter="quickSearch"
-					ref="autocomplete" hide-details hide-no-data prepend-inner-icon="mdi:mdi-magnify" single-line rounded
+					ref="autocomplete" hide-details hide-no-data single-line rounded
 					variant="solo-filled" no-filter class="mx-5" style="max-width: 800px;"
 					:label="'Search ' + section"
 					:placeholder="'Search ' + section"
+					@focus="searchFocussed=true"
 					>
+					<template v-slot:prepend-inner>
+						<v-icon icon="mdi:mdi-arrow-left" v-if="searchFocussed" @click.stop="searchFocussed = false" @mousedown.stop></v-icon>
+						<v-app-bar-nav-icon v-else-if="mobile" color="grey-lighten-1" @click.stop="if (mobile) { drawer = !drawer; } else { rail = !rail }" @mousedown.stop></v-app-bar-nav-icon>
+						<v-icon v-else icon="mdi:mdi-magnify"></v-icon>
+					</template>
 					<template v-slot:append-inner>
-						<v-btn color="grey-lighten-1" @mousedown.stop @click.stop="advancedSearch"
+						<AccountButton :user="user" v-if="mobile && !searchFocussed"></AccountButton>
+						<v-btn v-else color="grey-lighten-1" @mousedown.stop @click.stop="advancedSearch"
 							:disabled="fields.length === 0" icon>
 							<v-badge :content="searchParamCount" color="info" v-if="searchParamCount > 0">
 								<v-icon icon="mdi-tune" />
@@ -27,28 +34,9 @@
 				</v-combobox>
 			</div>
 
-			<v-spacer></v-spacer>
+			<v-spacer v-if="!mobile"></v-spacer>
 
-			<v-menu>
-				<template v-slot:activator="{ props }">
-					<v-btn
-					color="primary"
-					v-bind="props"
-					>
-						<v-avatar color="primary">
-							{{ user?.initials ? user.initials : '??' }}
-						</v-avatar>
-					</v-btn>
-				</template>
-				<v-list>
-					<v-list-item
-						to="/logout"
-						title="Logout"
-						prepend-icon="mdi-logout" 
-					>
-					</v-list-item>
-				</v-list>
-			</v-menu>
+			<AccountButton :user="user" v-if="!mobile"></AccountButton>
 		</v-app-bar>
 
 		<v-navigation-drawer v-model="drawer" :rail="rail" expand-on-hover :permanent="!mobile" color="secondary">
@@ -143,13 +131,15 @@ import util from "./services/util";
 import FileUploads from "./components/FileUploads";
 import SearchField from "./components/SearchField";
 import { useDisplay } from 'vuetify';
+import AccountButton from './components/AccountButton.vue';
 
 export default {
 	name: 'ShiftAdmin',
 
 	components: {
 		FileUploads,
-		SearchField
+		SearchField,
+		AccountButton
 	},
 
 	data: function () {
@@ -188,6 +178,7 @@ export default {
 			fileSelected: {},
 			fullScreen: false,
 			display: {},
+			searchFocussed: false
 		};
 	},
 
@@ -370,6 +361,11 @@ export default {
 		},
 		rail(newVal) {
 			localStorage.rail = newVal;
+		},
+		advancedDialog(newVal) {
+			if (newVal === false) {
+				this.searchFocussed = false;
+			}
 		}
 	},
 
@@ -386,6 +382,9 @@ export default {
 		mobile: function () {
 			return this.display;
 		},
+		showSearch: function () {
+			return this.fields.find(item => item.type === 'id')
+		}
 	},
 
 	async mounted() {

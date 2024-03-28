@@ -16,7 +16,7 @@
                     </template>
                     <v-list>
                         <v-list-item v-for="(item, index) in buttons" :key="index" :value="index"
-                            @click="customButton(item)">
+                            @click="customButton(item)" :disabled="checkDisabled(item)">
                             <v-list-item-title>{{ item.label }}</v-list-item-title>
                         </v-list-item>
                     </v-list>
@@ -296,6 +296,14 @@ export default {
             }
         },
         customButton: async function (button) {
+            if (button.confirm) {
+                let result = confirm(button.confirm);
+
+                if (!result) {
+                    return false;
+                }
+            }
+            
             let data = {
                 cmd: 'button',
                 button: button.id,
@@ -339,6 +347,22 @@ export default {
         },
         edit: function () {
             this.$router.push('edit' + location.search);
+        },
+        checkDisabled: function (button) {
+            if (typeof button.enabled === 'object') {
+                let enabled = true;
+                for (const [key, val] of Object.entries(button.enabled)) {
+                    if (this.data[key] != val) {
+                        enabled = false;
+                    }
+                }
+
+                if (enabled === false) {
+                    return true;
+                }
+            }
+
+            return false;
         }
     },
 

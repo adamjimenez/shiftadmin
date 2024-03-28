@@ -84,13 +84,13 @@
                                 :disabled="!data.vars.subsections[item.title.toLowerCase()]?.length"></v-btn>
 
                             <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Folder'"
-                                @click.stop="menuItem = { parent: item, type: 'Table' }; menuDialog = true;"></v-btn>
+                                @click.stop="menuItem = { parent: item.title, newParent: item.title, type: 'Table' }; menuDialog = true;"></v-btn>
                             <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Folder'" title="Sort"
                                 @click.stop="openSectionSortable(item.children)"
                                 :disabled="!item.children?.length"></v-btn>
 
                             <v-btn icon="mdi-pencil"
-                                @click.stop="menuItem = { ...item }; menuItem.index = key; menuItem.type = getMenuItemType(item); menuDialog = true;"></v-btn>
+                                @click.stop="menuItem = { ...item }; menuItem.index = key; menuItem.type = getMenuItemType(item); menuDialog = true; menuItem.newParent = menuItem.parent;"></v-btn>
                             <v-btn icon="mdi-delete" @click.stop="deleteMenuItem(key, data.vars.menu)"></v-btn>
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
@@ -115,7 +115,7 @@
                                         :prepend-icon="child.icon ? child.icon : 'mdi-minus'">
                                         <template #append>
                                             <v-btn icon="mdi-pencil"
-                                                @click.stop="menuItem = { ...child }; menuItem.index = key2; menuItem.type = getMenuItemType(child); menuItem.parent = item; menuDialog = true;"></v-btn>
+                                                @click.stop="menuItem = { ...child }; menuItem.index = key2; menuItem.type = getMenuItemType(child); menuItem.parent = item.title; menuItem.newParent = item.title; menuDialog = true;"></v-btn>
 
                                             <v-btn icon="mdi-delete"
                                                 @click.stop="deleteMenuItem(key2, item.children)"></v-btn>
@@ -213,10 +213,12 @@
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
 
                     <v-tabs v-model="menuItem.type">
-                        <v-tab value="Table">Table</v-tab>
-                        <v-tab value="Custom">Custom</v-tab>
-                        <v-tab value="Folder" v-if="!menuItem.parent">Folder</v-tab>
+                        <v-tab value="Table" :disabled="!isNaN(menuItem.index)">Table</v-tab>
+                        <v-tab value="Custom" :disabled="!isNaN(menuItem.index)">Custom</v-tab>
+                        <v-tab value="Folder" v-if="!menuItem.parent" :disabled="!isNaN(menuItem.index)">Folder</v-tab>
                     </v-tabs>
+
+                    <v-select label="Parent" v-if="menuItem.type !== 'Folder'" v-model="menuItem.newParent" :items="folders" clearable></v-select>
 
                     <v-combobox label="Table" v-model="menuItem.section" :items="getSections()"
                         v-if="menuItem.type === 'Table'"
@@ -518,7 +520,25 @@ export default {
                 item.target_blank = this.menuItem.target_blank;
             }
 
-            let menu = this.menuItem.parent ? this.menuItem.parent.children : this.data.vars.menu;
+            // default to root
+            let menu = this.data.vars.menu;
+
+            // if subitem, lookup parent
+            if (this.menuItem.parent) {
+                menu = this.data.vars.menu.find(item => item.title === this.menuItem.parent).children;
+            }
+
+            // remove from old parent
+            if (!isNaN(this.menuItem.index) && this.menuItem.parent !== this.menuItem.newParent) {
+                menu.splice(this.menuItem.index, 1);
+
+                // lookup new parent
+                if (this.menuItem.newParent) {
+                    menu = this.data.vars.menu.find(item => item.title === this.menuItem.newParent).children;
+                } else {
+                    menu = this.data.vars.menu;
+                }
+            }
 
             if (Object.hasOwn(this.menuItem, 'index')) {
                 menu[this.menuItem.index] = item;
@@ -719,6 +739,9 @@ export default {
             }
 
             return keys;
+        },
+        folders: function () {
+            return this.data.vars.menu.filter(item => Array.isArray(item.children));
         }
     },
     watch: {

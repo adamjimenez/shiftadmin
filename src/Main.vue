@@ -78,8 +78,8 @@
 				</div>
 
 				<v-list-item title="Reports" prepend-icon="mdi-chart-line" :to="base + 'reports'" />
-				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" v-if="user.admin === 1 || user?.privileges?.uploads > 0" />
-				<v-list-item title="Configure" prepend-icon="mdi-cog" :to="base + 'configure'" v-if="user.admin === 1" />
+				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" v-if="user?.admin === 1 || user?.privileges?.uploads > 0" />
+				<v-list-item title="Configure" prepend-icon="mdi-cog" :to="base + 'configure'" v-if="user?.admin === 1" />
 			</v-list>
 		</v-navigation-drawer>
 
@@ -134,7 +134,7 @@ import { useDisplay } from 'vuetify';
 import AccountButton from './components/AccountButton.vue';
 
 export default {
-	name: 'ShiftAdmin',
+	name: 'GenieAdmin',
 
 	components: {
 		FileUploads,

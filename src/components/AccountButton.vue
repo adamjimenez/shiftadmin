@@ -8,6 +8,9 @@
             </v-btn>
         </template>
         <v-list>
+            <v-list-item>
+                {{ user.name }}
+            </v-list-item>
             <v-list-item @click="logout" title="Logout" prepend-icon="mdi-logout"></v-list-item>
         </v-list>
     </v-menu>

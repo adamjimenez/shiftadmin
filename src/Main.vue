@@ -34,9 +34,9 @@
 				</v-combobox>
 			</div>
 
-			<v-spacer v-if="!mobile"></v-spacer>
+			<v-spacer v-if="!mobile || !showSearch"></v-spacer>
 
-			<AccountButton :user="user" v-if="!mobile"></AccountButton>
+			<AccountButton :user="user" v-if="!mobile || !showSearch"></AccountButton>
 		</v-app-bar>
 
 		<v-navigation-drawer v-model="drawer" :rail="rail" expand-on-hover :permanent="!mobile" color="secondary">
@@ -191,17 +191,39 @@ export default {
 			this.$router.push(this.base + 'section/' + this.section + '/' + item.value + '/');
 		},
 		updateSearch: async function (term) {
-			if (typeof this.search === 'object') {
+			if (this.search !== null && typeof this.search === 'object') {
 				return;
 			}
 
 			this.section = this.$route.params.section;
 
-			const result = await api.post('?cmd=search&section=' + this.section, {
+			const result = await api.post('?section=' + this.section, {
 				term: term
 			});
 
-			this.searchItems = result.data.data;
+			let searchItems = [];
+
+			result.data.data.forEach(item => {
+				let title = '';
+				for (const [k, v] of Object.entries(item)) {
+					if(k === 'id') {
+						continue;
+					}
+
+					if (title) {
+						title += ', ';
+					}
+
+					title += v;
+				}
+
+				searchItems.push({
+					value: item.id,
+					title: title
+				});
+			});
+
+			this.searchItems = searchItems;
 			this.searchParams = { s: this.search };
 		},
 		updateFunc: function (column, func) {
@@ -398,6 +420,7 @@ export default {
 		if (query) {
 			this.params = query;
 			this.searchParams = query;
+			this.search = this.params.s;
 		}
 
 		if (this.$route.params.section) {

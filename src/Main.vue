@@ -360,10 +360,9 @@ export default {
 				this.searchParams = query;
 			}
 
-			if (this.$route.params.section) {
+			if (this.$route.params.section !== this.section) {
 				this.section = this.$route.params.section;
-			} else {
-				this.section = '';
+				this.search = this.params.s;
 			}
 		},
 		searchParams: function (searchParams) {

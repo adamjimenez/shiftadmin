@@ -203,7 +203,7 @@ export default {
             this.data = result.data;
             this.totalItems = this.data.total;
 
-            this.$emit('updateCount', this.totalItems);
+            this.$emit('updateCount', this.data);
 
             // pagination
             this.buttonData = {
@@ -447,9 +447,6 @@ export default {
 
                 this.$emit('changeFields', fields);
             }
-        },
-        searchparams: function () {
-            this.reload();
         },
         headers: function (headers) {
             let saved = localStorage['fields_' + this.internalSection];

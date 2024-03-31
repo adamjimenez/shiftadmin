@@ -190,40 +190,12 @@ export default {
 
 			this.$router.push(this.base + 'section/' + this.section + '/' + item.value + '/');
 		},
-		updateSearch: async function (term) {
+		updateSearch: async function () {
 			if (this.search !== null && typeof this.search === 'object') {
 				return;
 			}
 
 			this.section = this.$route.params.section;
-
-			const result = await api.post('?section=' + this.section, {
-				term: term
-			});
-
-			let searchItems = [];
-
-			result.data.data.forEach(item => {
-				let title = '';
-				for (const [k, v] of Object.entries(item)) {
-					if(k === 'id') {
-						continue;
-					}
-
-					if (title) {
-						title += ', ';
-					}
-
-					title += v;
-				}
-
-				searchItems.push({
-					value: item.id,
-					title: title
-				});
-			});
-
-			this.searchItems = searchItems;
 			this.searchParams = { s: this.search };
 		},
 		updateFunc: function (column, func) {
@@ -342,14 +314,40 @@ export default {
 		formatString: function (string) {
 			return util.formatString(string);
 		},
-		updateCount: function (count) {
+		updateCount: function (data) {
 			this.vars?.menu?.forEach(menu => {
 				menu.children?.forEach(child => {
 					if (location.href.endsWith(child.to)) {
-						child.count = count;
+						child.count = data.total;
 					}
 				})
 			})
+
+			// update search combo
+			let searchItems = [];
+
+			data.data.forEach(item => {
+				let title = '';
+				for (const [k, v] of Object.entries(item)) {
+					if(k === 'id') {
+						continue;
+					}
+
+					if (title) {
+						title += ', ';
+					}
+
+					title += v;
+				}
+
+				searchItems.push({
+					value: item.id,
+					title: title
+				});
+			});
+
+			this.searchItems = searchItems;
+
 		}
 	},
 

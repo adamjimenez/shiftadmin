@@ -280,7 +280,7 @@ export default {
                 ids: [this.id]
             };
             await api.post('?cmd=delete&section=' + this.section, data);
-            this.$router.push('../' + this.section);
+            this.$router.push(this.back);
         },
         changeFields: function () {
             this.$refs['listPage'].dialog = true;

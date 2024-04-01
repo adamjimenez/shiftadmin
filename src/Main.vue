@@ -402,7 +402,7 @@ export default {
 			return this.display;
 		},
 		showSearch: function () {
-			return this.fields.find(item => item.type === 'id')
+			return this.fields.find(item => item.type === 'id') || false
 		}
 	},
 

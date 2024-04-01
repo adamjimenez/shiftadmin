@@ -29,7 +29,7 @@ export default {
             }
         }
 
-        options.sort((a, b) => a.title.localeCompare(b.title));
+        options.sort((a, b) => String(a.title).localeCompare(String(b.title)));
 
         return options;
     },

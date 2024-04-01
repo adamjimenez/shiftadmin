@@ -418,7 +418,7 @@ export default {
                 this.error = result.data.error;
             } else {
                 await this.fetchData();
-                this.$emit('saveConfig');
+                this.$emit('configUpdated');
             }
         },
         saveTable: async function () {

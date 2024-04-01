@@ -77,7 +77,20 @@
 					</v-list-item>
 				</div>
 
-				<v-list-item title="Reports" prepend-icon="mdi-chart-line" :to="base + 'reports'" />
+				<v-list-group prepend-icon="mdi-chart-line" value="Reports">
+					<template v-slot:activator="{ props }">
+						<v-list-item v-bind="props" title="Reports" />
+					</template>
+
+					<v-list-item title="New" prepend-icon="mdi-plus" :to="base + 'reports/0'" />
+					<v-list-item v-for="child in vars.reports" :key="child.to" :title="child.title" prepend-icon="mdi-minus" @click="openReport(child.id)">
+						<template v-slot:append>
+							<v-btn icon="mdi-delete" v-if="child.id" @click.stop="deleteReport(child.id)"
+								variant="text" size="x-small" />
+						</template>
+					</v-list-item>
+				</v-list-group>
+
 				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" v-if="user?.admin === 1 || user?.privileges?.uploads > 0" />
 				<v-list-item title="Configure" prepend-icon="mdi-cog" :to="base + 'configure'" v-if="user?.admin === 1" />
 			</v-list>
@@ -86,7 +99,7 @@
 		<v-main class="d-flex flex-column align-center justify-center">
 			<router-view ref="main" class="w-100 flex-grow-1" :vars="vars" :searchparams="searchParams"
 				@changeFields="changeFields" @chooseFileUpload="chooseFileUpload" :fileSelected="fileSelected"
-				@message="message" :class="fullScreen ? 'fullScreen' : ''" :mobile="mobile" @saveConfig="fetchData" @updateCount="updateCount" />
+				@message="message" :class="fullScreen ? 'fullScreen' : ''" :mobile="mobile" @configUpdated="fetchData" @updateCount="updateCount" />
 		</v-main>
 
 		<v-dialog v-model="advancedDialog" max-width="600" scrollable>
@@ -296,6 +309,17 @@ export default {
 			}
 
 			await api.post('?cmd=filters', { delete: filter_id });
+			this.fetchData();
+		},
+		openReport: function (id) {
+			this.$router.push(this.base + 'reports/' + id);
+		},
+		deleteReport: async function (id) {
+			if (!confirm('Are you sure?')) {
+				return;
+			}
+
+			await api.post('?cmd=reports', { delete: id });
 			this.fetchData();
 		},
 		chooseFileUpload: function (column) {

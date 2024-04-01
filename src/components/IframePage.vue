@@ -17,7 +17,7 @@ export default {
 	},
     computed: {
         frameUrl: function () {
-            return this.webUrl + 'admin/' + this.$route.params.catchAll;
+            return this.webUrl + 'admin/' + this.$route.params.catchAll + '?frame=1';
         }
     },
     methods: {

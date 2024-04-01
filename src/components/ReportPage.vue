@@ -2,8 +2,11 @@
     <div class="w-100">
         <v-sheet class="d-flex justify-center flex-wrap text-center mx-auto px-4" width="100%">
             <v-card-text>
-
                 <v-alert type="error" :text="error" v-if="error"></v-alert>
+
+                <v-card-title>
+                    <v-text-field v-model="reportTitle" variant="plain" @update:focused="updateTitle"></v-text-field>
+                </v-card-title>
 
                 <v-container class="ma-0" fluid>
                     <v-row>
@@ -11,14 +14,14 @@
                             <v-container class="ma-0" fluid>
                                 <v-row>
                                     <v-col v-for="widget, index in report.source" :key="widget.title"
-                                        @mouseover="widget.hover = true" @mouseout="widget.hover = false">
+                                        @mouseover="hover = 'source' + index" @mouseout="hover = ''">
                                         <v-card style="overflow: visible; position: relative;" :loading="loading" :title="formatString(widget.table)">
                                             <v-card-text class="pa-1">
                                                 <div class="text-h6">
                                                     <v-menu>
                                                         <template v-slot:activator="{ props }">
                                                             <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
-                                                                v-show="widget.hover || props['aria-expanded'] === 'true'"
+                                                                v-show="hover === 'source' + index || props['aria-expanded'] === 'true'"
                                                                 style="position: absolute; top: 0; right: 0;">
                                                             </v-btn>
                                                         </template>
@@ -62,7 +65,7 @@
                             <v-container class="ma-0" fluid>
                                 <v-row>
                                     <v-col cols="12" sm="6" md="3" v-for="widget, index in report.kpi" :key="widget.title"
-                                        @mouseover="widget.hover = true" @mouseout="widget.hover = false">
+                                        @mouseover="hover = 'kpi' + index" @mouseout="hover = ''">
                                         <v-card style="overflow: visible;">
                                             <v-card-text class="pa-1">
                                                 <div class="text-h6" style="position: relative;">
@@ -70,7 +73,7 @@
                                                     <v-menu>
                                                         <template v-slot:activator="{ props }">
                                                             <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
-                                                                v-show="widget.hover || props['aria-expanded'] === 'true'"
+                                                                v-show="hover === 'kpi' + index|| props['aria-expanded'] === 'true'"
                                                                 style="position: absolute; top: -10px; right: -10px;">
                                                             </v-btn>
                                                         </template>
@@ -102,14 +105,14 @@
                             <v-container class="ma-0" fluid>
                                 <v-row>
                                     <v-col cols="12" v-for="widget, index in report.graph" :key="widget.title"
-                                        @mouseover="widget.hover = true" @mouseout="widget.hover = false">
+                                        @mouseover="hover = 'graph' + index" @mouseout="hover = ''">
                                         <v-card style="overflow: visible; position: relative;" :title="widget.title">
                                             <v-card-text class="pa-1">
                                                 <div class="text-h6">
                                                     <v-menu>
                                                         <template v-slot:activator="{ props }">
                                                             <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
-                                                                v-show="widget.hover || props['aria-expanded'] === 'true'"
+                                                                v-show="hover === 'graph' + index || props['aria-expanded'] === 'true'"
                                                                 style="position: absolute; top: 0; right: 0;">
                                                             </v-btn>
                                                         </template>
@@ -138,14 +141,14 @@
                                 </v-row>
                             </v-container>
 
-                            <v-table v-for="widget, index in report.keyValue" :key="widget.title" @mouseover="widget.hover = true" @mouseout="widget.hover = false">
+                            <v-table v-for="widget, index in report.keyValue" :key="widget.title" @mouseover="hover = 'keyValue' + index" @mouseout="hover = ''">
                                 <template v-slot:[`top`]>
                                     <h2 style="overflow: visible; position: relative;">
                                         {{ widget.title }}
                                         <v-menu>
                                             <template v-slot:activator="{ props }">
                                                 <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
-                                                    v-show="widget.hover || props['aria-expanded'] === 'true'"
+                                                    v-show="hover === 'keyValue' + index || props['aria-expanded'] === 'true'"
                                                     style="position: absolute; top: 0; right: 0;">
                                                 </v-btn>
                                             </template>
@@ -178,11 +181,11 @@
                                         <td>
                                             {{ applyFunc(column, data) }}
                                         </td>
-                                        <td>
+                                        <td @mouseover="hover = 'keyValueColumn' + index + '_' + columnIndex" @mouseout="hover = ''">
                                             <v-menu v-if="columnIndex > 0">
                                                 <template v-slot:activator="{ props }">
                                                     <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
-                                                        v-show="column.hover || props['aria-expanded'] === 'true'"
+                                                        v-show="hover === 'keyValueColumn' + index + '_' + columnIndex || props['aria-expanded'] === 'true'"
                                                         style="position: absolute; top: 0; right: 10px;">
                                                     </v-btn>
                                                 </template>
@@ -207,12 +210,12 @@
                             </v-table>
 
                             <v-data-table v-for="widget, index in report.dataTable" :key="widget.title"
-                                :items="getItems(widget)" @mouseover="widget.hover = true" @mouseout="widget.hover = false"
+                                :items="getItems(widget)" @mouseover="hover = 'dataTable' + index" @mouseout="hover = ''"
                                 items-per-page-text="">
                                 <template v-slot:headers="{ columns, isSorted, getSortIcon, toggleSort }">
                                     <tr>
                                         <template v-for="column, columnIndex in columns" :key="column.key">
-                                            <td @mouseover="column.hover = true" @mouseout="column.hover = false" style="position: relative;">
+                                            <td @mouseover="hover = 'dataTableColumn' + index + '_' + columnIndex" @mouseout="hover = ''" style="position: relative;">
                                                 <span class="mr-2 cursor-pointer" @click="() => toggleSort(column)">{{
                                                     column.title }}</span>
                                                 <template v-if="isSorted(column)">
@@ -224,7 +227,7 @@
                                                 <v-menu v-if="columnIndex > 0">
                                                     <template v-slot:activator="{ props }">
                                                         <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
-                                                            v-show="column.hover || props['aria-expanded'] === 'true'"
+                                                            v-show="hover === 'dataTableColumn' + index + '_' + columnIndex || props['aria-expanded'] === 'true'"
                                                             style="position: absolute; top: 0; right: 10px;">
                                                         </v-btn>
                                                     </template>
@@ -252,7 +255,7 @@
                                     <v-menu>
                                         <template v-slot:activator="{ props }">
                                             <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
-                                                v-show="widget.hover || props['aria-expanded'] === 'true'">
+                                                v-show="hover === 'dataTable' + index || props['aria-expanded'] === 'true'">
                                             </v-btn>
                                         </template>
 
@@ -381,6 +384,7 @@ export default {
                 params: {},
                 keyValue: {},
             },
+            hover: '',
             source: {},
             widget: {},
             widgetDialog: false,
@@ -393,6 +397,8 @@ export default {
             error: '',
             sortDialog: false,
             sortOrder: [],
+            reportTitle: '',
+            reloadConfig: false,
         }
     },
     methods: {
@@ -410,10 +416,10 @@ export default {
         fetchData: async function () {
             let data = {
                 cmd: 'get',
-                section: this.report.source[0].table,
+                section: this.report.source[0]?.table,
                 fields: this.report.params,
                 itemsPerPage: this.itemsPerPage,
-                columns: this.report.source[0].columns,
+                columns: this.report.source[0]?.columns,
             };
 
             const params = qs.stringify(data);
@@ -598,34 +604,80 @@ export default {
 
             return items;
         },
-        saveReport: function () {
-            localStorage.report = JSON.stringify(this.report);
-        },
-        loadReport: function () {
-            if (!localStorage.report) {
-                return;
+        saveReport: async function () {
+            let reportData = JSON.stringify(this.report);
+            localStorage.report = reportData;
+            
+            this.loading = true;
+            this.error = '';
+
+            const result = await api.post('?cmd=reports', {
+                save: 1,
+                title: this.report.title,
+                report: reportData,
+                id: this.$route.params.id,
+            });
+            let data = result.data;
+
+            if (data.error) {
+                this.error = data.error;
             }
 
-            this.report = JSON.parse(localStorage.report);
+            this.loading = false;
+
+            if (data.id !== this.$route.params.section) {
+                this.$router.push(this.base + 'reports/' + data.id);
+                this.$emit('configUpdated');
+                this.reloadConfig = false;
+            }
+        },
+        loadReport: async function () {
+            this.loading = true;
+            this.error = '';
+
+            const result = await api.get('?cmd=reports&id=' + this.$route.params.id);
+            let data = result.data;
+
+            if (data.error) {
+                this.error = data.error;
+            }
+
+            this.loading = false;
+            
+            this.report = JSON.parse(data.report.report);
+            if (!this.report.title) {
+                this.report.title = 'untitled';
+            }
+            this.reportTitle = this.report.title;
 
             this.fetchData();
         },
         updateFunc: function (column, func) {
-            this.report.params.func[column] = func;
+            if (this.report.params.func[column] !== func) {
+                this.report.params.func[column] = func;
+            }
         },
         getFieldType: function (column, table) {
             return this.config.tables[table]?.find(item => item.name === column).type;
         },        
 		formatString: function (string) {
 			return util.formatString(string);
-		},
-        
+		},        
         openSortable: function (obj) {
             this.sortOrder = obj;
             this.sortDialog = true;
         },
+        updateTitle: function (focussed) {
+            if (focussed === false && this.report.title !== this.reportTitle) {
+                this.report.title = this.reportTitle;
+                this.reloadConfig = true;
+            }
+        }
     },
     computed: {
+		base() {
+			return util.base();
+		},
         widgetValid: function () {
             switch (this.widget.type) {
                 case 'kpi':
@@ -650,7 +702,10 @@ export default {
                 this.fetchData();
             },
             deep: true
-        }
+        },
+		$route() {
+			this.loadReport();
+		},
     },
     async mounted() {
         /*

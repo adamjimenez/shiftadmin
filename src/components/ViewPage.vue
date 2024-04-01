@@ -1,7 +1,7 @@
 <template>
     <v-card class="d-flex flex-column">
         <v-sheet color="secondary" class="w-100 d-flex">
-            <v-btn title="Back" icon="mdi-arrow-left" :to="back" color="grey-lighten-1" variant="text" v-if="back"></v-btn>
+            <v-btn title="Back" icon="mdi-arrow-left" @click="goBack" color="grey-lighten-1" variant="text" v-if="back"></v-btn>
             <span v-if="tab === 'summary'" class="w-100">
                 <v-btn title="Edit" icon="mdi-pencil" color="grey-lighten-1" variant="text" @click="edit"></v-btn>
                 <v-btn v-if="data['deleted'] > 0" title="Restore" icon="mdi-delete-restore" color="success" @click="restoreItem"
@@ -214,7 +214,7 @@ export default {
             const urlParams = new URLSearchParams(window.location.search);
             const parentsection = urlParams.get('parentsection');
 
-            if (parentsection) {                
+            if (parentsection) {
                 const parentid = urlParams.get('parentid');
                 this.back = '../../' + parentsection + '/' + parentid + '/';
             } else if (!fields.id) {
@@ -363,6 +363,9 @@ export default {
             }
 
             return false;
+        },
+        goBack: function () {
+            this.$router.push(this.back);
         }
     },
 

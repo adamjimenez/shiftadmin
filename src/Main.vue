@@ -14,7 +14,7 @@
 					variant="solo-filled" no-filter class="mx-5" style="max-width: 800px;"
 					:label="'Search ' + section"
 					:placeholder="'Search ' + section"
-					@focus="searchFocussed=true"
+					@focus="if (mobile) { searchFocussed = true; }"
 					>
 					<template v-slot:prepend-inner>
 						<v-icon icon="mdi:mdi-arrow-left" v-if="searchFocussed" @click.stop="searchFocussed = false" @mousedown.stop></v-icon>

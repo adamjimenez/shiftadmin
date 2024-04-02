@@ -203,8 +203,6 @@ export default {
             this.data = result.data;
             this.totalItems = this.data.total;
 
-            this.$emit('updateCount', this.data);
-
             // pagination
             this.buttonData = {
                 page: page,
@@ -253,6 +251,9 @@ export default {
             let title = this.vars?.branding?.title ? this.vars.branding.title : 'ADMIN';
             document.title = title + ' | ' + this.internalSection;
 
+            await this.$nextTick();
+
+            this.$emit('updateCount', this.data);
             this.$emit('loaded')
         },
         rowClick: function (e, item) {

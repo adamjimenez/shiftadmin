@@ -98,7 +98,7 @@
 
 		<v-main class="d-flex flex-column align-center justify-center">
 			<router-view ref="main" class="w-100 flex-grow-1" :vars="vars" :searchparams="searchParams"
-				@changeFields="changeFields" @chooseFileUpload="chooseFileUpload" :fileSelected="fileSelected"
+				@changeFields="changeFields" @changeHeaders="changeHeaders" @chooseFileUpload="chooseFileUpload" :fileSelected="fileSelected"
 				@message="message" :class="fullScreen ? 'fullScreen' : ''" :mobile="mobile" @configUpdated="fetchData" @updateCount="updateCount" />
 		</v-main>
 
@@ -166,7 +166,8 @@ export default {
 			data: {},
 			user: {},
 			advancedDialog: false,
-			fields: [],
+			fields: [], // fields which are shown
+			headers: [], // all columns
 			params: { func: {} },
 			searchParams: {},
 			searchable: [
@@ -264,6 +265,9 @@ export default {
 		},
 		changeFields: function (fields) {
 			this.fields = fields;
+		},
+		changeHeaders: function (headers) {
+			this.headers = headers;
 		},
 		fetchData: async function () {
 			let result = {};
@@ -426,7 +430,7 @@ export default {
 			return this.display;
 		},
 		showSearch: function () {
-			return this.fields.find(item => item.type === 'id') || false
+			return this.headers.find(item => item.type === 'id') || false
 		}
 	},
 

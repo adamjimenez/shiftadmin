@@ -357,7 +357,8 @@ export default {
 			data.data.forEach(item => {
 				let title = '';
 				for (const [k, v] of Object.entries(item)) {
-					if(k === 'id') {
+					let field = this.fields.find(field => field.column === k);
+					if(!v || !['text', 'textarea', 'editor', 'email', 'mobile', 'select', 'postcode', 'id'].includes(field?.type)) {
 						continue;
 					}
 
@@ -375,7 +376,6 @@ export default {
 			});
 
 			this.searchItems = searchItems;
-
 		}
 	},
 

@@ -292,6 +292,11 @@ export default {
     components: {
         draggable,
     },
+    beforeRouteLeave(to, from, next) {
+        if (!this.dirty || confirm('You have unsaved changes. Do you want to continue?')) {
+            return next()
+        }
+    },
     props: {
         vars: null,
     },

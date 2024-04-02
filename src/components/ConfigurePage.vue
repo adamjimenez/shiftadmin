@@ -362,7 +362,7 @@ export default {
             sortSectionsDialog: false,
             dirty: false,
             hideConfigTables: true,
-            configTables: ['cms_activation', 'cms_filters', 'cms_login_attempts', 'cms_logs', 'cms_privileges', 'email_templates', 'files']
+            configTables: ['cms_activation', 'cms_filters', 'cms_login_attempts', 'cms_logs', 'cms_privileges', 'cms_reports', 'cms_trusted_devices', 'email_templates', 'files']
         }
     },
     methods: {

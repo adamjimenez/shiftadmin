@@ -89,7 +89,7 @@
 
         <v-dialog v-model="logsDialog" max-width="600" scrollable>
             <v-card title="Logs" :loading="loadingLogs">
-                <v-list>
+                <v-list v-if="logs.length">
                     <v-list-item v-for="item in logs" :key="item.id" class="unclamp mb-3">
                         <v-list-item-title>
                             {{ formatString(item.task) }} on {{ formatDateTime(item.date) }}
@@ -98,10 +98,13 @@
                             <div v-html="item.details" style="white-space: pre;"></div>
                         </v-list-item-subtitle>
                         <div v-if="item.user > 0">
-                            <v-btn variant="text" :to="'../../users/' + item.user" @click="logsDialog = false">{{ item.name ? item.name : item.user }}</v-btn>
+                            <v-btn variant="text" :to="this.base + 'section/users/' + item.user" @click="logsDialog = false">{{ item.name.trim() ? item.name : item.user }}</v-btn>
                         </div>
                     </v-list-item>
                 </v-list>
+                <v-card-text v-else>
+                    No logs found.
+                </v-card-text>
             </v-card>
         </v-dialog>
 
@@ -370,6 +373,9 @@ export default {
     },
 
     computed: {
+        base: function () {
+            return util.base();
+        },
         buttons: function () {
             let buttons = [];
 

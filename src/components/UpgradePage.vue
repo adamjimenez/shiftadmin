@@ -104,8 +104,8 @@ export default {
                 monthlyPricing: 14,
                 annualPricing: 10,
                 features: [
-                    'Everything in Starter',
-                    'Import/ Export',
+                    'Everything in starter',
+                    'Import/ export',
                     'Custom CMS buttons',
                     'Custom pages',
                 ],
@@ -115,10 +115,10 @@ export default {
                 monthlyPricing: 60,
                 annualPricing: 50,
                 features: [
-                    'Everytbing in Basic',
+                    'Everything in basic',
                     'User privileges',
                     'Bulk editing',
-                    'Reporting tool Beta',
+                    'Reporting tool beta',
                 ],
             },
         ]

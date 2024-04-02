@@ -30,6 +30,9 @@
                         <span v-if="['upload', 'file', 'files', 'uploads'].includes(getFieldType(header.value))">
                             <v-img :src="apiRoot + '?cmd=file&f=' + (Array.isArray(item[header.value]) ? item[header.value][0] : item[header.value]) + '&w=320&h=240'" style="max-width: 160px; max-height: 120px;"></v-img>
                         </span>
+                        <span v-else-if="['select_multiple'].includes(getFieldType(header.value))">
+                            {{ item[header.value].length + ' items' }}
+                        </span>
                         <span v-else>
                             {{ formatData(item[header.value], getFieldType(header.value)) }}
                         </span>

@@ -33,6 +33,9 @@
                         <span v-else-if="['select_multiple'].includes(getFieldType(header.value))">
                             {{ Array.isArray(item[header.value]) ? item[header.value].length + ' items' : '' }}
                         </span>
+                        <span v-else-if="['select'].includes(getFieldType(header.value)) && typeof vars.options?.[header.value] === 'object'">
+                            {{ vars.options[header.value][item[header.value]] }}
+                        </span>
                         <span v-else>
                             {{ formatData(item[header.value], getFieldType(header.value)) }}
                         </span>
@@ -419,7 +422,7 @@ export default {
         }
     },
     watch: {
-        internalSection: function (newVal, oldVal) {
+        internalSection: function (newVal) {
             if (localStorage['fields_' + newVal]) {
                 this.selectedHeaders = JSON.parse(localStorage['fields_' + newVal]);
             } else {
@@ -431,16 +434,17 @@ export default {
             } else {
                 this.sortBy = [];
             }
-
-            if (oldVal) {
-                this.reload();
-            }
         },
         $route(route) {
             this.internalSection = route.params.section;
+            this.reload();
         },
         section: function (section) {
             this.internalSection = section;
+
+            if (section) {
+                this.reload();
+            }
         },
         selectedHeaders: function (newVal, oldVal) {            
             if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {

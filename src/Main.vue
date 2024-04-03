@@ -110,7 +110,7 @@
 					<template v-for="field in fields" :key="field.type">
 						<v-list-item v-if="searchable.includes(field.type)">
 							<SearchField :column="field.column" :type="field.type" :optionConfig="vars.options" :label="formatString(field.column)"
-								v-model="params[field.column]" :func="params?.func[field.column]"
+								v-model="params[field.column]" :func="params?.func?.[field.column]"
 								@updateFunc="updateFunc"
 								></SearchField>
 						</v-list-item>
@@ -192,7 +192,8 @@ export default {
 			fileSelected: {},
 			fullScreen: false,
 			display: {},
-			searchFocussed: false
+			searchFocussed: false,
+			ignoreChange: false,
 		};
 	},
 
@@ -219,22 +220,19 @@ export default {
 			this.searchParams = { s: this.search };
 		},
 		doSearch: function () {
-			let searchParams = structuredClone(this.params);
+			let searchParams = {};
 
-			// remove empty
-			for (const [k, v] of Object.entries(searchParams)) {
-				if (v === '') {
-					delete searchParams[k];
+			for (const [k, v] of Object.entries(this.params)) {
+				if (['parentsection', 'parentid'].includes(k) || typeof v === 'undefined') {
+					continue;
 				}
+
+				searchParams[k] = v;
 			}
 
-			for (const [k, v] of Object.entries(searchParams.func)) {
-				if (v === '' || typeof searchParams[k] === 'undefined') {
-					delete searchParams.func[k];
-				}
-			}
-
+			console.log('do search update params')
 			this.searchParams = searchParams;
+			
 			this.advancedDialog = false;
 		},
 		saveSearch: async function () {
@@ -380,12 +378,18 @@ export default {
 	},
 
 	watch: {
-		$route() {
+		$route: async function(to) {
+			console.log(to);
+
 			// get params from qs
 			let query = this.$route.query
 			if (query) {
 				this.params = query;
+
+				this.ignoreChange = true;
 				this.searchParams = query;
+				await this.$nextTick();
+				this.ignoreChange = false;
 			}
 
 			if (this.$route.params.section !== this.section) {
@@ -393,13 +397,25 @@ export default {
 				this.search = this.params.s;
 			}
 		},
-		searchParams: function (searchParams) {
-			let params = searchParams;
-			delete params.parentsection;
-			delete params.parentid;
+		searchParams: async function (searchParams) {
+			if (this.ignoreChange) {
+				return;
+			}
 
-			if (Object.values(searchParams).length) {
-				this.$router.push({ path: this.base + 'section/' + this.$route.params.section, query: searchParams })
+			let params = {};
+
+			for (const [k, v] of Object.entries(searchParams)) {
+				if (['parentsection', 'parentid'].includes(k) || typeof v === 'undefined') {
+					continue;
+				}
+
+				params[k] = v;
+			}
+
+			if (Object.values(params).length) {
+				// added force as there seems to be a bug with vue-router not redirecting
+				let result = await this.$router.push({ path: this.base + 'section/' + this.$route.params.section, query: params, force: true })
+				console.log(result)
 			}
 		},
 		mobile(mobile) {

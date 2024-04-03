@@ -323,6 +323,10 @@ export default {
 
 			await api.post('?cmd=reports', { delete: id });
 			this.fetchData();
+
+			if (this.$route.fullPath === this.base + 'reports/' + id) {
+				this.$router.push(this.base);
+			}
 		},
 		chooseFileUpload: function (column) {
 			this.$refs['fileUploads'].open(column);

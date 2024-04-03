@@ -11,7 +11,7 @@
                 <v-alert type="error" :text="error" v-if="error"></v-alert>
 
                 <v-card-title>
-                    <v-text-field v-model="reportTitle" variant="plain" @update:focused="updateTitle"></v-text-field>
+                    <v-text-field v-model="reportTitle" variant="outlined" @update:focused="updateTitle"></v-text-field>
                 </v-card-title>
 
                 <v-container class="ma-0" fluid>
@@ -288,7 +288,6 @@
                     </v-row>
                 </v-container>
             </v-card-text>
-
         </v-sheet>
 
         <v-dialog v-model="widgetDialog" max-width="600">
@@ -639,6 +638,10 @@ export default {
             }
         },
         loadReport: async function () {
+            if (!parseInt(this.$route.params.id)) {
+                return;
+            }
+
             this.loading = true;
             this.error = '';
 

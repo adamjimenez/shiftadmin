@@ -84,7 +84,7 @@
                     </div>
                 </template>
             </v-card>
-            <list-page v-else :section="tab" :parentsection="section" :parentid="id" hidebuttons ref="listPage" @loaded="loaded"></list-page>
+            <list-page v-else :section="tab" :parentsection="section" :parentid="id" hidebuttons ref="listPage" :vars="vars" @loaded="loaded"></list-page>
         </div>
 
         <v-dialog v-model="logsDialog" max-width="600" scrollable>

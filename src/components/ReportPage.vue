@@ -2,6 +2,12 @@
     <div class="w-100">
         <v-sheet class="d-flex justify-center flex-wrap text-center mx-auto px-4" width="100%">
             <v-card-text>
+                <v-fab icon="mdi-plus" @click="newWidget" color="primary" location="end" 
+                    absolute
+                    app
+                    appear
+                ></v-fab>
+
                 <v-alert type="error" :text="error" v-if="error"></v-alert>
 
                 <v-card-title>
@@ -43,6 +49,7 @@
                                                 </div>
 
                                                 <div v-for="filter in widget.filters" :key="filter">
+                                                    {{ filter }}
                                                     <SearchField :column="filter" :type="getFieldType(filter, widget.table)"
                                                         :optionConfig="config.vars.options" :label="filter"
                                                         v-model="report.params[filter]" :func="report.params?.func?.[filter]"
@@ -56,7 +63,7 @@
                                         </v-card>
                                     </v-col>
                                 </v-row>
-                                <v-btn icon="mdi-plus" @click="newWidget" color="primary" />
+
                             </v-container>
                         </v-col>
 
@@ -144,7 +151,6 @@
                             <v-table v-for="widget, index in report.keyValue" :key="widget.title" @mouseover="hover = 'keyValue' + index" @mouseout="hover = ''">
                                 <template v-slot:[`top`]>
                                     <h2 style="overflow: visible; position: relative;">
-                                        {{ widget.title }}
                                         <v-menu>
                                             <template v-slot:activator="{ props }">
                                                 <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
@@ -215,7 +221,7 @@
                                 <template v-slot:headers="{ columns, isSorted, getSortIcon, toggleSort }">
                                     <tr>
                                         <template v-for="column, columnIndex in columns" :key="column.key">
-                                            <td @mouseover="hover = 'dataTableColumn' + index + '_' + columnIndex" @mouseout="hover = ''" style="position: relative;">
+                                            <td @mouseover.stop="hover = 'dataTableColumn' + index + '_' + columnIndex" @mouseout="hover = ''" style="position: relative;">
                                                 <span class="mr-2 cursor-pointer" @click="() => toggleSort(column)">{{
                                                     column.title }}</span>
                                                 <template v-if="isSorted(column)">
@@ -282,6 +288,7 @@
                     </v-row>
                 </v-container>
             </v-card-text>
+
         </v-sheet>
 
         <v-dialog v-model="widgetDialog" max-width="600">
@@ -290,16 +297,16 @@
                     <v-select label="Type" :items="['source', 'kpi', 'dataTable', 'graph', 'keyValue']"
                         v-model="widget.type"></v-select>
                     <v-select label="Table" v-if="['source'].includes(widget.type)" v-model="widget.table"
-                        :items="Object.keys(config.tables)" />
+                        :items="Object.keys(filteredTables)" />
                     <v-text-field label="Title" v-if="['kpi', 'graph', 'keyValue'].includes(widget.type)" v-model="widget.title"></v-text-field>
                     <v-select label="Source" v-if="['kpi', 'dataTable', 'graph', 'filter', 'keyValue'].includes(widget.type)"
                         :items="report.source" v-model="widget.source" item-title="table" item-value="table"></v-select>
-                    <v-select label="Columns" v-if="['source'].includes(widget.type)" :items="config.tables[widget.table]"
+                    <v-autocomplete label="Columns" v-if="['source'].includes(widget.type)" :items="config.tables[widget.table]"
                         v-model="widget.columns" item-title="name" item-value="name" :disabled="!widget.table" multiple
-                        chips clearable></v-select>
-                    <v-select label="Filters" v-if="['source'].includes(widget.type)" :items="config.tables[widget.table]"
+                        chips clearable auto-select-first="exact"></v-autocomplete>
+                    <v-autocomplete label="Filters" v-if="['source'].includes(widget.type)" :items="config.tables[widget.table]"
                         v-model="widget.filters" item-title="name" item-value="name" :disabled="!widget.table" multiple
-                        chips></v-select>
+                        chips clearable auto-select-first="exact"></v-autocomplete>
                     <v-select label="Key" v-if="['kpi', 'graph', 'filter'].includes(widget.type)"
                         :items="report.source[0].columns.concat(['custom'])" v-model="widget.key" item-title="name" item-value="name"
                         :disabled="!widget.source"></v-select>
@@ -331,7 +338,7 @@
                         placeholder="JS expression to apply to each row"></v-text-field>
                     <v-select label="Table formula" :items="funcs" v-model="column.table_func"></v-select>
                     <v-text-field v-if="column.table_func === 'custom'" label="Custom" v-model="column.custom"
-                        :disabled="column.func !== 'custom'"></v-text-field>
+                        :disabled="column.table_func !== 'custom'"></v-text-field>
                     <v-select label="Format" :items="['currency']" v-model="column.format"></v-select>
                 </v-card-text>
                 <v-card-actions>
@@ -653,12 +660,16 @@ export default {
             this.fetchData();
         },
         updateFunc: function (column, func) {
+            if (!this.report.params.func) {
+                this.report.params.func = {};
+            }
+
             if (this.report.params.func[column] !== func) {
                 this.report.params.func[column] = func;
             }
         },
         getFieldType: function (column, table) {
-            return this.config.tables[table]?.find(item => item.name === column).type;
+            return this.config.tables[table]?.find(item => item.name === column)?.type;
         },        
 		formatString: function (string) {
 			return util.formatString(string);
@@ -688,6 +699,35 @@ export default {
         },
         columnValid: function () {
             return this.column.title && this.column.key && this.column.table_func;
+        },
+        filteredTables: function () {
+            let tables = {};
+
+            if (!this.config.tables) {
+                return tables;
+            }
+
+            let configTables = [
+                'cms_activation', 
+                'cms_filters', 
+                'cms_login_attempts', 
+                'cms_logs', 
+                'cms_privileges', 
+                'cms_reports', 
+                'cms_trusted_devices', 
+                'email_templates', 
+                'files'
+            ];
+
+            for (let [index, table] of Object.entries(this.config.tables)) {
+                if (configTables.includes(index)) {
+                    continue;
+                }
+
+                tables[index] = table;
+            }
+
+            return tables;
         },
     },
     watch: {

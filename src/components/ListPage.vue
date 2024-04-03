@@ -31,7 +31,7 @@
                             <v-img :src="apiRoot + '?cmd=file&f=' + (Array.isArray(item[header.value]) ? item[header.value][0] : item[header.value]) + '&w=320&h=240'" style="max-width: 160px; max-height: 120px;"></v-img>
                         </span>
                         <span v-else-if="['select_multiple'].includes(getFieldType(header.value))">
-                            {{ item[header.value].length + ' items' }}
+                            {{ Array.isArray(item[header.value]) ? item[header.value].length + ' items' : '' }}
                         </span>
                         <span v-else>
                             {{ formatData(item[header.value], getFieldType(header.value)) }}
@@ -214,7 +214,7 @@ export default {
             };
 
             // headers
-            this.headers = [];
+            let headers = [];
             let allHeaders = Object.values(result.data.fields);
 
             if (allHeaders.length && !allHeaders.find(obj => obj.column === 'id')) {
@@ -225,11 +225,15 @@ export default {
             }
 
             for (const [, field] of Object.entries(this.data.fields)) {
-                this.headers.push({
+                headers.push({
                     title: this.formatString(field.column),
                     key: field.column,
                 });
             }
+            this.headers = headers;
+
+            // wait for selected headers to be filtered
+            await this.$nextTick();
 
             let allHeaderKeys = allHeaders.map(item => item.column);
 
@@ -415,24 +419,28 @@ export default {
         }
     },
     watch: {
-        internalSection: function () {
-            if (localStorage['fields_' + this.internalSection]) {
-                this.selectedHeaders = JSON.parse(localStorage['fields_' + this.internalSection]);
+        internalSection: function (newVal, oldVal) {
+            if (localStorage['fields_' + newVal]) {
+                this.selectedHeaders = JSON.parse(localStorage['fields_' + newVal]);
+            } else {
+                this.selectedHeaders = [];
             }
 
-            if (localStorage['sortBy_' + this.internalSection]) {
-                this.sortBy = JSON.parse(localStorage['sortBy_' + this.internalSection]);
+            if (localStorage['sortBy_' + newVal]) {
+                this.sortBy = JSON.parse(localStorage['sortBy_' + newVal]);
             } else {
                 this.sortBy = [];
+            }
+
+            if (oldVal) {
+                this.reload();
             }
         },
         $route(route) {
             this.internalSection = route.params.section;
-            this.reload();
         },
         section: function (section) {
             this.internalSection = section;
-            this.reload();
         },
         selectedHeaders: function (newVal, oldVal) {            
             if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {

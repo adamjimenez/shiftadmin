@@ -48,13 +48,8 @@ const router = createRouter({
     history: createWebHistory(),
     routes: routes,
     // set custom query resolver
-    parseQuery(query) {
-        return qs.parse(query);
-    },
-    stringifyQuery(query) {
-        var result = qs.stringify(query);
-        return result ? result : '';
-    },
+    parseQuery: qs.parse,
+    stringifyQuery: qs.stringify,
 })
 
 export default {

@@ -382,9 +382,7 @@ export default {
 	},
 
 	watch: {
-		$route: async function(to) {
-			console.log(to);
-
+		$route: async function() {
 			// get params from qs
 			let query = this.$route.query
 			if (query) {
@@ -399,6 +397,7 @@ export default {
 			if (this.$route.params.section !== this.section) {
 				this.section = this.$route.params.section;
 				this.search = this.params.s;
+				this.headers = [];
 			}
 		},
 		searchParams: async function (searchParams) {

@@ -31,6 +31,9 @@
 							<v-icon icon="mdi-tune" v-else />
 						</v-btn>
 					</template>
+					<template v-slot:item="{ item, props }">
+						<v-list-item v-bind="props" @mousedown.stop="goToRecord(item.value)"></v-list-item>
+					</template>
 				</v-combobox>
 			</div>
 
@@ -203,7 +206,10 @@ export default {
 				return;
 			}
 
-			this.$router.push(this.base + 'section/' + this.section + '/' + item.value + '/');
+			this.goToRecord(item.value);
+		},
+		goToRecord(id) {
+			this.$router.push(this.base + 'section/' + this.section + '/' + id + '/');
 		},
 		updateSearch: async function () {
 			if (this.search !== null && typeof this.search === 'object') {
@@ -417,8 +423,7 @@ export default {
 
 			if (Object.values(params).length) {
 				// added force as there seems to be a bug with vue-router not redirecting
-				let result = await this.$router.push({ path: this.base + 'section/' + this.$route.params.section, query: params, force: true })
-				console.log(result)
+				await this.$router.push({ path: this.base + 'section/' + this.$route.params.section, query: params, force: true });
 			}
 		},
 		mobile(mobile) {

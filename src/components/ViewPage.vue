@@ -28,7 +28,7 @@
 
         <div class="pa-5 d-flex flex-column" style="height: 1px; overflow: auto; flex-grow: 1;">
             <v-tabs v-model="tab" style="min-height: 50px;">
-                <v-tab value="summary">Summary</v-tab>
+                <v-tab value="summary">{{ section }}</v-tab>
                 <template v-if="vars.subsections && vars.subsections[section]?.length">
                     <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection.subsection" :value="subsection.subsection">
                         <v-icon v-if="subsection.icon" :icon="subsection.icon" start></v-icon>
@@ -185,6 +185,8 @@ export default {
             }
 
             let fields = result.data.fields;
+            
+            this.$emit('changeHeaders', Object.values(fields));
             this.$emit('changeFields', Object.values(fields));
 
             if (result.data.data) {

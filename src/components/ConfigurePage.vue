@@ -543,6 +543,8 @@ export default {
                 } else {
                     menu = this.data.vars.menu;
                 }
+
+                this.menuItem.index = menu.length;
             }
 
             if (Object.hasOwn(this.menuItem, 'index')) {

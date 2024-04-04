@@ -112,8 +112,8 @@ export default {
             },
             {
                 name: 'Business',
-                monthlyPricing: 60,
-                annualPricing: 50,
+                monthlyPricing: 100,
+                annualPricing: 80,
                 features: [
                     'Everything in basic',
                     'User privileges',

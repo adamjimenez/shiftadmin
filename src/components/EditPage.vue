@@ -44,7 +44,7 @@
                                 <v-btn v-if="value.type === 'uploads' || data[value.column]?.length === 0"
                                     @click="chooseFileUpload(value.column)">Choose</v-btn>
                             </div>
-                            <v-textarea v-else-if="value.type === 'textarea'" :label="formatString(key)"
+                            <v-textarea v-else-if="['json', 'textarea'].includes(value.type)" :label="formatString(key)"
                                 v-model="data[value.column]" :error-messages="errors[key]" />
                             <div v-else-if="value.type === 'editor'">
                                 <div class="ma-3">{{ formatString(key) }}</div>

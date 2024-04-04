@@ -6270,6 +6270,11 @@
   "resolved" "https://registry.npmjs.org/vue-hot-reload-api/-/vue-hot-reload-api-2.3.4.tgz"
   "version" "2.3.4"
 
+"vue-json-pretty@^2.4.0":
+  "integrity" "sha512-e9bP41DYYIc2tWaB6KuwqFJq5odZ8/GkE6vHQuGcbPn37kGk4a3n1RNw3ZYeDrl66NWXgTlOfS+M6NKkowmkWw=="
+  "resolved" "https://registry.npmjs.org/vue-json-pretty/-/vue-json-pretty-2.4.0.tgz"
+  "version" "2.4.0"
+
 "vue-loader@^17.0.0":
   "integrity" "sha512-yTKOA4R/VN4jqjw4y5HrynFL8AK0Z3/Jt7eOJXEitsm0GMRHDBjCfCiuTiLP7OESvsZYo2pATCWhDqxC5ZrM6w=="
   "resolved" "https://registry.npmjs.org/vue-loader/-/vue-loader-17.4.2.tgz"
@@ -6299,7 +6304,7 @@
   "resolved" "https://registry.npmjs.org/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz"
   "version" "1.9.1"
 
-"vue@*", "vue@^2 || ^3.2.13", "vue@^3.0.0", "vue@^3.0.0-0 || ^2.7.0", "vue@^3.0.1", "vue@^3.2.0", "vue@^3.2.13", "vue@^3.2.25", "vue@^3.3.0", "vue@3.4.21":
+"vue@*", "vue@^2 || ^3.2.13", "vue@^3.0.0", "vue@^3.0.0-0 || ^2.7.0", "vue@^3.0.1", "vue@^3.2.0", "vue@^3.2.13", "vue@^3.2.25", "vue@^3.3.0", "vue@>=3.0.0", "vue@3.4.21":
   "integrity" "sha512-5hjyV/jLEIKD/jYl4cavMcnzKwjMKohureP8ejn3hhEjwhWIhWeuzL2kJAjzl/WyVsgPY56Sy4Z40C3lVshxXA=="
   "resolved" "https://registry.npmjs.org/vue/-/vue-3.4.21.tgz"
   "version" "3.4.21"

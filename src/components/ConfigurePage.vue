@@ -329,6 +329,7 @@ export default {
                 'id',
                 'integer',
                 'ip',
+                'json',
                 'mobile',
                 'page_name',
                 'password',

@@ -75,6 +75,9 @@
                             <img v-else-if="value.type === 'upload'"
                                 :src="apiRoot + '?cmd=upload&f=' + data[value.column] + '&w=320&h=240'" />
                             <div v-else-if="value.type === 'editor'" v-html="data[value.column]"></div>
+                            <div v-else-if="value.type === 'json'">
+                                <vue-json-pretty :data="JSON.parse(data[value.column])" :theme="$vuetify.theme.name" :showDoubleQuotes="false" />
+                            </div>
                             <span v-else>
                                 {{ formatData(data[value.column], value.type) }}
 
@@ -138,11 +141,14 @@ import api from "../services/api";
 import util from "../services/util";
 import ListPage from "./ListPage";
 import ListButtons from "./ListButtons";
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
 
 export default {
     components: {
         ListPage,
         ListButtons,
+        VueJsonPretty,
     },
     props: {
         vars: null,

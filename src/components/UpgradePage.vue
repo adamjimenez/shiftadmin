@@ -101,8 +101,8 @@ export default {
             },
             {
                 name: 'Basic',
-                monthlyPricing: 14,
-                annualPricing: 10,
+                monthlyPricing: 28,
+                annualPricing: 20,
                 features: [
                     'Everything in starter',
                     'Import/ export',

@@ -1,11 +1,21 @@
 <template>
     <span>
-        <v-select v-if="['checkbox', 'deleted'].includes(type)" :label="label" :items="[{value: 0, title: 'No'}, {value: 1, title: 'Yes'}]" v-model="value" clearable />
+        <div v-if="['checkbox', 'deleted'].includes(type)" class="mb-1">
+            <div>{{ label }}</div>
+            <v-btn-toggle v-model="value" divided>
+                <v-btn value="1">
+                    Yes
+                </v-btn>
+                <v-btn value="0">
+                    No
+                </v-btn>
+            </v-btn-toggle>
+        </div>
         <v-select v-else-if="['select'].includes(type)" :label="label" :items="options" v-model="value" clearable />
         <v-select v-else-if="['select_multiple'].includes(type)" :label="label" :items="options" v-model="value" multiple
             chips clearable>
             <template v-slot:prepend>
-                <v-select v-model="localFunc" :items="['in', 'not in']" />
+                <v-select v-model="localFunc" :items="['in', 'not in']" hide-details />
             </template>
         </v-select>
         <v-autocomplete v-else-if="type === 'combo'" :label="label" v-model="value" :items="options"

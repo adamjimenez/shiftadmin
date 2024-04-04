@@ -14,7 +14,7 @@
 					variant="solo-filled" no-filter class="mx-5" style="max-width: 800px;"
 					:label="'Search ' + section"
 					:placeholder="'Search ' + section"
-					@focus="if (mobile) { searchFocussed = true; }"
+					@focus="onSearchFocus"
 					>
 					<template v-slot:prepend-inner>
 						<v-icon icon="mdi:mdi-arrow-left" v-if="searchFocussed" @click.stop="searchFocussed = false" @mousedown.stop></v-icon>
@@ -49,6 +49,7 @@
 				</v-list-item>
 
 				<v-list-item :title="'Upgrade'" prepend-icon="mdi-rocket-launch" :to="base + 'upgrade'" base-color="red" v-if="edition !== 'Business'" />
+
 				<div v-for="item in vars?.menu" :key="item">
 					<v-list-group v-if="item.children" :prepend-icon="item.icon ? item.icon : 'mdi-minus'"
 						:value="item.title">
@@ -112,10 +113,10 @@
 				<v-card-text>
 					<template v-for="field in fields" :key="field.type">
 						<v-list-item v-if="searchable.includes(field.type)">
-							<SearchField :column="field.column" :type="field.type" :optionConfig="vars.options" :label="formatString(field.column)"
+							<search-field :column="field.column" :type="field.type" :optionConfig="vars.options" :label="formatString(field.column)"
 								v-model="params[field.column]" :func="params?.func?.[field.column]"
 								@updateFunc="updateFunc"
-								></SearchField>
+								></search-field>
 						</v-list-item>
 					</template>
 				</v-card-text>
@@ -144,6 +145,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', eve
 <script>
 import api from "./services/api";
 import util from "./services/util";
+import qs from "qs";
 import FileUploads from "./components/FileUploads";
 import SearchField from "./components/SearchField";
 import { useDisplay } from 'vuetify';
@@ -216,8 +218,57 @@ export default {
 				return;
 			}
 
-			this.section = this.$route.params.section;
-			this.searchParams = { s: this.search };
+            let data = {
+                cmd: 'get',
+                section: this.$route.params.section,
+                fields: { s: this.search },
+                itemsPerPage: 10,
+                columns: this.fields.map(item => item.column)
+            };
+
+            const params = qs.stringify(data);
+
+            this.loading = true;
+            this.error = '';
+
+            let result = {};
+            try {
+                result = await api.get('?' + params.toString(), data);
+            } catch (error) {
+                console.log(error)
+            }
+
+            if (result.data.error) {
+                this.error = result.data.error;
+            }
+
+            this.loading = false;
+
+			// update search combo
+			let searchItems = [];
+
+			result.data.data.forEach(item => {
+				let title = '';
+				for (const [k, v] of Object.entries(item)) {
+					let field = this.fields.find(field => field.column === k);
+					if(!v || !['text'].includes(field?.type)) {
+						continue;
+					}
+
+					if (title) {
+						title += ', ';
+					}
+
+					title += v;
+				}
+
+				searchItems.push({
+					value: item.id,
+					title: title
+				});
+			});
+
+			this.searchItems = searchItems;
 		},
 		updateFunc: function (column, func) {
 			this.params.func[column] = func;
@@ -358,32 +409,11 @@ export default {
 					}
 				})
 			})
-
-			// update search combo
-			let searchItems = [];
-
-			data.data.forEach(item => {
-				let title = '';
-				for (const [k, v] of Object.entries(item)) {
-					let field = this.fields.find(field => field.column === k);
-					if(!v || !['text', 'textarea', 'editor', 'email', 'mobile', 'select', 'postcode', 'id'].includes(field?.type)) {
-						continue;
-					}
-
-					if (title) {
-						title += ', ';
-					}
-
-					title += v;
-				}
-
-				searchItems.push({
-					value: item.id,
-					title: title
-				});
-			});
-
-			this.searchItems = searchItems;
+		},
+		onSearchFocus: function () {
+			if (this.mobile) { 
+				this.searchFocussed = true; 
+			}
 		}
 	},
 

@@ -1,12 +1,8 @@
 <template>
     <div class="w-100">
-        <v-sheet class="d-flex justify-center flex-wrap text-center mx-auto px-4" width="100%">
+        <v-sheet class="d-flex justify-center flex-wrap text-center mx-auto" width="100%">
             <v-card-text>
-                <v-fab icon="mdi-plus" @click="newWidget" color="primary" location="end" 
-                    absolute
-                    app
-                    appear
-                ></v-fab>
+                <v-fab icon="mdi-plus" @click="newWidget" color="primary" location="end" absolute app appear></v-fab>
 
                 <v-alert type="error" :text="error" v-if="error"></v-alert>
 
@@ -17,70 +13,75 @@
                 <v-container class="ma-0" fluid>
                     <v-row>
                         <v-col>
-                            <v-container class="ma-0" fluid>
-                                <v-row>
-                                    <v-col v-for="widget, index in report.source" :key="widget.title"
-                                        @mouseover="hover = 'source' + index" @mouseout="hover = ''">
-                                        <v-card style="overflow: visible; position: relative;" :loading="loading" :title="formatString(widget.table)">
-                                            <v-card-text class="pa-1">
-                                                <div class="text-h6">
-                                                    <v-menu>
-                                                        <template v-slot:activator="{ props }">
-                                                            <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
-                                                                v-show="hover === 'source' + index || props['aria-expanded'] === 'true'"
-                                                                style="position: absolute; top: 0; right: 0;">
-                                                            </v-btn>
-                                                        </template>
+                            <div v-for="widget, index in report.source" :key="widget.title"
+                                @mouseover="hover = 'source' + index" @mouseout="hover = ''">
+                                <v-card style="overflow: visible; position: relative;" :loading="loading"
+                                    :title="formatString(widget.table)">
+                                    <v-card-text class="pa-1">
+                                        <div class="text-h6">
+                                            <v-menu>
+                                                <template v-slot:activator="{ props }">
+                                                    <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
+                                                        v-show="hover === 'source' + index || props['aria-expanded'] === 'true'"
+                                                        style="position: absolute; top: 0; right: 0;">
+                                                    </v-btn>
+                                                </template>
 
-                                                        <v-list>
-                                                            <v-list-item>
-                                                                <v-list-item-title
-                                                                    @click="editWidget(index, report.source)">Configure</v-list-item-title>
-                                                            </v-list-item>
-                                                            <v-list-item>
-                                                                <v-list-item-title
-                                                                    @click="deleteWidget(index, 'source')">Delete</v-list-item-title>
-                                                            </v-list-item>
-                                                            <v-list-item>
-                                                                <v-list-item-title @click="openSortable(report.source)">Sort Order</v-list-item-title>
-                                                            </v-list-item>
-                                                        </v-list>
-                                                    </v-menu>
-                                                </div>
+                                                <v-list>
+                                                    <v-list-item>
+                                                        <v-list-item-title
+                                                            @click="editWidget(index, report.source)">Configure</v-list-item-title>
+                                                    </v-list-item>
+                                                    <v-list-item>
+                                                        <v-list-item-title
+                                                            @click="deleteWidget(index, 'source')">Delete</v-list-item-title>
+                                                    </v-list-item>
+                                                    <v-list-item>
+                                                        <v-list-item-title @click="openSortable(report.source)">Sort
+                                                            Order</v-list-item-title>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </v-menu>
+                                        </div>
 
-                                                <div v-for="filter in widget.filters" :key="filter">
-                                                    {{ filter }}
-                                                    <SearchField :column="filter" :type="getFieldType(filter, widget.table)"
-                                                        :optionConfig="config.vars.options" :label="filter"
-                                                        v-model="report.params[filter]" :func="report.params?.func?.[filter]"
-                                                        @updateFunc="updateFunc"></SearchField>
-                                                </div>
-                                                
-                                                <v-text-field type="number" v-model="itemsPerPage" label="Limit"
-                                                    :error-messages="parseInt(itemsPerPage) === data?.length ? 'limit reached' : ''"
-                                                    @blur="fetchData"></v-text-field>
-                                            </v-card-text>
-                                        </v-card>
-                                    </v-col>
-                                </v-row>
+                                        <div v-for="filter in widget.filters" :key="filter">
+                                            <SearchField :column="filter" :type="getFieldType(filter, widget.table)"
+                                                :optionConfig="config.vars.options" :label="formatString(filter)"
+                                                v-model="report.params[filter]" :func="report.params?.func?.[filter]"
+                                                @updateFunc="updateFunc"></SearchField>
 
-                            </v-container>
+                                            <SearchField
+                                                v-if="['date', 'datetime', 'timestamp'].includes(getFieldType(filter, widget.table))"
+                                                :column="filter" :type="getFieldType(filter, widget.table)"
+                                                :optionConfig="config.vars.options"
+                                                :label="formatString('Compare ' + filter)"
+                                                v-model="report.compare[filter]"></SearchField>
+                                        </div>
+
+                                        <v-text-field type="number" v-model="itemsPerPage" label="Limit"
+                                            :error-messages="parseInt(itemsPerPage) === data?.length ? 'limit reached' : ''"
+                                            @blur="fetchData"></v-text-field>
+
+                                        <v-btn @click="report.params = {}">Reset</v-btn>
+                                    </v-card-text>
+                                </v-card>
+                            </div>
                         </v-col>
 
                         <v-col cols="10">
 
                             <v-container class="ma-0" fluid>
                                 <v-row>
-                                    <v-col cols="12" sm="6" md="3" v-for="widget, index in report.kpi" :key="widget.title"
-                                        @mouseover="hover = 'kpi' + index" @mouseout="hover = ''">
-                                        <v-card style="overflow: visible;">
+                                    <v-col cols="12" sm="6" md="3" v-for="widget, index in report.kpi"
+                                        :key="widget.title" @mouseover="hover = 'kpi' + index" @mouseout="hover = ''">
+                                        <v-card style="overflow: visible;" :title="widget.title">
                                             <v-card-text class="pa-1">
                                                 <div class="text-h6" style="position: relative;">
-                                                    {{ widget.title }}
                                                     <v-menu>
                                                         <template v-slot:activator="{ props }">
-                                                            <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
-                                                                v-show="hover === 'kpi' + index|| props['aria-expanded'] === 'true'"
+                                                            <v-btn color="primary" v-bind="props"
+                                                                icon="mdi-dots-vertical"
+                                                                v-show="hover === 'kpi' + index || props['aria-expanded'] === 'true'"
                                                                 style="position: absolute; top: -10px; right: -10px;">
                                                             </v-btn>
                                                         </template>
@@ -95,13 +96,15 @@
                                                                     @click="deleteWidget(index, 'kpi')">Delete</v-list-item-title>
                                                             </v-list-item>
                                                             <v-list-item>
-                                                                <v-list-item-title @click="openSortable(report.kpi)">Sort Order</v-list-item-title>
+                                                                <v-list-item-title
+                                                                    @click="openSortable(report.kpi)">Sort
+                                                                    Order</v-list-item-title>
                                                             </v-list-item>
                                                         </v-list>
                                                     </v-menu>
                                                 </div>
                                                 <div class="text-body-2">
-                                                    {{ applyFunc(widget, data) }}
+                                                    <CompareValue :newVal="applyFunc(widget, data, true)" :oldVal="applyFunc(widget, compareData, true)" :format="widget.format"></CompareValue>
                                                 </div>
                                             </v-card-text>
                                         </v-card>
@@ -118,7 +121,8 @@
                                                 <div class="text-h6">
                                                     <v-menu>
                                                         <template v-slot:activator="{ props }">
-                                                            <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
+                                                            <v-btn color="primary" v-bind="props"
+                                                                icon="mdi-dots-vertical"
                                                                 v-show="hover === 'graph' + index || props['aria-expanded'] === 'true'"
                                                                 style="position: absolute; top: 0; right: 0;">
                                                             </v-btn>
@@ -134,7 +138,9 @@
                                                                     @click="deleteWidget(index, 'graph')">Delete</v-list-item-title>
                                                             </v-list-item>
                                                             <v-list-item>
-                                                                <v-list-item-title @click="openSortable(report.graph)">Sort Order</v-list-item-title>
+                                                                <v-list-item-title
+                                                                    @click="openSortable(report.graph)">Sort
+                                                                    Order</v-list-item-title>
                                                             </v-list-item>
                                                         </v-list>
                                                     </v-menu>
@@ -148,7 +154,8 @@
                                 </v-row>
                             </v-container>
 
-                            <v-table v-for="widget, index in report.keyValue" :key="widget.title" @mouseover="hover = 'keyValue' + index" @mouseout="hover = ''">
+                            <v-table v-for="widget, index in report.keyValue" :key="widget.title"
+                                @mouseover="hover = 'keyValue' + index" @mouseout="hover = ''">
                                 <template v-slot:[`top`]>
                                     <h2 style="overflow: visible; position: relative;">
                                         <v-menu>
@@ -161,7 +168,8 @@
 
                                             <v-list>
                                                 <v-list-item>
-                                                    <v-list-item-title @click="addColumn(widget)">Add row</v-list-item-title>
+                                                    <v-list-item-title @click="addColumn(widget)">Add
+                                                        row</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item>
                                                     <v-list-item-title
@@ -172,7 +180,8 @@
                                                         @click="deleteWidget(index, 'keyValue')">Delete</v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item>
-                                                    <v-list-item-title @click="openSortable(widget.columns)">Sort Rows</v-list-item-title>
+                                                    <v-list-item-title @click="openSortable(widget.columns)">Sort
+                                                        Rows</v-list-item-title>
                                                 </v-list-item>
                                             </v-list>
                                         </v-menu>
@@ -180,14 +189,13 @@
                                 </template>
 
                                 <tbody>
-                                    <tr
-                                        v-for="column, columnIndex in widget.columns" :key="column.key"
-                                    >
+                                    <tr v-for="column, columnIndex in widget.columns" :key="column.key">
                                         <td>{{ column.title }}</td>
                                         <td>
                                             {{ applyFunc(column, data) }}
                                         </td>
-                                        <td @mouseover="hover = 'keyValueColumn' + index + '_' + columnIndex" @mouseout="hover = ''">
+                                        <td @mouseover="hover = 'keyValueColumn' + index + '_' + columnIndex"
+                                            @mouseout="hover = ''">
                                             <v-menu v-if="columnIndex > 0">
                                                 <template v-slot:activator="{ props }">
                                                     <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
@@ -206,7 +214,8 @@
                                                             @click="deleteColumn(columnIndex, index)">Delete</v-list-item-title>
                                                     </v-list-item>
                                                     <v-list-item>
-                                                        <v-list-item-title @click="openSortable(report.dataTable)">Sort Order</v-list-item-title>
+                                                        <v-list-item-title @click="openSortable(report.dataTable)">Sort
+                                                            Order</v-list-item-title>
                                                     </v-list-item>
                                                 </v-list>
                                             </v-menu>
@@ -216,14 +225,15 @@
                             </v-table>
 
                             <v-data-table v-for="widget, index in report.dataTable" :key="widget.title"
-                                :items="getItems(widget)" @mouseover="hover = 'dataTable' + index" @mouseout="hover = ''"
-                                items-per-page-text="">
+                                :items="getItems(widget)" @mouseover="hover = 'dataTable' + index"
+                                @mouseout="hover = ''" items-per-page-text="">
                                 <template v-slot:headers="{ columns, isSorted, getSortIcon, toggleSort }">
                                     <tr>
                                         <template v-for="column, columnIndex in columns" :key="column.key">
-                                            <td @mouseover.stop="hover = 'dataTableColumn' + index + '_' + columnIndex" @mouseout="hover = ''" style="position: relative;">
+                                            <td @mouseover.stop="hover = 'dataTableColumn' + index + '_' + columnIndex"
+                                                @mouseout="hover = ''" style="position: relative;">
                                                 <span class="mr-2 cursor-pointer" @click="() => toggleSort(column)">{{
-                                                    column.title }}</span>
+                    column.title }}</span>
                                                 <template v-if="isSorted(column)">
                                                     <v-icon :icon="getSortIcon(column)"></v-icon>
                                                 </template>
@@ -248,7 +258,9 @@
                                                                 @click="deleteColumn(columnIndex, index)">Delete</v-list-item-title>
                                                         </v-list-item>
                                                         <v-list-item>
-                                                            <v-list-item-title @click="openSortable(report.dataTable)">Sort Order</v-list-item-title>
+                                                            <v-list-item-title
+                                                                @click="openSortable(report.dataTable)">Sort
+                                                                Order</v-list-item-title>
                                                         </v-list-item>
                                                     </v-list>
                                                 </v-menu>
@@ -267,7 +279,8 @@
 
                                         <v-list>
                                             <v-list-item>
-                                                <v-list-item-title @click="addColumn(widget)">Add column</v-list-item-title>
+                                                <v-list-item-title @click="addColumn(widget)">Add
+                                                    column</v-list-item-title>
                                             </v-list-item>
                                             <v-list-item>
                                                 <v-list-item-title
@@ -278,7 +291,8 @@
                                                     @click="deleteWidget(index, 'dataTable')">Delete</v-list-item-title>
                                             </v-list-item>
                                             <v-list-item>
-                                                <v-list-item-title @click="openSortable(widget.columns)">Sort Columns</v-list-item-title>
+                                                <v-list-item-title @click="openSortable(widget.columns)">Sort
+                                                    Columns</v-list-item-title>
                                             </v-list-item>
                                         </v-list>
                                     </v-menu>
@@ -297,32 +311,42 @@
                         v-model="widget.type"></v-select>
                     <v-select label="Table" v-if="['source'].includes(widget.type)" v-model="widget.table"
                         :items="Object.keys(filteredTables)" />
-                    <v-text-field label="Title" v-if="['kpi', 'graph', 'keyValue'].includes(widget.type)" v-model="widget.title"></v-text-field>
-                    <v-select label="Source" v-if="['kpi', 'dataTable', 'graph', 'filter', 'keyValue'].includes(widget.type)"
+                    <v-text-field label="Title" v-if="['kpi', 'graph', 'keyValue'].includes(widget.type)"
+                        v-model="widget.title"></v-text-field>
+                    <v-select label="Source"
+                        v-if="['kpi', 'dataTable', 'graph', 'filter', 'keyValue'].includes(widget.type)"
                         :items="report.source" v-model="widget.source" item-title="table" item-value="table"></v-select>
-                    <v-autocomplete label="Columns" v-if="['source'].includes(widget.type)" :items="config.tables[widget.table]"
-                        v-model="widget.columns" item-title="name" item-value="name" :disabled="!widget.table" multiple
-                        chips clearable auto-select-first="exact"></v-autocomplete>
-                    <v-autocomplete label="Filters" v-if="['source'].includes(widget.type)" :items="config.tables[widget.table]"
-                        v-model="widget.filters" item-title="name" item-value="name" :disabled="!widget.table" multiple
-                        chips clearable auto-select-first="exact"></v-autocomplete>
+                    <v-autocomplete label="Columns" v-if="['source'].includes(widget.type)"
+                        :items="config.tables[widget.table]" v-model="widget.columns" item-title="name"
+                        item-value="name" :disabled="!widget.table" multiple chips clearable
+                        auto-select-first="exact"></v-autocomplete>
+                    <v-autocomplete label="Filters" v-if="['source'].includes(widget.type)"
+                        :items="config.tables[widget.table]" v-model="widget.filters" item-title="name"
+                        item-value="name" :disabled="!widget.table" multiple chips clearable
+                        auto-select-first="exact"></v-autocomplete>
                     <v-select label="Key" v-if="['kpi', 'graph', 'filter'].includes(widget.type)"
-                        :items="report.source[0].columns.concat(['custom'])" v-model="widget.key" item-title="name" item-value="name"
-                        :disabled="!widget.source"></v-select>
-                    <v-text-field label="Row formula" v-if="['kpi', 'graph'].includes(widget.type) && widget.key === 'custom'" v-model="widget.row_formula" :disabled="widget.key !== 'custom'"></v-text-field>
+                        :items="report.source[0].columns.concat(['custom'])" v-model="widget.key" item-title="name"
+                        item-value="name" :disabled="!widget.source"></v-select>
+                    <v-text-field label="Row formula"
+                        v-if="['kpi', 'graph'].includes(widget.type) && widget.key === 'custom'"
+                        v-model="widget.row_formula" :disabled="widget.key !== 'custom'"></v-text-field>
                     <v-select label="Table Formula" v-if="['kpi', 'graph'].includes(widget.type)" :items="funcs"
                         v-model="widget.table_func"></v-select>
-                    <v-text-field label="Custom table formula" v-if="['kpi'].includes(widget.type) && widget.table_func === 'custom'" v-model="widget.table_formula"
-                        :disabled="widget.table_func !== 'custom'"></v-text-field>
+                    <v-text-field label="Custom table formula"
+                        v-if="['kpi'].includes(widget.type) && widget.table_func === 'custom'"
+                        v-model="widget.table_formula" :disabled="widget.table_func !== 'custom'"></v-text-field>
                     <v-select label="Group By" v-if="['dataTable', 'graph',].includes(widget.type)"
                         :items="report.source[0].columns" v-model="widget.groupBy" item-title="name"
                         item-value="name"></v-select>
-                    <v-text-field label="Group by formula" v-if="['dataTable', 'graph',].includes(widget.type)" v-model="widget.groupby_formula"  messages="e.g. new Date(date).toLocaleString('default', { month: 'long', year: 'numeric' })"></v-text-field>
+                    <v-text-field label="Group by formula" v-if="['dataTable', 'graph',].includes(widget.type)"
+                        v-model="widget.groupby_formula"
+                        messages="e.g. new Date(date).toLocaleString('default', { month: 'long', year: 'numeric' })"></v-text-field>
                     <v-select label="Format" v-if="['kpi'].includes(widget.type)" :items="['currency']"
                         v-model="widget.format"></v-select>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn variant="flat" color="primary" :disabled="!widgetValid" @click="saveWidget" text="Save"></v-btn>
+                    <v-btn variant="flat" color="primary" :disabled="!widgetValid" @click="saveWidget"
+                        text="Save"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -341,7 +365,8 @@
                     <v-select label="Format" :items="['currency']" v-model="column.format"></v-select>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn variant="flat" color="primary" :disabled="!columnValid" @click="saveColumn" text="Save"></v-btn>
+                    <v-btn variant="flat" color="primary" :disabled="!columnValid" @click="saveColumn"
+                        text="Save"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -367,12 +392,14 @@ import qs from "qs";
 import SearchField from "./SearchField";
 import ReportChart from "./ReportChart";
 import draggable from 'vuedraggable'
+import CompareValue from "./CompareValue";
 
 export default {
     components: {
         SearchField,
         ReportChart,
         draggable,
+        CompareValue,
     },
     data: function () {
         return {
@@ -380,8 +407,9 @@ export default {
                 tables: {},
             },
             data: [],
+            compareData: [],
             report: {
-                name: '',
+                title: '',
                 source: [],
                 kpi: [],
                 dataTable: [], // group by + heading: title, key, func, conditions
@@ -389,6 +417,18 @@ export default {
                 graph: [], // heading, type, value, group by
                 params: {},
                 keyValue: {},
+                compare: {},
+            },
+            defaultReport: {
+                title: 'Untitled',
+                source: [],
+                kpi: [],
+                dataTable: [], // group by + heading: title, key, func, conditions
+                filter: [], // keys
+                graph: [], // heading, type, value, group by
+                params: {},
+                keyValue: {},
+                compare: {},
             },
             hover: '',
             source: {},
@@ -422,10 +462,11 @@ export default {
         fetchData: async function () {
             let data = {
                 cmd: 'get',
-                section: this.report.source[0]?.table,
+                section: this.report.source?.[0]?.table,
                 fields: this.report.params,
+                compare: this.report.compare,
                 itemsPerPage: this.itemsPerPage,
-                columns: this.report.source[0]?.columns,
+                columns: this.report.source?.[0]?.columns,
             };
 
             const params = qs.stringify(data);
@@ -437,6 +478,7 @@ export default {
             try {
                 result = await api.get('?' + params.toString(), data);
                 this.data = result.data?.data;
+                this.compareData = result.data?.compare_data;
             } catch (error) {
                 console.log(error)
                 this.error = error.message;
@@ -528,7 +570,7 @@ export default {
 
             return total;
         },
-        applyFunc: function (widget, data) {
+        applyFunc: function (widget, data, raw) {
             if (!data) {
                 return false;
             }
@@ -548,6 +590,10 @@ export default {
                 case 'custom':
                     total = eval(total + widget.table_formula)
                     break;
+            }
+
+            if (raw) {
+                return total;
             }
 
             let formatOptions = {
@@ -612,8 +658,12 @@ export default {
         },
         saveReport: async function () {
             let reportData = JSON.stringify(this.report);
+            if (reportData === JSON.stringify(this.defaultReport)) {
+                return false;
+            }
+
             localStorage.report = reportData;
-            
+
             this.loading = true;
             this.error = '';
 
@@ -639,6 +689,9 @@ export default {
         },
         loadReport: async function () {
             if (!parseInt(this.$route.params.id)) {
+                this.report = { ...this.defaultReport };
+                this.reportTitle = this.report.title;
+                this.data = {};
                 return;
             }
 
@@ -653,8 +706,13 @@ export default {
             }
 
             this.loading = false;
-            
-            this.report = JSON.parse(data.report.report);
+
+            let report = JSON.parse(data.report.report);
+            if (typeof report.compare !== 'object') {
+                report.compare = {};
+            }
+
+            this.report = report;
             if (!this.report.title) {
                 this.report.title = 'untitled';
             }
@@ -673,10 +731,10 @@ export default {
         },
         getFieldType: function (column, table) {
             return this.config.tables[table]?.find(item => item.name === column)?.type;
-        },        
-		formatString: function (string) {
-			return util.formatString(string);
-		},        
+        },
+        formatString: function (string) {
+            return util.formatString(string);
+        },
         openSortable: function (obj) {
             this.sortOrder = obj;
             this.sortDialog = true;
@@ -686,12 +744,16 @@ export default {
                 this.report.title = this.reportTitle;
                 this.reloadConfig = true;
             }
+        },
+        compare: function (newVal, oldVal) {
+            let perc = (newVal - oldVal) / oldVal;
+            return newVal + ' ' + perc.toFixed(1) + '%';
         }
     },
     computed: {
-		base() {
-			return util.base();
-		},
+        base() {
+            return util.base();
+        },
         widgetValid: function () {
             switch (this.widget.type) {
                 case 'kpi':
@@ -711,14 +773,14 @@ export default {
             }
 
             let configTables = [
-                'cms_activation', 
-                'cms_filters', 
-                'cms_login_attempts', 
-                'cms_logs', 
-                'cms_privileges', 
-                'cms_reports', 
-                'cms_trusted_devices', 
-                'email_templates', 
+                'cms_activation',
+                'cms_filters',
+                'cms_login_attempts',
+                'cms_logs',
+                'cms_privileges',
+                'cms_reports',
+                'cms_trusted_devices',
+                'email_templates',
                 'files'
             ];
 
@@ -746,9 +808,15 @@ export default {
             },
             deep: true
         },
-		$route() {
-			this.loadReport();
-		},
+        'report.compare': {
+            handler: function () {
+                this.fetchData();
+            },
+            deep: true
+        },
+        $route() {
+            this.loadReport();
+        },
     },
     async mounted() {
         /*

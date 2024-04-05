@@ -45,6 +45,8 @@
 </template>
 
 <script>
+import moment from 'moment';
+
 export default {
     name: "DateRange",
     props: {
@@ -133,6 +135,9 @@ export default {
             
             await this.$nextTick();
             this.specialPressed = false;
+        },
+        formatDate: function(value) {
+            return moment(value).format('DD-MMM-YYYY')
         }
     },
     watch: {
@@ -167,7 +172,7 @@ export default {
     },
     computed: {
         dateRangeText() {
-            return this.value?.[0] ? this.parseDate(this.value[0]) + ' - ' + this.parseDate(this.value[this.value.length - 1]) : '-';
+            return this.value?.[0] ? this.formatDate(this.value[0]) + ' - ' + this.formatDate(this.value[this.value.length - 1]) : '-';
         },
     },
     mounted: function () {

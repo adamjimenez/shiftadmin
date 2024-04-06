@@ -4,7 +4,7 @@
             <v-text-field v-model="dateRangeText" :label="label" readonly v-bind="props"></v-text-field>
         </template>
         <v-card v-bind="$attrs">
-                <v-container class="bg-black">
+                <v-container>
                     <v-row>
                         <v-col>
                             <v-list v-model:selected="special">
@@ -37,7 +37,7 @@
                                 </v-list-item>
                             </v-list>
                         </v-col>
-                        <v-date-picker v-model="value" no-title bg-color="black" multiple="range"></v-date-picker>
+                        <v-date-picker v-model="value" no-title multiple="range"></v-date-picker>
                     </v-row>
                 </v-container>
         </v-card>

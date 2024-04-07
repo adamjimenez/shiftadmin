@@ -193,7 +193,7 @@ export default {
             this.fields = fields;
 
             let title = this.vars?.branding?.title ? this.vars.branding.title : 'ADMIN';
-            document.title = title + ' | ' + this.section + ' | ' + this.id;
+            document.title = title + ' | ' + this.formatString(this.section) + ' | ' + this.id;
 
             // parent fields
             const urlParams = new URLSearchParams(window.location.search);

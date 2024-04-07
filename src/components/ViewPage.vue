@@ -30,7 +30,7 @@
             <v-tabs v-model="tab" style="min-height: 50px;">
                 <v-tab value="summary">{{ section }}</v-tab>
                 <template v-if="vars.subsections && vars.subsections[section]?.length">
-                    <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection.subsection" :value="subsection.subsection">
+                    <v-tab v-for="subsection in vars?.subsections[section]" :key="subsection.subsection" :value="subsection.subsection.replaceAll('_', ' ')">
                         <v-icon v-if="subsection.icon" :icon="subsection.icon" start></v-icon>
                         {{ subsection.title }}
                     </v-tab>
@@ -219,7 +219,7 @@ export default {
             this.fields = result.data.fields;
 
             let title = this.vars?.branding?.title ? this.vars.branding.title : 'ADMIN';
-            document.title = title + ' | ' + this.section + ' | ' + this.id;
+            document.title = title + ' | ' + this.formatString(this.section) + ' | ' + this.id;
 
             // back button to go back to parent section
             const urlParams = new URLSearchParams(window.location.search);

@@ -259,7 +259,7 @@ export default {
             }
 
             let title = this.vars?.branding?.title ? this.vars.branding.title : 'ADMIN';
-            document.title = title + ' | ' + this.internalSection;
+            document.title = title + ' | ' + this.formatString(this.internalSection);
 
             await this.$nextTick();
 

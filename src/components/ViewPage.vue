@@ -61,7 +61,7 @@
                                 <v-rating v-model="data[value.column]" :length="5" :size="32" readonly></v-rating>
                             </span>
                             <a v-else-if="['file', 'upload'].includes(value.type)" :href="apiRoot + '?cmd=file&f=' + data[value.column]" target="_blank">
-                                <img :src="apiRoot + '?cmd=file&f=' + data[value.column] + '&w=320&h=240'" />
+                                <img :src="apiRoot + '?cmd=file&f=' + data[value.column] + '&w=320&h=240'" style="max-height: 300px; max-width: 300px;" />
                                 <div>{{ data[value.column] }}</div>
                             </a>
                             <div v-else-if="['files', 'uploads'].includes(value.type)">

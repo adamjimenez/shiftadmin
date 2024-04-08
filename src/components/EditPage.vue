@@ -64,7 +64,7 @@
                             <v-select v-else-if="['select', 'select_parent', 'select_multiple'].includes(value.type)"
                                 :label="formatString(key)" v-model="data[value.column]" :error-messages="errors[key]"
                                 :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'"
-                                :chips="value.type === 'select_multiple'" />
+                                :chips="value.type === 'select_multiple'" clearable />
                             <v-autocomplete v-else-if="value.type === 'combo'" :label="formatString(key)"
                                 v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]"
                                 @update:search="updateCombo($event, key)" />

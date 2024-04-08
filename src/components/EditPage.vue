@@ -48,7 +48,7 @@
                                 v-model="data[value.column]" :error-messages="errors[key]" />
                             <div v-else-if="value.type === 'editor'">
                                 <div class="ma-3">{{ formatString(key) }}</div>
-                                <editor v-model="data[value.column]" :init="{
+                                <editor-field v-model="data[value.column]" :init="{
                                     plugins: 'code link lists media image',
                                     toolbar: 'insertfile undo redo | styleselect | formatselect  | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | hr link image forecolor backcolor | components',
                                     branding: false,
@@ -86,39 +86,12 @@
 import api from "../services/api";
 import util from "../services/util";
 import PolygonField from "./PolygonField";
-
-import 'tinymce'
-import Editor from '@tinymce/tinymce-vue';
-/* Required TinyMCE components */
-import 'tinymce/icons/default/icons.min.js';
-import 'tinymce/themes/silver/theme.min.js';
-import 'tinymce/models/dom/model.min.js';
-
-/* Import a skin (can be a custom skin instead of the default) */
-import 'tinymce/skins/ui/oxide/skin.js';
-import 'tinymce/skins/ui/oxide/content.min.css';
-
-/* Import plugins */
-import 'tinymce/plugins/advlist';
-import 'tinymce/plugins/code';
-import 'tinymce/plugins/emoticons';
-import 'tinymce/plugins/emoticons/js/emojis';
-import 'tinymce/plugins/link';
-import 'tinymce/plugins/lists';
-import 'tinymce/plugins/table';
-import 'tinymce/plugins/media';
-import 'tinymce/plugins/image';
-
-/* content UI CSS is required */
-import 'tinymce/skins/ui/oxide/content.js';
-
-/* The default content CSS can be changed or replaced with appropriate CSS for the editor content. */
-import 'tinymce/skins/content/default/content.js';
+import EditorField from "./EditorField";
 
 export default {
     components: {
         PolygonField,
-        'editor': Editor
+        EditorField
     },
     beforeRouteLeave(to, from, next) {
         if (!this.dirty || confirm('You have unsaved changes. Do you want to continue?')) {

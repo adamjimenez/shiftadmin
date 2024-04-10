@@ -85,11 +85,11 @@ export default {
             if (typeof this.column === 'function') {
                 filepath = '/uploads' + filepath
                 this.column(filepath, { title: filepath });
-            } else {
-                this.$emit('fileSelected', { value: filepath.substr(1), column: this.column });
+                this.dialog = false;
+            } else if (this.column) {
+                this.$emit('fileSelected', { value: filepath.substr(1), column: this.column });                
+                this.dialog = false;
             }
-
-            this.dialog = false;
         },
         upLevel: function () {
             let index = this.path.substr(0, this.path.length - 1).lastIndexOf("/");

@@ -146,7 +146,8 @@
                                                     </v-menu>
                                                 </div>
                                                 <div class="text-body-2" style="max-height: 400px;">
-                                                    <ReportChart :items="getItems(widget)"></ReportChart>
+                                                    {{ widget.format }}
+                                                    <ReportChart :type="widget.graph_type" :items="getItems(widget)" :label="formatString(widget.key)" :format="widget.format"></ReportChart>
                                                 </div>
                                             </v-card-text>
                                         </v-card>
@@ -313,6 +314,8 @@
                         :items="Object.keys(filteredTables)" />
                     <v-text-field label="Title" v-if="['kpi', 'graph', 'keyValue'].includes(widget.type)"
                         v-model="widget.title"></v-text-field>
+                    <v-select label="Graph type" v-if="['graph'].includes(widget.type)" v-model="widget.graph_type"
+                        :items="['bar', 'line']" />
                     <v-select label="Source"
                         v-if="['kpi', 'dataTable', 'graph', 'filter', 'keyValue'].includes(widget.type)"
                         :items="report.source" v-model="widget.source" item-title="table" item-value="table"></v-select>
@@ -643,7 +646,7 @@ export default {
 
                 if (widget.type === 'graph') {
                     item.label = index;
-                    item.total = this.applyFunc(widget, group);
+                    item.total = this.applyFunc(widget, group, true);
                 } else {
                     item[widget.groupBy] = index;
                     widget.columns?.forEach(column => {

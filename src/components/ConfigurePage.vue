@@ -5,10 +5,16 @@
             <v-tab value="menu">Menu</v-tab>
             <v-tab value="options">Options</v-tab>
             <v-tab value="general">General</v-tab>
+            <v-spacer></v-spacer>
+            <div class="ma-3">
+                ShiftLib v{{ data.version || '?' }}
+            </div>
         </v-tabs>
 
         <v-card :loading="loading">
             <v-alert v-if="error" type="error" :text="error"></v-alert>
+
+            <v-alert v-if="data.version !== data.latest" type="info" :text="'Version ' + data.latest + ' of ShiftLib is available'" @click="getUpdate" style="cursor: pointer;"></v-alert>
 
             <v-card-actions>
                 <v-btn v-if="tab !== 'tables'" color="primary" variant="flat" @click="save"
@@ -733,6 +739,9 @@ export default {
         formatString: function (string) {
             return util.formatString(string);
         },
+        getUpdate: function () {
+            window.open('https://github.com/adamjimenez/shiftlib');
+        }
     },
     computed: {
         isMenuValid: function () {

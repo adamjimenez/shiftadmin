@@ -825,7 +825,7 @@ export default {
     },
     async mounted() {
         /*
-        if (!['Business'].includes(util.getEdition())) {
+        if (!['Business', 'Trial'].includes(util.getEdition())) {
             this.$router.push(util.base() + 'upgrade');
             return;
         }

@@ -7,14 +7,30 @@
                     Effortless admin
                 </div>
 
-                <p>
-                    Current license:
-                    {{ data.edition }}
-                </p>
-                <p v-if="data.subscription_end != '0000-00-00'">
-                    License end:
-                    {{ formatDate(data.subscription_end) }}
-                </p>
+                <v-container>
+                <v-row>
+                    <v-col>
+                        <p>
+                            Current license:
+                            {{ data.edition }}
+                        </p>
+                        <p v-if="data.edition !== 'Trial' && data.subscription_end != '0000-00-00'">
+                            License end:
+                            {{ formatDate(data.subscription_end) }}
+                        </p>
+                    </v-col>
+                    <v-col class="text-right">
+                        <v-btn color="primary" @click="beginTrial" v-if="data.edition === 'Unlicensed' && data.trial_end === '0000-00-00'">
+                            Begin 30-day free trial
+                        </v-btn>
+                        <span v-else-if="['Trial', 'Unlicensed'].includes(data.edition)">
+                            Trial end:
+                            {{ formatDate(data.trial_end) }}
+                        </span>
+                    </v-col>
+                </v-row>
+                </v-container>
+
             </v-card-text>
         </v-card>
 
@@ -107,7 +123,7 @@ export default {
                     'Everything in Starter',
                     'Import/ export',
                     'Custom CMS buttons',
-                    'Custom pages',
+                    'Bespoke admin sections',
                 ],
             },
             {
@@ -118,7 +134,7 @@ export default {
                     'Everything in Pro',
                     'User privileges',
                     'Bulk editing',
-                    'Reporting tool beta',
+                    'Report builder',
                 ],
             },
         ]
@@ -127,12 +143,31 @@ export default {
     methods: {
         fetchData: async function () {
             const response = await fetch('https://genieadmin.com/api/?host=' + location.host);
-            const data = await response.json();
-
-            this.data = data;
+            this.data = await response.json();
+            util.setEdition(this.data.edition);
         },
         formatDate: function (value) {
             return util.formatDate(value);
+        },
+        beginTrial: async function () {
+            let confirmed = confirm('Begin 30 day trial?');
+
+            if (!confirmed) {
+                return;
+            }
+
+            const params = new URLSearchParams();
+            params.append('trial', 1);
+
+            await fetch('https://genieadmin.com/api/?host=' + location.host, {
+                method: 'post',
+                body: params,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded' // For POST requests
+                }            
+            });
+
+            this.fetchData();
         }
     },
 

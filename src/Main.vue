@@ -1,24 +1,25 @@
 <template>
 	<v-app :class="mobile ? 'mobile' : 'desktop'">
 		<v-app-bar color="secondary">
-			<v-app-bar-nav-icon v-if="!mobile || !showSearch" variant="text" color="grey-lighten-1" @click.stop="if (mobile) { drawer = !drawer; } else { rail = !rail }"></v-app-bar-nav-icon>
-			
+			<v-app-bar-nav-icon v-if="!mobile || !showSearch" variant="text" color="grey-lighten-1"
+				@click.stop="if (mobile) { drawer = !drawer; } else { rail = !rail }"></v-app-bar-nav-icon>
+
 			<v-btn v-if="!mobile" :to=base variant="plain">
 				{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
 			</v-btn>
 
 			<div class="text-align-center w-100 d-flex flex-row justify-center" v-if="showSearch">
-				<v-combobox v-if="section && fields.length" v-model="search" :items="searchItems" @update:search="updateSearch"
-					@update:model-value="afterSelection" @keydown.enter="quickSearch"
-					ref="autocomplete" hide-details hide-no-data single-line rounded
-					variant="solo-filled" no-filter class="mx-5" style="max-width: 800px;"
-					:label="'Search ' + section"
-					:placeholder="'Search ' + section"
-					@focus="onSearchFocus"
-					>
+				<v-combobox v-if="section && fields.length" v-model="search" :items="searchItems"
+					@update:search="updateSearch" @update:model-value="afterSelection" @keydown.enter="quickSearch"
+					ref="autocomplete" hide-details hide-no-data single-line rounded variant="solo-filled" no-filter
+					class="mx-5" style="max-width: 800px;" :label="'Search ' + section"
+					:placeholder="'Search ' + section" @focus="onSearchFocus">
 					<template v-slot:prepend-inner>
-						<v-icon icon="mdi:mdi-arrow-left" v-if="searchFocussed" @click.stop="searchFocussed = false" @mousedown.stop></v-icon>
-						<v-app-bar-nav-icon v-else-if="mobile" color="grey-lighten-1" @click.stop="if (mobile) { drawer = !drawer; } else { rail = !rail }" @mousedown.stop></v-app-bar-nav-icon>
+						<v-icon icon="mdi:mdi-arrow-left" v-if="searchFocussed" @click.stop="searchFocussed = false"
+							@mousedown.stop></v-icon>
+						<v-app-bar-nav-icon v-else-if="mobile" color="grey-lighten-1"
+							@click.stop="if (mobile) { drawer = !drawer; } else { rail = !rail }"
+							@mousedown.stop></v-app-bar-nav-icon>
 						<v-icon v-else icon="mdi:mdi-magnify"></v-icon>
 					</template>
 					<template v-slot:append-inner>
@@ -48,7 +49,8 @@
 					{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
 				</v-list-item>
 
-				<v-list-item :title="'Upgrade'" prepend-icon="mdi-rocket-launch" :to="base + 'upgrade'" base-color="red" v-if="edition !== 'Business'" />
+				<v-list-item :title="'Upgrade'" prepend-icon="mdi-rocket-launch" :to="base + 'upgrade'" base-color="red"
+					v-if="edition !== 'Business'" />
 
 				<div v-for="item in vars?.menu" :key="item">
 					<v-list-group v-if="item.children" :prepend-icon="item.icon ? item.icon : 'mdi-minus'"
@@ -57,23 +59,28 @@
 							<v-list-item v-bind="props" :title="item.title" />
 						</template>
 
-						<v-list-item v-for="child in item.children" :key="child.to" :title="child.title" :value="child.to" :to="child.target_blank ? child.to : base + child.to" :target="child.target_blank ? '_blank' : ''">
+						<v-list-item v-for="child in item.children" :key="child.to" :title="child.title"
+							:value="child.to" :to="child.target_blank ? child.to : base + child.to"
+							:target="child.target_blank ? '_blank' : ''">
 							<template v-slot:prepend>
-								<v-badge :content="parseInt(child.count).toLocaleString()" color="error" v-if="child.count > 0">
+								<v-badge :content="parseInt(child.count).toLocaleString()" color="error"
+									v-if="child.count > 0">
 									<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" />
 								</v-badge>
 								<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" v-else />
 							</template>
 							<template v-slot:append>
-								<v-btn icon="mdi-delete" v-if="child.filter_id" @click.stop="deleteFilter(child.filter_id)"
-									variant="text" size="x-small" />
+								<v-btn icon="mdi-delete" v-if="child.filter_id"
+									@click.stop="deleteFilter(child.filter_id)" variant="text" size="x-small" />
 							</template>
 						</v-list-item>
 					</v-list-group>
 
-					<v-list-item v-else :title="item.title" :value="item.to" :to="item.target_blank ? item.to : base + item.to" :target="item.target_blank ? '_blank' : ''">
+					<v-list-item v-else :title="item.title" :value="item.to"
+						:to="item.target_blank ? item.to : base + item.to" :target="item.target_blank ? '_blank' : ''">
 						<template v-slot:prepend>
-							<v-badge :content="parseInt(child.count).toLocaleString()" color="error" v-if="item.count > 0">
+							<v-badge :content="parseInt(child.count).toLocaleString()" color="error"
+								v-if="item.count > 0">
 								<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" />
 							</v-badge>
 							<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" v-else />
@@ -87,23 +94,27 @@
 					</template>
 
 					<v-list-item title="New" prepend-icon="mdi-plus" :to="base + 'reports/0'" />
-					<v-list-item v-for="child in vars.reports" :key="child.to" :title="child.title" prepend-icon="mdi-minus" @click="openReport(child.id)">
+					<v-list-item v-for="child in vars.reports" :key="child.to" :title="child.title"
+						prepend-icon="mdi-minus" @click="openReport(child.id)">
 						<template v-slot:append>
-							<v-btn icon="mdi-delete" v-if="child.id" @click.stop="deleteReport(child.id)"
-								variant="text" size="x-small" />
+							<v-btn icon="mdi-delete" v-if="child.id" @click.stop="deleteReport(child.id)" variant="text"
+								size="x-small" />
 						</template>
 					</v-list-item>
 				</v-list-group>
 
-				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler" v-if="user?.admin === 1 || user?.privileges?.uploads > 0" />
-				<v-list-item title="Configure" prepend-icon="mdi-cog" :to="base + 'configure'" v-if="user?.admin === 1" />
+				<FileUploads ref="fileUploads" @fileSelected="fileSelectedHandler"
+					v-if="user?.admin === 1 || user?.privileges?.uploads > 0" />
+				<v-list-item title="Configure" prepend-icon="mdi-cog" :to="base + 'configure'"
+					v-if="user?.admin === 1" />
 			</v-list>
 		</v-navigation-drawer>
 
 		<v-main class="d-flex flex-column align-center justify-center">
 			<router-view ref="main" class="w-100 flex-grow-1" :vars="vars" :searchparams="searchParams"
-				@changeFields="changeFields" @changeHeaders="changeHeaders" @chooseFileUpload="chooseFileUpload" :fileSelected="fileSelected"
-				@message="message" :class="fullScreen ? 'fullScreen' : ''" :mobile="mobile" @configUpdated="fetchData" @updateCount="updateCount" />
+				@changeFields="changeFields" @changeHeaders="changeHeaders" @chooseFileUpload="chooseFileUpload"
+				:fileSelected="fileSelected" @message="message" :class="fullScreen ? 'fullScreen' : ''" :mobile="mobile"
+				@configUpdated="fetchData" @updateCount="updateCount" />
 		</v-main>
 
 		<v-dialog v-model="advancedDialog" max-width="600" scrollable>
@@ -113,10 +124,9 @@
 				<v-card-text>
 					<template v-for="field in fields" :key="field.type">
 						<v-list-item v-if="searchable.includes(field.type)">
-							<search-field :column="field.column" :type="field.type" :optionConfig="vars.options" :label="formatString(field.column)"
-								v-model="params[field.column]" :func="params?.func?.[field.column]"
-								@updateFunc="updateFunc"
-								></search-field>
+							<search-field :column="field.column" :type="field.type" :optionConfig="vars.options"
+								:label="formatString(field.column)" v-model="params[field.column]"
+								:func="params?.func?.[field.column]" @updateFunc="updateFunc"></search-field>
 						</v-list-item>
 					</template>
 				</v-card-text>
@@ -218,31 +228,31 @@ export default {
 				return;
 			}
 
-            let data = {
-                cmd: 'get',
-                section: this.$route.params.section,
-                fields: { s: this.search },
-                itemsPerPage: 10,
-                columns: this.fields.map(item => item.column)
-            };
+			let data = {
+				cmd: 'get',
+				section: this.$route.params.section,
+				fields: { s: this.search },
+				itemsPerPage: 10,
+				columns: this.fields.map(item => item.column)
+			};
 
-            const params = qs.stringify(data);
+			const params = qs.stringify(data);
 
-            this.loading = true;
-            this.error = '';
+			this.loading = true;
+			this.error = '';
 
-            let result = {};
-            try {
-                result = await api.get('?' + params.toString(), data);
-            } catch (error) {
-                console.log(error)
-            }
+			let result = {};
+			try {
+				result = await api.get('?' + params.toString(), data);
+			} catch (error) {
+				console.log(error)
+			}
 
-            if (result.data.error) {
-                this.error = result.data.error;
-            }
+			if (result.data.error) {
+				this.error = result.data.error;
+			}
 
-            this.loading = false;
+			this.loading = false;
 
 			// update search combo
 			let searchItems = [];
@@ -251,7 +261,7 @@ export default {
 				let title = '';
 				for (const [k, v] of Object.entries(item)) {
 					let field = this.fields.find(field => field.column === k);
-					if(!v || !['text'].includes(field?.type)) {
+					if (!v || !['text'].includes(field?.type)) {
 						continue;
 					}
 
@@ -289,7 +299,7 @@ export default {
 
 			console.log('do search update params')
 			this.searchParams = searchParams;
-			
+
 			this.advancedDialog = false;
 		},
 		saveSearch: async function () {
@@ -411,14 +421,19 @@ export default {
 			})
 		},
 		onSearchFocus: function () {
-			if (this.mobile) { 
-				this.searchFocussed = true; 
+			if (this.mobile) {
+				this.searchFocussed = true;
 			}
 		}
 	},
 
 	watch: {
-		$route: async function() {
+		$route: async function () {
+			if (util.getEdition() === 'Unlicensed') {
+				this.$router.push(util.base() + 'upgrade');
+				return;
+			}
+
 			// get params from qs
 			let query = this.$route.query
 			if (query) {

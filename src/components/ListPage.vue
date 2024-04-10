@@ -284,7 +284,7 @@ export default {
             let data = {};
 
             if (button === 'export') {
-                if (!['Pro', 'Business'].includes(util.getEdition())) {
+                if (!['Pro', 'Business', 'Trial'].includes(util.getEdition())) {
                     this.$router.push(util.base() + 'upgrade');
                     return;
                 }
@@ -292,7 +292,7 @@ export default {
                 this.$refs['importExport'].exportItems();
                 return
             } else if (button === 'import') {
-                if (!['Pro', 'Business'].includes(util.getEdition())) {
+                if (!['Pro', 'Business', 'Trial'].includes(util.getEdition())) {
                     this.$router.push(util.base() + 'upgrade');
                     return;
                 }
@@ -364,7 +364,7 @@ export default {
             }
 
             // custom button
-            if (!['Pro', 'Business'].includes(util.getEdition())) {
+            if (!['Pro', 'Business', 'Trial'].includes(util.getEdition())) {
                 this.$router.push(util.base() + 'upgrade');
                 return;
             }

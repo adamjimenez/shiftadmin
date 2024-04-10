@@ -40,6 +40,9 @@
                             <v-btn icon="mdi-sort" title="Sort" @click.stop="openSortable(index, fields)"></v-btn>
                             <v-btn icon="mdi-pencil"
                                 @click.stop="table = { id: index, name: index }; tableDialog = true;"></v-btn>
+
+                            <v-btn icon="mdi-xml" title="Code snippets" @click.stop="table = { id: index, name: index }; snippetsDialog = true;"></v-btn>
+
                             <v-btn icon="mdi-delete" @click.stop="deleteTable(index)"
                                 :disabled="['users'].includes(index)"></v-btn>
                         </v-expansion-panel-title>
@@ -167,6 +170,40 @@
             </v-card>
         </v-dialog>
 
+        <v-dialog v-model="snippetsDialog" max-width="600">
+            <v-card title="Snippets">
+                <v-card-text>
+                    <v-tabs v-model="snippetView">
+                        <v-tab value="view">View</v-tab>
+                        <v-tab value="list" :disabled="listCode === false">List</v-tab>
+                        <v-tab value="form">Form</v-tab>
+                    </v-tabs>
+
+                    <div v-if="snippetView === 'form'">
+                        <VCodeBlock
+                            :code="formCode"
+                            highlightjs
+                            lang="php"
+                        />
+                    </div>
+                    <div v-else-if="snippetView === 'list'">
+                        <VCodeBlock
+                            :code="listCode"
+                            highlightjs
+                            lang="php"
+                        />
+                    </div>
+                    <div v-else>
+                        <VCodeBlock
+                            :code="viewCode"
+                            highlightjs
+                            lang="php"
+                        />
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+
         <v-dialog v-model="fieldDialog" max-width="600">
             <v-card title="Field">
                 <v-card-text>
@@ -284,6 +321,7 @@
 </template>
 
 <script>
+import VCodeBlock from '@wdns/vue-code-block';
 import api from "../services/api";
 import draggable from 'vuedraggable';
 import util from "../services/util";
@@ -291,6 +329,7 @@ import util from "../services/util";
 export default {
     components: {
         draggable,
+        VCodeBlock,
     },
     beforeRouteLeave(to, from, next) {
         if (!this.dirty || confirm('You have unsaved changes. Do you want to continue?')) {
@@ -363,7 +402,9 @@ export default {
             sortSectionsDialog: false,
             dirty: false,
             hideConfigTables: true,
-            configTables: ['cms_activation', 'cms_filters', 'cms_login_attempts', 'cms_logs', 'cms_privileges', 'cms_reports', 'cms_trusted_devices', 'email_templates', 'files']
+            configTables: ['cms_activation', 'cms_multiple_select', 'cms_filters', 'cms_login_attempts', 'cms_logs', 'cms_privileges', 'cms_reports', 'cms_trusted_devices', 'email_templates', 'files'],
+            snippetsDialog: false,
+            snippetView: 'view',
         }
     },
     methods: {
@@ -430,6 +471,8 @@ export default {
         saveTable: async function () {
             this.error = '';
 
+            this.table.name = this.table.name.toLowerCase();
+
             this.loading = true;
             const result = await api.post('config.php?cmd=save_table', this.table);
             this.loading = false;
@@ -459,6 +502,8 @@ export default {
         },
         saveField: async function () {
             this.error = '';
+
+            this.field.name = this.field.name.toLowerCase();
 
             this.loading = true;
             const result = await api.post('config.php?cmd=save_field', this.field);
@@ -750,6 +795,96 @@ export default {
         },
         folders: function () {
             return this.data.vars.menu.filter(item => Array.isArray(item.children));
+        },
+        formCode: function () {
+            let code = `<?php
+// set cms section for fields and validation
+$cms->set_section('${this.table.name}');
+
+if (count($_POST)) {
+    // ajax form validation
+    $cms->submit_handler();
+}
+
+// load shiftlib js library
+load_js(['shiftlib']);
+?>
+
+<form method="post" sl-validate sl-hide sl-target="#success">`;
+
+    this.data.tables[this.table.name].forEach(field => {
+        if (!['id'].includes(field.name)) {
+            code += `
+    <p><?=$cms->get_field('${field.name}');?></p>`;
+        }
+    })
+
+    code += `
+    <button type="submit">Submit</button>
+</form>
+
+<div id="success" style="display: none;">
+    <p>
+        The form has been submitted!
+    </p>
+</div>
+`;
+
+            return code;
+        },
+        viewCode: function () {
+            let pageName = this.data.tables[this.table.name].find(item => item.type === 'page_name');
+
+            let condition = pageName ? '$request' : 1;
+
+            let code = `<?php
+$condition = ${condition}; // replace with $_GET var or whatever
+$content = $cms->get('${this.table.name}', $condition);
+?>
+
+`;
+
+            this.data.tables[this.table.name].forEach(field => {
+                let label = this.formatString(field.name);
+
+                if (['file', 'files', 'upload', 'uploads'].includes(field.type)) {
+                    code += `<p>${label}: <?=image($content['${field.name}']);?></p>\n`;
+                } else if (['date', 'datetime', 'timestamp'].includes(field.type)) {
+                    code += `<p>${label}: <?=dateformat('d-m-Y H:i:s', $content['${field.name}']);?></p>\n`;
+                } else {
+                    code += `<p>${label}: <?=$content['${field.name}'];?></p>\n`;
+                }
+            })
+
+            return code;
+        },
+        listCode: function () {
+            let id = this.data.tables[this.table.name].find(item => item.name === 'id');
+
+            if (!id) {
+                return false;
+            }
+
+            let code = `<?php
+$items = $cms->get('${this.table.name}');
+
+foreach ($items as $item):
+?>
+
+`;
+
+            this.data.tables[this.table.name].forEach(field => {
+                code += `<p>${this.formatString(field.name)}: <?=$content['${field.name}'];?></p>\n`;
+            })
+
+            code += `<hr>
+
+<?php
+endforeach;
+?>
+`;
+
+            return code;
         }
     },
     watch: {

@@ -813,7 +813,7 @@ load_js(['shiftlib']);
 <form method="post" sl-validate sl-hide sl-target="#success">`;
 
     this.data.tables[this.table.name].forEach(field => {
-        if (!['id'].includes(field.name)) {
+        if (!['id'].includes(field.name) && !['timestamp', 'position'].includes(field.type)) {
             code += `
     <p><?=$cms->get_field('${field.name}');?></p>`;
         }

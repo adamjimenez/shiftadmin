@@ -507,7 +507,7 @@ export default {
             this.widgetDialog = true;
         },
         deleteWidget: function (index, key) {
-            this.report[key] = this.report[key].splice(index, 1);
+            this.report[key].splice(index, 1);
         },
         saveWidget: function () {
             let widget = { ...this.widget };
@@ -558,7 +558,7 @@ export default {
             this.columnDialog = false;
         },
         deleteColumn: function (columnIndex, index) {
-            this.report.dataTable[index].columns = this.report.dataTable[index].columns.splice(columnIndex, 1);
+            this.report.dataTable[index].columns.splice(columnIndex, 1);
         },
         sumRows(widget, data) {
             let total = 0;

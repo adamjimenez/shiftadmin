@@ -346,7 +346,7 @@
                     <v-text-field label="Group by formula" v-if="['dataTable', 'graph',].includes(widget.type)"
                         v-model="widget.groupby_formula"
                         messages="e.g. new Date(date).toLocaleString('default', { month: 'long', year: 'numeric' })"></v-text-field>
-                    <v-select label="Format" v-if="['kpi'].includes(widget.type)" :items="['currency']"
+                    <v-select label="Format" v-if="['kpi', 'graph'].includes(widget.type)" :items="['currency']"
                         v-model="widget.format"></v-select>
                 </v-card-text>
                 <v-card-actions>

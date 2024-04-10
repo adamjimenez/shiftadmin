@@ -165,7 +165,7 @@
                                             <template v-slot:activator="{ props }">
                                                 <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
                                                     v-show="hover === 'keyValue' + index || props['aria-expanded'] === 'true'"
-                                                    style="position: absolute; top: 0; right: 0;">
+                                                    style="position: absolute; top: -10px; right: 0;">
                                                 </v-btn>
                                             </template>
 

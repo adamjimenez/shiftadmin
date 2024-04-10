@@ -159,6 +159,8 @@
                                 @mouseover="hover = 'keyValue' + index" @mouseout="hover = ''">
                                 <template v-slot:[`top`]>
                                     <h2 style="overflow: visible; position: relative;">
+                                        {{widget.title}}
+                                        
                                         <v-menu>
                                             <template v-slot:activator="{ props }">
                                                 <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"

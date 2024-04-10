@@ -32,7 +32,7 @@ export default {
         }
     },
 	async mounted() {
-        if (!['Basic', 'Business'].includes(util.getEdition())) {
+        if (!['Pro', 'Business'].includes(util.getEdition())) {
             this.$router.push(util.base() + 'upgrade');
             return;
         }

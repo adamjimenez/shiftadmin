@@ -100,11 +100,11 @@ export default {
                 ],
             },
             {
-                name: 'Basic',
+                name: 'Pro',
                 monthlyPricing: 28,
                 annualPricing: 20,
                 features: [
-                    'Everything in starter',
+                    'Everything in Starter',
                     'Import/ export',
                     'Custom CMS buttons',
                     'Custom pages',
@@ -115,7 +115,7 @@ export default {
                 monthlyPricing: 100,
                 annualPricing: 80,
                 features: [
-                    'Everything in basic',
+                    'Everything in Pro',
                     'User privileges',
                     'Bulk editing',
                     'Reporting tool beta',
@@ -138,7 +138,11 @@ export default {
 
     mounted: async function () {
         await this.fetchData();
-        this.editions.find(edition => edition.name === this.data.edition).hosted = this.data.hosted;
+        let edition = this.editions.find(edition => edition.name === this.data.edition)
+        
+        if (edition) {
+            edition.hosted = this.data.hosted;
+        }
     }
 };
 </script>

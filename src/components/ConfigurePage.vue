@@ -41,15 +41,15 @@
                         <v-expansion-panel-title>
                             {{ index }}<v-spacer></v-spacer>
 
-                            <v-btn icon="mdi-plus"
+                            <v-btn icon="mdi-plus" title="Add field"
                                 @click.stop="field = { name: '', type: 'text', table: index }; fieldDialog = true;"></v-btn>
                             <v-btn icon="mdi-sort" title="Sort" @click.stop="openSortable(index, fields)"></v-btn>
-                            <v-btn icon="mdi-pencil"
+                            <v-btn icon="mdi-pencil" title="Rename"
                                 @click.stop="table = { id: index, name: index }; tableDialog = true;"></v-btn>
 
                             <v-btn icon="mdi-xml" title="Code snippets" @click.stop="table = { id: index, name: index }; snippetsDialog = true;"></v-btn>
 
-                            <v-btn icon="mdi-delete" @click.stop="deleteTable(index)"
+                            <v-btn icon="mdi-delete" title="Delete" @click.stop="deleteTable(index)"
                                 :disabled="['users'].includes(index)"></v-btn>
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
@@ -63,9 +63,9 @@
                                             {{ col.type }}
                                         </v-list-item-subtitle>
                                         <template #append>
-                                            <v-btn icon="mdi-pencil"
+                                            <v-btn icon="mdi-pencil" title="Edit"
                                                 @click.stop="field = { ...col }; field.id = col.name; field.table = index; field.required = col.required > 0 ? true : false; fieldDialog = true;"></v-btn>
-                                            <v-btn icon="mdi-delete" @click.stop="deleteField(index, col.name)"></v-btn>
+                                            <v-btn icon="mdi-delete" title="Delete" @click.stop="deleteField(index, col.name)"></v-btn>
                                         </template>
                                     </v-list-item>
                                 </v-list>
@@ -86,21 +86,21 @@
                             {{ item.title }}
                             <v-spacer></v-spacer>
 
-                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Table'"
+                            <v-btn icon="mdi-plus" title="Add subsection" v-if="getMenuItemType(item) === 'Table'"
                                 @click.stop="subsection = { section: item.title.toLowerCase() }; subsectionDialog = true;"></v-btn>
-                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Table'" title="Sort"
+                            <v-btn icon="mdi-sort" title="Sort" v-if="getMenuItemType(item) === 'Table'"
                                 @click.stop="openSectionSortable(data.vars.subsections[item.title.toLowerCase()])"
                                 :disabled="!data.vars.subsections[item.title.toLowerCase()]?.length"></v-btn>
 
-                            <v-btn icon="mdi-plus" v-if="getMenuItemType(item) === 'Folder'"
+                            <v-btn icon="mdi-plus" title="Add child" v-if="getMenuItemType(item) === 'Folder'"
                                 @click.stop="menuItem = { parent: item.title, newParent: item.title, type: 'Table' }; menuDialog = true;"></v-btn>
-                            <v-btn icon="mdi-sort" v-if="getMenuItemType(item) === 'Folder'" title="Sort"
+                            <v-btn icon="mdi-sort" title="Sort" v-if="getMenuItemType(item) === 'Folder'"
                                 @click.stop="openSectionSortable(item.children)"
                                 :disabled="!item.children?.length"></v-btn>
 
-                            <v-btn icon="mdi-pencil"
+                            <v-btn icon="mdi-pencil" title="Edit"
                                 @click.stop="menuItem = { ...item }; menuItem.index = key; menuItem.type = getMenuItemType(item); menuDialog = true; menuItem.newParent = menuItem.parent;"></v-btn>
-                            <v-btn icon="mdi-delete" @click.stop="deleteMenuItem(key, data.vars.menu)"></v-btn>
+                            <v-btn icon="mdi-delete" title="Delete" @click.stop="deleteMenuItem(key, data.vars.menu)"></v-btn>
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
                             <v-list max-width="600">
@@ -111,9 +111,11 @@
                                         :prepend-icon="child.icon ? child.icon : 'mdi-minus'">
                                         <template #append>
                                             <v-btn icon="mdi-pencil"
+                                                title="Edit"
                                                 @click.stop="subsection = { ...child }; subsection.section = item.title.toLowerCase(); subsection.index = key2; subsectionDialog = true;"></v-btn>
 
                                             <v-btn icon="mdi-delete"
+                                                title="Delete"
                                                 @click.stop="deleteSubsection(item.title.toLowerCase(), key2)"></v-btn>
                                         </template>
                                     </v-list-item>
@@ -124,9 +126,11 @@
                                         :prepend-icon="child.icon ? child.icon : 'mdi-minus'">
                                         <template #append>
                                             <v-btn icon="mdi-pencil"
+                                                title="Edit"
                                                 @click.stop="menuItem = { ...child }; menuItem.index = key2; menuItem.type = getMenuItemType(child); menuItem.parent = item.title; menuItem.newParent = item.title; menuDialog = true;"></v-btn>
 
                                             <v-btn icon="mdi-delete"
+                                                title="Delete"
                                                 @click.stop="deleteMenuItem(key2, item.children)"></v-btn>
                                         </template>
                                     </v-list-item>
@@ -146,8 +150,8 @@
                     <v-list-item v-for="(options, key, index) in data.vars.options" :key="index" :value="key"
                         :title="key">
                         <template #append>
-                            <v-btn icon="mdi-pencil" @click.stop="editOption(key)"></v-btn>
-                            <v-btn icon="mdi-delete" @click.stop="deleteOption(key)"></v-btn>
+                            <v-btn icon="mdi-pencil" title="Edit" @click.stop="editOption(key)"></v-btn>
+                            <v-btn icon="mdi-delete" title="Delete" @click.stop="deleteOption(key)"></v-btn>
                         </template>
                     </v-list-item>
                 </v-list>

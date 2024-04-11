@@ -36,6 +36,9 @@
                         <span v-else-if="['select'].includes(getFieldType(header.value)) && typeof vars.options?.[header.value] === 'object'">
                             {{ vars.options[header.value][item[header.value]] || item[header.value] }}
                         </span>
+                        <span v-else-if="['editor'].includes(getFieldType(header.value))">
+                            {{ item[header.value].replace(/(<([^>]+)>)/gi, "") }}
+                        </span>
                         <span v-else>
                             {{ formatData(item[header.value], getFieldType(header.value)) }}
                         </span>

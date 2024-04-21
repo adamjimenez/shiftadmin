@@ -53,6 +53,9 @@
                                     toolbar: 'insertfile undo redo | styleselect | formatselect  | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | hr link image forecolor backcolor | components',
                                     branding: false,
                                     promotion: false,
+                                    relative_urls: false,
+                                    remove_script_host: false,
+                                    document_base_url: WebUrl,
                                     file_picker_callback: filePickerCallback
                                 }" />
                             </div>
@@ -317,6 +320,11 @@ export default {
                 this.dirty = true;
             },
             deep: true
+        }
+    },
+    computed: {
+        WebUrl: function () {
+            return api.getWebUrl();
         }
     },
     async mounted() {

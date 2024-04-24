@@ -26,7 +26,7 @@
                 :parentid="id" :sortable="isSortable" @action="actionHandler" :data="buttonData"></ListButtons>
         </v-sheet>
 
-        <div class="pa-5 d-flex flex-column" style="height: 1px; overflow: auto; flex-grow: 1;">
+        <div class="d-flex flex-column" style="height: 1px; overflow: auto; flex-grow: 1;">
             <v-tabs v-model="tab" style="min-height: 50px;">
                 <v-tab value="summary">{{ section }}</v-tab>
                 <template v-if="vars.subsections && vars.subsections[section]?.length">
@@ -37,10 +37,14 @@
                 </template>
             </v-tabs>
 
-            <v-card v-if="tab === 'summary'" min-width="600" style="overflow: auto;">
+            <v-card v-if="tab === 'summary'" min-width="600" class="pa-5" style="overflow: auto;">
                 <template v-for="(value, key, index) in fields" :key="index">
                     <div v-if="data[value.column] && !['password'].includes(value.type) && (!['file', 'select', 'select_parent', 'combo'].includes(value.type) || (data[value.column] && data[value.column] != 0))">
-                        <v-card-title>
+                        <v-card-title @mouseenter="fieldHover = key" @mouseleave="fieldHover = ''">
+                            <a :id="key.replaceAll(' ', '_')"></a>
+                            <a :href="'#' + key.replaceAll(' ', '_')" v-show="fieldHover === key">
+                                <v-icon style="position: absolute; left: 0px;" color="primary">mdi-link</v-icon>
+                            </a>
                             {{ formatString(key) }}
                         </v-card-title>
                         <v-card-text :title="key">
@@ -175,6 +179,7 @@ export default {
             options: [],
             back: '../',
             buttonData: {},
+            fieldHover: '',
         };
     },
     methods: {
@@ -232,6 +237,15 @@ export default {
                 this.back = '';
             } else {
                 this.back = '../';
+            }
+
+            await this.$nextTick();
+            const hash = window.location.hash;
+            if (hash) {
+                const targetElement = document.querySelector(hash);
+                if (targetElement) {
+                    targetElement.scrollIntoView();
+                }
             }
         },
         openLogs: async function () {

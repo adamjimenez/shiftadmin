@@ -343,9 +343,11 @@
                     <v-select label="Group By" v-if="['dataTable', 'graph',].includes(widget.type)"
                         :items="report.source[0].columns" v-model="widget.groupBy" item-title="name"
                         item-value="name"></v-select>
-                    <v-text-field label="Group by formula" v-if="['dataTable', 'graph',].includes(widget.type)"
+                    <v-select label="Group by formula" v-if="['dataTable', 'graph',].includes(widget.type)" :items="groupby_funcs"
+                        v-model="widget.groupby_func"></v-select>
+                    <v-text-field label="Custom group by formula" v-if="widget.groupby_func === 'custom'"
                         v-model="widget.groupby_formula"
-                        messages="e.g. new Date(date).toLocaleString('default', { month: 'long', year: 'numeric' })"></v-text-field>
+                        :messages="'e.g. new Date(' + widget.key + ').toLocaleString(\'default\', { month: \'long\', year: \'numeric\' })'"></v-text-field>
                     <v-select label="Format" v-if="['kpi', 'graph'].includes(widget.type)" :items="['currency']"
                         v-model="widget.format"></v-select>
                 </v-card-text>
@@ -442,6 +444,7 @@ export default {
             column: {},
             columnDialog: false,
             funcs: ['count', 'sum', 'avg', 'custom'],
+            groupby_funcs: ['month', 'custom'],
             editing: {}, // ref to the widget being edited
             itemsPerPage: 500,
             loading: false,
@@ -631,8 +634,19 @@ export default {
             this.data?.forEach(item => {
                 let value = item[widget.groupBy + '_label'] ? item[widget.groupBy + '_label'] : item[widget.groupBy]
 
-                if (widget.groupby_formula) {
-                    value = this.applyFormula(widget.groupby_formula, item);
+                if (widget.groupby_func) {
+                    let groupby_formula = '';
+
+                    switch (widget.groupby_func) {
+                        case 'custom':
+                            groupby_formula = widget.groupby_formula;
+                        break;
+                        case 'month':
+                            groupby_formula =  "new Date(" + widget.key + ").toLocaleString('default', { month: 'long', year: 'numeric' })";
+                        break;
+                    }
+
+                    value = this.applyFormula(groupby_formula, item);
                 }
 
                 if (!groups[value]) {

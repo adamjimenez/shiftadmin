@@ -220,11 +220,14 @@ export default {
             }
 
             // get file data
-            for (const [name, value] of Object.entries(this.files)) {
-                value.forEach(function (file) {
-                    console.log('File details:', file);
+            for (let [name, value] of Object.entries(this.files)) {
+                if (!Array.isArray(value)) {
+                    value = [value];
+                }
+
+                value.forEach((file) => {
                     formData.append(name + '[]', file);
-                })
+                });
             }
 
             this.errors = {};

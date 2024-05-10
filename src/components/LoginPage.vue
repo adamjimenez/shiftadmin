@@ -34,7 +34,7 @@
                     </div>
                 </div>
 
-                <div v-if="data.code !== 1 && data.code !== 2 && error !== 'invalid'">
+                <div v-else-if="data.code !== 1 && data.code !== 2 && error !== 'invalid'">
                     <v-text-field v-if="!query.code" v-model="email" :rules="usernameRules" label="Email"
                         required></v-text-field>
                     <v-text-field v-if="!reset || query.code" type="password" v-model="password" :rules="passwordRules"

@@ -320,7 +320,13 @@ export default {
                 this.dirty = true;
             },
             deep: true
-        }
+        },
+        files: {
+            handler() {
+                this.dirty = true;
+            },
+            deep: true
+        },
     },
     computed: {
         WebUrl: function () {

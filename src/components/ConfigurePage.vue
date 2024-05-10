@@ -160,6 +160,7 @@
                 <v-card-text>
                     Customise the look of the CMS and where automatic emails are sent from.
                 </v-card-text>
+                <v-text-field label="Base url" v-model="data.base_url" @click="setDefaultBaseUrl();"></v-text-field>
                 <v-text-field label="From email" v-model="data.from_email"></v-text-field>
                 <v-text-field label="Title" v-model="data.vars.branding.title"></v-text-field>
                 <v-text-field label="Primary" v-model="data.vars.branding.colors.primary" type="color"></v-text-field>
@@ -745,6 +746,11 @@ export default {
         },
         getUpdate: function () {
             window.open('https://github.com/adamjimenez/shiftlib');
+        },
+        setDefaultBaseUrl: function () {
+            if (!this.data.base_url) {
+                this.data.base_url = location.origin + '/';
+            }
         }
     },
     computed: {

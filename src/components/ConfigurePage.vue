@@ -27,7 +27,7 @@
                     <v-btn icon="mdi-sort" title="Sort" @click="openSectionSortable(data.vars.menu)"></v-btn>
                 </span>
                 <span v-if="tab === 'options'">
-                    <v-btn icon="mdi-plus" @click="option = { name: '' }; optionDialog = true;"></v-btn>
+                    <v-btn icon="mdi-plus" @click="option = { name: '', type: 'options' }; optionDialog = true;"></v-btn>
                 </span>
             </v-card-actions>
 
@@ -222,6 +222,7 @@
                     <v-text-field label="Name" v-model="field.name" autofocus></v-text-field>
                     <v-select label="Field" v-model="field.type" :items="fieldTypes"></v-select>
                     <v-text-field label="Label" v-model="field.label"></v-text-field>
+                    <v-select label="Options" v-model="field.options" v-if="field.type === 'combo'" :items="Object.keys(filteredTables)"></v-select>
                     <v-checkbox label="Required" v-model="field.required"></v-checkbox>
                 </v-card-text>
                 <v-card-actions>
@@ -314,7 +315,7 @@
                 <v-card-text>
                     <v-alert v-if="error" type="error" :text="error"></v-alert>
                     <v-combobox label="Name" v-model="option.name" autofocus :items="optionKeys"></v-combobox>
-                    <v-radio-group v-model="option.type">
+                    <v-radio-group v-if="option.index" v-model="option.type">
                         <v-radio label="Table" value="table"></v-radio>
                         <v-radio label="Options" value="options"></v-radio>
                     </v-radio-group>

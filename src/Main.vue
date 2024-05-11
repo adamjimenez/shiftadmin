@@ -345,7 +345,7 @@ export default {
 			let data = result.data;
 
 			// backcompat subsections
-			if (data?.vars) {
+			if (data?.vars && data.vars.subsections) {
 				for (let [section, subsections] of Object.entries(data.vars.subsections)) {
 					subsections.forEach((subsection, index) => {
 						if (typeof subsection === 'string') {

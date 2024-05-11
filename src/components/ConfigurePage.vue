@@ -433,6 +433,10 @@ export default {
                 data.vars = {};
             }
 
+            if (!data.vars.menu) {
+                data.vars.menu = [];
+            }
+
             if (!data.vars.subsections) {
                 data.vars.subsections = {};
             }
@@ -584,7 +588,7 @@ export default {
             }
 
             // default to root
-            let menu = this.data.vars.menu || [];
+            let menu = this.data.vars.menu;
 
             // if subitem, lookup parent
             if (this.menuItem.parent) {
@@ -599,7 +603,7 @@ export default {
                 if (this.menuItem.newParent) {
                     menu = this.data.vars.menu.find(item => item.title === this.menuItem.newParent).children;
                 } else {
-                    menu = this.data.vars.menu || [];
+                    menu = this.data.vars.menu;
                 }
 
                 this.menuItem.index = menu.length;

@@ -91,7 +91,7 @@
                     </div>
                 </template>
             </v-card>
-            <list-page v-else :section="tab" :parentsection="section" :parentid="id" hidebuttons ref="listPage" :vars="vars" @loaded="loaded"></list-page>
+            <list-page v-else :section="tab" :parentsection="section" :parentid="id" hidebuttons ref="listPage" :vars="vars" @loaded="loaded" @changeSelected="changeSelected"></list-page>
         </div>
 
         <v-dialog v-model="logsDialog" max-width="600" scrollable>
@@ -395,7 +395,10 @@ export default {
         },
         goBack: function () {
             this.$router.push(this.back);
-        }
+        },
+        changeSelected: function (items) {
+            this.selected = items;
+        },
     },
 
     computed: {
@@ -428,6 +431,9 @@ export default {
         },
         vars: function () {
             this.fetchData();
+        },
+        tab: function () {
+            this.selected = [];
         }
     },
 

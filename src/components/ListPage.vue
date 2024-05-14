@@ -477,6 +477,9 @@ export default {
 
             this.selectedHeaders = selectedHeaders;
         },
+        selected: function (items) {
+            this.$emit('changeSelected', items);
+        },
     },
     computed: {
         activeHeaders: function () { // turns selectedHeaders array into multidimensional array

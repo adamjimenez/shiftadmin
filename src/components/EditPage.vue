@@ -8,6 +8,7 @@
         </v-sheet>
 
         <v-card-text class="mt-10">
+
             <v-form ref="form">
                 <v-list>
                     <template v-for="(value, key, index) in fields" :key="index">
@@ -163,7 +164,7 @@ export default {
                 }
             }
 
-            this.data = data;
+            this.data = !Array.isArray(data) ? data : {};
             await this.$nextTick();
 
             this.fields = fields;
@@ -184,6 +185,7 @@ export default {
                         }
                     }
                 }
+                await this.$nextTick();
             }
 
             if (parentsection) {

@@ -343,6 +343,10 @@ export default {
                 this.page++;
                 return
             } else if (typeof button === 'string') {
+                if (button === 'delete' && !this.data?.fields.deleted && !confirm('Are you sure you want to delete these items?')) {
+                    return;
+                }
+
                 data = {
                     cmd: button,
                     section: this.internalSection,

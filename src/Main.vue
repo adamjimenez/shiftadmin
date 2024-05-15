@@ -452,7 +452,7 @@ export default {
 			}
 		},
 		searchParams: async function (searchParams) {
-			if (this.ignoreChange) {
+			if (this.ignoreChange || !this.$route.params.section) {
 				return;
 			}
 

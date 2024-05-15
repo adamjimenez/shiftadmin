@@ -14,12 +14,12 @@
                     <template v-for="(value, key, index) in fields" :key="index">
                         <v-list-item v-if="!['id', 'timestamp', 'deleted'].includes(value.type)">
                             <v-checkbox v-if="value.type === 'checkbox'" :label="formatString(key)"
-                                v-model="data[value.column]" :error-messages="errors[key]" :true-value="'1'" :false-value="'0'"  />
+                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" :true-value="'1'" :false-value="'0'"  />
                             <div v-else-if="['file', 'files'].includes(value.type)">
                                 <div v-if="data[value.column]?.length > 0" class="mb-3">
                                     <div class="mb-3">{{ formatString(key) }}</div>
                                     <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file" pill
-                                        closable @click:close="delete data[value.column].splice(fileIndex, 1)">
+                                        :closable="!value.readonly" @click:close="delete data[value.column].splice(fileIndex, 1)">
                                         <v-avatar start>
                                             <v-img :src="apiRoot + '?cmd=file&f=' + file + '&w=320&h=240'"></v-img>
                                         </v-avatar>
@@ -27,14 +27,14 @@
                                     </v-chip>
                                 </div>
                                 <v-file-input v-if="value.type === 'files' || data[value.column]?.length === 0"
-                                    :label="formatString(key)" v-model="files[value.column]" :error-messages="errors[key]"
+                                    :label="formatString(key)" v-model="files[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]"
                                     :multiple="value.type === 'files'" />
                             </div>
                             <div v-else-if="['upload', 'uploads'].includes(value.type)">
                                 <div>{{ formatString(key) }}</div>
                                 <div v-if="data[value.column]?.length > 0" class="mb-3">
                                     <v-chip v-for="(file, k, fileIndex) in data[value.column]" :key="file" :text="file"
-                                        closable @click:close="data[value.column].splice(fileIndex, 1)">
+                                        :closable="!value.readonly" @click:close="data[value.column].splice(fileIndex, 1)">
                                         <v-avatar start>
                                             <v-img :src="apiRoot + '?cmd=file&f=' + file + '&w=320&h=240'"></v-img>
                                         </v-avatar>
@@ -46,10 +46,10 @@
                                     @click="chooseFileUpload(value.column)">Choose</v-btn>
                             </div>
                             <v-textarea v-else-if="['json', 'textarea'].includes(value.type)" :label="formatString(key)"
-                                v-model="data[value.column]" :error-messages="errors[key]" />
+                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" />
                             <div v-else-if="value.type === 'editor'">
                                 <div class="ma-3">{{ formatString(key) }}</div>
-                                <editor-field v-model="data[value.column]" :init="{
+                                <editor-field v-model="data[value.column]" :readonly="value.readonly" :init="{
                                     plugins: 'code link lists media image',
                                     toolbar: 'insertfile undo redo | styleselect | formatselect  | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | hr link image forecolor backcolor | components',
                                     branding: false,
@@ -62,20 +62,20 @@
                             </div>
                             <div v-else-if="value.type === 'rating'">
                                 <div class="px-3">{{ formatString(key) }}</div>
-                                <v-rating v-model="data[value.column]" :error-messages="errors[key]" hover :length="5"
+                                <v-rating v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" hover :length="5"
                                     :size="32" />
                             </div>
                             <v-select v-else-if="['select', 'select_parent', 'select_multiple'].includes(value.type)"
-                                :label="formatString(key)" v-model="data[value.column]" :error-messages="errors[key]"
+                                :label="formatString(key)" v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]"
                                 :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'"
-                                :chips="value.type === 'select_multiple'" clearable />
+                                :chips="value.type === 'select_multiple'" :clearable="!value.readonly" />
                             <v-autocomplete v-else-if="value.type === 'combo'" :label="formatString(key)"
-                                v-model="data[value.column]" :error-messages="errors[key]" :items="options[key]"
+                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" :items="options[key]"
                                 @update:search="updateCombo($event, key)" />
                             <!--<v-number-input v-else-if="['int', 'position', 'decimal'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"  :step="fieldStep(value.type)"></v-number-input>-->
                             <polygon-field v-else-if="['polygon'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"></polygon-field>
-                            <v-text-field :label="formatString(key)" v-model="data[value.column]"
-                                :error-messages="errors[key]" :rules="rules[value.type] ? [rules[value.type]] : []"
+                            <v-text-field :label="formatString(key)" v-model="data[value.column]" :readonly="value.readonly"
+                                :error-messages="errors[value.column]" :rules="rules[value.type] ? [rules[value.type]] : []"
                                 :type="fieldType(value.type)" autocomplete="new-password"
                                 v-else-if="key !== 'id'" />
                         </v-list-item>
@@ -250,7 +250,6 @@ export default {
             }
 
             if (result.data.error) {
-                console.l
                 this.error = result.data?.error;
             } else if (typeof result.data.errors === 'object' && Object.keys(result.data.errors).length) {
                 this.errors = result.data?.errors;

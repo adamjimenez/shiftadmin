@@ -157,8 +157,10 @@ export default {
 
             if (this.special[0] !== 'custom') {
                 modelValue = this.special[0];
-            } else {
+            } else if (newVal[0]) {
                 modelValue = [this.parseDate(newVal[0]), this.parseDate(newVal[newVal.length - 1])];
+            } else {
+                modelValue = null;
             }
 
             if (JSON.stringify(modelValue) != JSON.stringify(this.modelValue)) {

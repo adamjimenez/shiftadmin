@@ -42,7 +42,7 @@
                                     </v-chip>
                                 </div>
 
-                                <v-btn v-if="value.type === 'uploads' || data[value.column]?.length === 0"
+                                <v-btn v-if="value.type === 'uploads' || data[value.column].length === 0"
                                     @click="chooseFileUpload(value.column)">Choose</v-btn>
                             </div>
                             <v-textarea v-else-if="['json', 'textarea'].includes(value.type)" :label="formatString(key)"
@@ -145,7 +145,7 @@ export default {
             this.$emit('changeHeaders', Object.values(fields));
             this.$emit('changeFields', Object.values(fields));
 
-            data = result.data.data ? result.data.data : {};
+            data = !Array.isArray(result.data.data) ? result.data.data : {};
             this.options = await util.getAllOptions(fields, this.vars.options, data);
 
             for (const [, field] of Object.entries(fields)) {

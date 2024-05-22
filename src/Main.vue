@@ -94,7 +94,7 @@
 					</template>
 
 					<v-list-item title="New" prepend-icon="mdi-plus" :to="base + 'reports/0'" />
-					<v-list-item v-for="child in vars.reports" :key="child.to" :title="child.title"
+					<v-list-item v-for="child in vars?.reports" :key="child.to" :title="child.title"
 						prepend-icon="mdi-minus" @click="openReport(child.id)">
 						<template v-slot:append>
 							<v-btn icon="mdi-delete" v-if="child.id" @click.stop="deleteReport(child.id)" variant="text"

@@ -104,7 +104,9 @@
                                                     </v-menu>
                                                 </div>
                                                 <div class="text-body-2">
-                                                    <CompareValue :newVal="applyFunc(widget, data, true)" :oldVal="applyFunc(widget, compareData, true)" :format="widget.format"></CompareValue>
+                                                    <router-link :to="getLink(widget)">
+                                                        <CompareValue :newVal="applyFunc(widget, data, true)" :oldVal="applyFunc(widget, compareData, true)" :format="widget.format"></CompareValue>
+                                                    </router-link>
                                                 </div>
                                             </v-card-text>
                                         </v-card>
@@ -192,14 +194,14 @@
                                 </template>
 
                                 <tbody>
-                                    <tr v-for="column, columnIndex in widget.columns" :key="column.key">
+                                    <tr v-for="column, columnIndex in widget.columns" :key="column.key" @mouseover.stop="hover = 'keyValueColumn' + index + '_' + columnIndex"
+                                            @mouseout="hover = ''" style="overflow: visible; position: relative;">
                                         <td>{{ column.title }}</td>
                                         <td>
-                                            {{ applyFunc(column, data) }}
+                                            {{ applyFunc(column,data) }}
                                         </td>
-                                        <td @mouseover="hover = 'keyValueColumn' + index + '_' + columnIndex"
-                                            @mouseout="hover = ''">
-                                            <v-menu v-if="columnIndex > 0">
+                                        <td>
+                                            <v-menu>
                                                 <template v-slot:activator="{ props }">
                                                     <v-btn color="primary" v-bind="props" icon="mdi-dots-vertical"
                                                         v-show="hover === 'keyValueColumn' + index + '_' + columnIndex || props['aria-expanded'] === 'true'"
@@ -210,15 +212,11 @@
                                                 <v-list>
                                                     <v-list-item>
                                                         <v-list-item-title
-                                                            @click="editColumn(columnndex - 1, index)">Configure</v-list-item-title>
+                                                            @click="editColumn(columnIndex, widget)">Configure</v-list-item-title>
                                                     </v-list-item>
                                                     <v-list-item>
                                                         <v-list-item-title
                                                             @click="deleteColumn(columnIndex, index)">Delete</v-list-item-title>
-                                                    </v-list-item>
-                                                    <v-list-item>
-                                                        <v-list-item-title @click="openSortable(report.dataTable)">Sort
-                                                            Order</v-list-item-title>
                                                     </v-list-item>
                                                 </v-list>
                                             </v-menu>
@@ -235,8 +233,7 @@
                                         <template v-for="column, columnIndex in columns" :key="column.key">
                                             <td @mouseover.stop="hover = 'dataTableColumn' + index + '_' + columnIndex"
                                                 @mouseout="hover = ''" style="position: relative;">
-                                                <span class="mr-2 cursor-pointer" @click="() => toggleSort(column)">{{
-                    column.title }}</span>
+                                                <span class="mr-2 cursor-pointer" @click="() => toggleSort(column)">{{ column.title }}</span>
                                                 <template v-if="isSorted(column)">
                                                     <v-icon :icon="getSortIcon(column)"></v-icon>
                                                 </template>
@@ -254,7 +251,7 @@
                                                     <v-list>
                                                         <v-list-item>
                                                             <v-list-item-title
-                                                                @click="editColumn(columnIndex - 1, index)">Configure</v-list-item-title>
+                                                                @click="editColumn(columnIndex - 1, widget)">Configure</v-list-item-title>
                                                         </v-list-item>
                                                         <v-list-item>
                                                             <v-list-item-title
@@ -329,6 +326,8 @@
                         :items="config.tables[widget.table]" v-model="widget.filters" item-title="name"
                         item-value="name" :disabled="!widget.table" multiple chips clearable
                         auto-select-first="exact"></v-autocomplete>
+                    <v-text-field label="Filter" v-if="['kpi'].includes(widget.type)"
+                        v-model="widget.filter"></v-text-field>
                     <v-select label="Key" v-if="['kpi', 'graph', 'filter'].includes(widget.type)"
                         :items="report.source[0].columns.concat(['custom'])" v-model="widget.key" item-title="name"
                         item-value="name" :disabled="!widget.source"></v-select>
@@ -493,8 +492,17 @@ export default {
             }
 
             this.loading = false;
+            
+            let title = data.vars?.branding?.title ? data.vars.branding.title : 'ADMIN';
+            
+            title = title + ' | Reports';
+
+            if (this.report.title) {
+                title += ' | ' + this.report.title;            
+            }
 
             await this.$nextTick();
+            document.title = title;
         },
         newWidget: function () {
             this.editing = {};
@@ -534,14 +542,14 @@ export default {
             this.widget = widget;
             this.columnDialog = true
         },
-        editColumn: function (columnIndex, index) {
-            this.widget = this.report.dataTable[index];
-            let column = this.report.dataTable[index].columns[columnIndex];
+        editColumn: function (columnIndex, widget) {
+            this.widget = widget;
+            let column = widget.columns[columnIndex];
 
             this.column = { ...column };
             this.editing = {
                 index: columnIndex,
-                arr: this.report.dataTable[index].columns
+                arr: widget.columns
             }
             this.columnDialog = true;
         },
@@ -583,20 +591,52 @@ export default {
                 return false;
             }
 
-            let total = 0;
+            let filtered = [];
 
-            if (widget.table_func === 'count') {
-                return data.length;
+            if (widget.filter) {
+                // convert filter query string into an array
+                let params = qs.parse(widget.filter);
+
+                // filter rows
+                data.forEach(item => {
+                    for (const key in params) {
+                        console.log(params[key])
+                        if (params[key].substr(0, 1) === '>') {
+                            if (item[key] <= params[key].substr(1)) {
+                                return;
+                            }
+                        } else if (params[key].substr(0, 1) === '<') {
+                            if (item[key] >= params[key].substr(1)) {
+                                return;
+                            }
+                        } else if (item[key] != params[key]) {
+                            return;
+                        }
+                    }
+
+                    filtered.push(item);
+                });
+            } else {
+                filtered = data;
             }
 
-            total = this.sumRows(widget, data);
+            if (widget.table_func === 'count') {
+                return filtered.length;
+            }
+
+            let total = 0;
+            total = this.sumRows(widget, filtered);
 
             switch (widget.table_func) {
                 case 'avg':
-                    total /= data.length;
+                    total /= filtered.length;
                     break;
                 case 'custom':
-                    total = eval(total + widget.table_formula)
+                    try {
+                        total = eval(total + widget.table_formula)
+                    } catch (error) {
+                        console.log(error);
+                    }
                     break;
             }
 
@@ -625,7 +665,14 @@ export default {
                 }
             }
 
-            return eval(formula);
+            let result;
+            try {
+                result = eval(formula);
+            } catch (error) {
+                console.log(error);
+            }
+
+            return result;
         },
         getItems: function (widget) {
             let groups = {};
@@ -664,7 +711,10 @@ export default {
                     item.label = index;
                     item.total = this.applyFunc(widget, group, true);
                 } else {
-                    item[widget.groupBy] = index;
+                    if (widget.groupBy) {
+                        item[widget.groupBy] = index;
+                    }
+
                     widget.columns?.forEach(column => {
                         item[column.title] = this.applyFunc(column, group);
                     })
@@ -767,6 +817,11 @@ export default {
         compare: function (newVal, oldVal) {
             let perc = (newVal - oldVal) / oldVal;
             return newVal + ' ' + perc.toFixed(1) + '%';
+        },
+        getLink: function (widget) {
+            let paramString = this.report.params ? qs.stringify(this.report.params) : '';
+
+            return '/section/' + widget.source + '?' + paramString + '&' + widget.filter;
         }
     },
     computed: {

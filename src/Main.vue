@@ -370,7 +370,10 @@ export default {
 			this.$vuetify.theme.themes.dark.colors = { ...this.$vuetify.theme.themes.dark.colors, ...colors, ...this.vars?.branding?.colors };
 
 			let title = this.vars?.branding?.title ? this.vars.branding.title : 'ADMIN';
-			document.title = title;
+
+			if (!document.title) {
+				document.title = title;
+			}
 		},
 		deleteFilter: async function (filter_id) {
 			if (!confirm('Are you sure?')) {

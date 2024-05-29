@@ -28,6 +28,7 @@ export default {
             params.frame = 1;
 
             let paramString = qs.stringify(this.$route.query);
+
             return this.webUrl + 'admin/' + this.$route.params.catchAll + '?' + paramString;
         }
     },
@@ -40,7 +41,7 @@ export default {
             }
             
             if (message.data.url) {
-                let to = message.data.url.substr((this.webUrl + 'admin/') . length)
+                let to = util.base() + message.data.url.substr((this.webUrl + 'admin/') . length)
                 this.$router.push(to);
             }
             

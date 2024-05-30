@@ -145,7 +145,8 @@ export default {
             this.$emit('changeHeaders', Object.values(fields));
             this.$emit('changeFields', Object.values(fields));
 
-            data = !Array.isArray(result.data.data) ? result.data.data : {};
+            data = result.data.data && !Array.isArray(result.data.data) ? result.data.data : {};
+
             this.options = await util.getAllOptions(fields, this.vars.options, data);
 
             for (const [, field] of Object.entries(fields)) {

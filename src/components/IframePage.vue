@@ -54,6 +54,11 @@ export default {
             }
         },
     },
+    watch: {
+        frameUrl: function () {
+            this.isLoading = true;
+        }
+    },
 	async mounted() {
         if (!['Pro', 'Business', 'Trial'].includes(util.getEdition())) {
             this.$router.push(util.base() + 'upgrade');

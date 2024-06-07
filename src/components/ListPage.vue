@@ -131,7 +131,7 @@ export default {
             sortableDialog: false,
             totalItems: 0,
             itemsPerPage: 20,
-            page: 1,
+            page: 0,
             search: '',
             drag: false,
             sortOrder: [],
@@ -142,6 +142,7 @@ export default {
             defaultData: {}, // used for bulk edit
             sortBy: [],
             error: '',
+            ignoreReload: false,
         };
     },
     methods: {
@@ -149,6 +150,19 @@ export default {
             return util.formatString(string);
         },
         loadItems: async function ({ page, itemsPerPage, sortBy }) {
+            if (this.ignoreReload) {
+                this.ignoreReload = false;
+                return;
+            }
+
+            if (!page) {
+                if (localStorage['page_' + this.internalSection] > 0) {
+                    page = parseInt(localStorage['page_' + this.internalSection]);
+                } else {
+                    page = 1;
+                }
+            }
+
             let searchParams = this.searchparams;
 
             if (this.filter) {
@@ -212,9 +226,14 @@ export default {
             this.data = result.data;
             this.totalItems = this.data.total;
 
+            if (this.page !== page) {
+                this.page = page;
+                this.ignoreReload = true;
+            }
+
             // pagination
             this.buttonData = {
-                page: page,
+                page: this.page,
                 itemsPerPage: itemsPerPage,
                 totalItems: this.totalItems,
             };
@@ -441,6 +460,8 @@ export default {
             } else {
                 this.sortBy = [];
             }
+
+            this.page = 0;
         },
         $route(route) {
             this.internalSection = route.params.section;
@@ -484,6 +505,9 @@ export default {
         selected: function (items) {
             this.$emit('changeSelected', items);
         },
+        page: function (newVal) {
+            localStorage['page_' + this.internalSection] = newVal;
+        }
     },
     computed: {
         activeHeaders: function () { // turns selectedHeaders array into multidimensional array

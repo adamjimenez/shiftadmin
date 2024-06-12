@@ -142,7 +142,7 @@ export default {
             defaultData: {}, // used for bulk edit
             sortBy: [],
             error: '',
-            ignoreReload: false,
+            ignoreReload: true,
         };
     },
     methods: {
@@ -458,7 +458,8 @@ export default {
             if (localStorage['sortBy_' + newVal]) {
                 this.sortBy = JSON.parse(localStorage['sortBy_' + newVal]);
             } else {
-                this.sortBy = [];
+                this.sortBy = [];                
+                this.reload();
             }
 
             this.page = 0;
@@ -467,8 +468,9 @@ export default {
             this.internalSection = route.params.section;
             this.reload();
         },
-        section: function (section) {
+        section: async function (section) {
             this.internalSection = section;
+            await this.$nextTick();
 
             if (section) {
                 this.reload();

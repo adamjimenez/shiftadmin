@@ -228,6 +228,7 @@ export default {
 
             if (this.page !== page) {
                 this.page = page;
+                return;
             }
 
             // pagination

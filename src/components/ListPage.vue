@@ -2,7 +2,7 @@
     <v-layout>
 
         <v-data-table-server v-model="selected" :headers="activeHeaders" :items="data.data" item-value="id" show-select
-            @click:row="rowClick" :loading="loading" @update:options="loadItems" :items-length="totalItems"
+            @click:row="rowClick" :loading="loading" :items-length="totalItems"
             v-model:items-per-page="itemsPerPage" :search="search" fixed-header fixed-footer class="data-table-server" :page="page"
             v-model:sort-by="sortBy" @update:sortBy="updateSortBy"
             >
@@ -142,24 +142,18 @@ export default {
             defaultData: {}, // used for bulk edit
             sortBy: [],
             error: '',
-            ignoreReload: false,
         };
     },
     methods: {
         formatString: function (string) {
             return util.formatString(string);
         },
-        loadItems: async function ({ page, itemsPerPage, sortBy }) {
-            if (this.ignoreReload) {
-                this.ignoreReload = false;
-                return;
-            }
-
-            if (!page) {
+        loadItems: async function () {
+            if (!this.page) {
                 if (localStorage['page_' + this.internalSection] > 0) {
-                    page = parseInt(localStorage['page_' + this.internalSection]);
+                    this.page = parseInt(localStorage['page_' + this.internalSection]);
                 } else {
-                    page = 1;
+                    this.page = 1;
                 }
             }
 
@@ -173,9 +167,9 @@ export default {
                 cmd: 'get',
                 section: this.internalSection,
                 fields: searchParams,
-                page: page,
-                itemsPerPage: itemsPerPage,
-                sortBy: sortBy,
+                page: this.page,
+                itemsPerPage: this.itemsPerPage,
+                sortBy: this.sortBy,
                 columns: this.selectedHeaders
             };
 
@@ -226,15 +220,10 @@ export default {
             this.data = result.data;
             this.totalItems = this.data.total;
 
-            if (this.page !== page) {
-                this.page = page;
-                return;
-            }
-
             // pagination
             this.buttonData = {
                 page: this.page,
-                itemsPerPage: itemsPerPage,
+                itemsPerPage: this.itemsPerPage,
                 totalItems: this.totalItems,
             };
 
@@ -353,6 +342,7 @@ export default {
                     return;
                 }
                 this.page--;
+                this.reload();
                 return
             } else if (button === 'nextPage') {
                 if (this.page * this.itemsPerPage >= this.totalItems) {
@@ -360,6 +350,7 @@ export default {
                 }
 
                 this.page++;
+                this.reload();
                 return
             } else if (typeof button === 'string') {
                 if (button === 'delete' && !this.data?.fields.deleted && !confirm('Are you sure you want to delete these items?')) {
@@ -435,10 +426,11 @@ export default {
             this.reload();
         },
         reload: function () {
-            this.search = String(Date.now())
+            this.loadItems();
         },
         updateSortBy: function (newVal) {
             localStorage['sortBy_' + this.internalSection] = JSON.stringify(newVal);
+            this.reload();
         },
         getFieldType: function (header) {
             return this.data?.fields[header.replaceAll('_', ' ')]?.type
@@ -461,8 +453,8 @@ export default {
                 this.sortBy = [];
             }
 
-            this.reload();
             this.page = 0;
+            this.reload();
         },
         $route(route) {
             this.internalSection = route.params.section;

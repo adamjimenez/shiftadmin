@@ -18,11 +18,11 @@
         
             <template v-slot:item="{ item, internalItem, isSelected, toggleSelect}">
                 <tr class="v-data-table__tr v-data-table__tr--clickable" @click="rowClick($event, item)">
-                    <td class="v-data-table__td v-data-table-column--no-padding v-data-table-column--align-start" style="width:  48px;">
+                    <td class="v-data-table__td v-data-table-column--no-padding v-data-table-column--align-start border-primary" style="width: 48px;" :class="active === item.id ? 'border-s-lg' : ''">
                         <v-checkbox-btn
-                        :model-value="isSelected(internalItem)"
-                        hide-details
-                        @click.stop="toggleSelect(internalItem,!isSelected(internalItem))"
+                            :model-value="isSelected(internalItem)"
+                            @click.stop="active = item.id; toggleSelect(internalItem, !isSelected(internalItem))"
+                            hide-details
                         >                   
                         </v-checkbox-btn>
                     </td>
@@ -91,6 +91,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    border-left: 2px solid transparent;
+}
+
+.data-table-server th:first-child, .data-table-server td:first-child {
+    border-left: 4px solid transparent;
+    padding-left: 4px;
 }
 </style>
 
@@ -142,6 +148,7 @@ export default {
             defaultData: {}, // used for bulk edit
             sortBy: [],
             error: '',
+            active: 0,
         };
     },
     methods: {
@@ -157,10 +164,14 @@ export default {
                 }
             }
 
+            if (!this.active && localStorage['active_' + this.internalSection] > 0) {
+                this.active = localStorage['active_' + this.internalSection];
+            }
+
             let searchParams = this.searchparams;
 
             if (this.filter) {
-                searchParams['s'] = this.filter;
+                searchParams.s = this.filter;
             }
 
             let data = {
@@ -220,6 +231,11 @@ export default {
             this.data = result.data;
             this.totalItems = this.data.total;
 
+            // reset active if not visible
+            if (!this.data.data.find(obj => obj.id === this.active)) {
+                this.active = this.data.data[0].id;
+            }
+
             // pagination
             this.buttonData = {
                 page: this.page,
@@ -278,6 +294,8 @@ export default {
             this.$emit('loaded')
         },
         rowClick: function (e, item) {
+            this.active = item.id;
+
             let base = '/';
             if (this.$route.params.base) {
                 base += this.$route.params.base + '/';
@@ -500,6 +518,9 @@ export default {
         },
         page: function (newVal) {
             localStorage['page_' + this.internalSection] = newVal;
+        },
+        active: function (newVal) {
+            localStorage['active_' + this.internalSection] = newVal;
         }
     },
     computed: {

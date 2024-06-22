@@ -18,7 +18,7 @@
         
             <template v-slot:item="{ item, internalItem, isSelected, toggleSelect}">
                 <tr class="v-data-table__tr v-data-table__tr--clickable" @click="rowClick($event, item)">
-                    <td class="v-data-table__td v-data-table-column--no-padding v-data-table-column--align-start border-primary" style="width: 48px;" :class="active === item.id ? 'border-s-lg' : ''">
+                    <td class="v-data-table__td v-data-table-column--no-padding v-data-table-column--align-start border-primary" style="width: 48px;" :class="active === item.id ? 'active border-s-lg' : ''">
                         <v-checkbox-btn
                             :model-value="isSelected(internalItem)"
                             @click.stop="active = item.id; toggleSelect(internalItem, !isSelected(internalItem))"
@@ -233,7 +233,7 @@ export default {
 
             // reset active if not visible
             if (!this.data.data.find(obj => obj.id === this.active)) {
-                this.active = this.data.data[0].id;
+                this.active = this.data.data[0]?.id;
             }
 
             // pagination
@@ -455,6 +455,43 @@ export default {
         },
         formatData: function (data, type) {
             return util.formatData(data, type);
+        },
+        onKeydown: async function (event) {
+            let index;
+            let el;
+
+            switch (event.key) {
+                case 'ArrowDown':
+                    event.preventDefault();
+                    index = this.data.data.findIndex(obj => obj.id === this.active);
+
+                    if (index + 1 < this.data.data.length) {
+                        this.active = this.data.data[index + 1].id;
+                    }
+                    
+                    await this.$nextTick();
+
+                    el = document.getElementsByClassName('active')[0];
+                    el.scrollIntoView(false);
+                break;
+                case 'ArrowUp':
+                    event.preventDefault();
+                    index = this.data.data.findIndex(obj => obj.id === this.active);
+
+                    if (index > 0) {
+                        this.active = this.data.data[index - 1].id;
+                    }
+
+                    await this.$nextTick();
+
+                    el = document.getElementsByClassName('active')[0];
+                    el.scrollIntoView(false);
+                break;
+                case 'Enter':
+                    event.preventDefault();
+                    this.rowClick(event, { id: this.active });
+                break;
+            }
         }
     },
     watch: {
@@ -557,5 +594,11 @@ export default {
         this.internalSection = this.section ? this.section : this.$route.params.section;
         this.apiRoot = api.getApiRoot()
     },
+    mounted() {
+        document.addEventListener( "keydown", this.onKeydown );
+    },
+    unmounted() {
+        document.removeEventListener( "keydown", this.onKeydown );
+    }
 };
 </script>

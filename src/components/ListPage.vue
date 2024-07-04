@@ -488,8 +488,8 @@ export default {
                     el.scrollIntoView(false);
                 break;
                 case 'Enter':
-                    event.preventDefault();
-                    this.rowClick(event, { id: this.active });
+                    //event.preventDefault();
+                    //this.rowClick(event, { id: this.active });
                 break;
             }
         }

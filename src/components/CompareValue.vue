@@ -2,6 +2,7 @@
     <div>
         <span>
             {{ formatValue(newVal) }}
+            <!--{{ formatValue(oldVal) }}-->
         </span>
         <div v-if="oldVal">
             <span :class="perc < 0 ? 'text-red' : 'text-green'">
@@ -11,7 +12,6 @@
             </span>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -23,7 +23,6 @@ export default {
     },
     data: function () {
         return {
-            perc: '',
         }
     },
     methods: {
@@ -40,19 +39,14 @@ export default {
 
             return value.toLocaleString(undefined, formatOptions);
         },
-        updatePercentage: function () {
-            this.perc = (this.newVal - this.oldVal) / this.oldVal;
-            this.perc = this.perc.toFixed(1);
-        }
     },
 
-    watch: {
-        newVal: function () {
-            this.updatePercentage();
-        },
-        oldVal: function () {
-            this.updatePercentage();
-        },
+    computed: {
+        perc: function () {
+            let perc = ((this.newVal - this.oldVal) / this.oldVal) * 100;
+            perc = perc.toFixed(1);
+            return perc;
+        }
     }
 }
 </script>

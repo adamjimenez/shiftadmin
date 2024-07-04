@@ -348,7 +348,7 @@
                         v-model="widget.groupby_formula"
                         :messages="'e.g. new Date(' + widget.key + ').toLocaleString(\'default\', { month: \'long\', year: \'numeric\' })'"></v-text-field>
                     <v-select label="Format" v-if="['kpi', 'graph'].includes(widget.type)" :items="['currency']"
-                        v-model="widget.format"></v-select>
+                        v-model="widget.format" clearable></v-select>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn variant="flat" color="primary" :disabled="!widgetValid" @click="saveWidget"
@@ -368,7 +368,7 @@
                     <v-select label="Table formula" :items="funcs" v-model="column.table_func"></v-select>
                     <v-text-field v-if="column.table_func === 'custom'" label="Custom" v-model="column.custom"
                         :disabled="column.table_func !== 'custom'"></v-text-field>
-                    <v-select label="Format" :items="['currency']" v-model="column.format"></v-select>
+                    <v-select label="Format" :items="['currency']" v-model="column.format" clearable></v-select>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn variant="flat" color="primary" :disabled="!columnValid" @click="saveColumn"
@@ -445,7 +445,7 @@ export default {
             funcs: ['count', 'sum', 'avg', 'custom'],
             groupby_funcs: ['month', 'custom'],
             editing: {}, // ref to the widget being edited
-            itemsPerPage: 500,
+            itemsPerPage: 100000,
             loading: false,
             error: '',
             sortDialog: false,

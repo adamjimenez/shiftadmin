@@ -44,6 +44,8 @@
 
                                 <v-btn v-if="value.type === 'uploads' || data[value.column].length === 0"
                                     @click="chooseFileUpload(value.column)">Choose</v-btn>
+
+                                <div v-if="errors[value.column]" class="text-red-lighten-1">{{ errors[value.column] }}</div>
                             </div>
                             <v-textarea v-else-if="['json', 'textarea'].includes(value.type)" :label="formatString(key)"
                                 v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" />
@@ -70,8 +72,8 @@
                                 :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'"
                                 :chips="value.type === 'select_multiple'" :clearable="!value.readonly" />
                             <v-autocomplete v-else-if="value.type === 'combo'" :label="formatString(key)"
-                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" :items="options[key]"
-                                @update:search="updateCombo($event, key)" />
+                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" :items="options[key.replaceAll(' ', '_')]"
+                                @update:search="updateCombo($event, value.options || key.replaceAll(' ', '_'))" />
                             <!--<v-number-input v-else-if="['int', 'position', 'decimal'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"  :step="fieldStep(value.type)"></v-number-input>-->
                             <polygon-field v-else-if="['polygon'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"></polygon-field>
                             <v-text-field :label="formatString(key)" v-model="data[value.column]" :readonly="value.readonly"

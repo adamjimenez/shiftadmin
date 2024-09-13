@@ -37,7 +37,7 @@ export default {
         let options = {};
 
         // get options
-        if (['select', 'select_parent', 'select_multiple'].includes(type)) {
+        if (['combo', 'select', 'select_parent', 'select_multiple'].includes(type)) {
             let option = optionConfig[column.replaceAll('_', ' ')];
             options = await this.getSelectOptions(option);
 
@@ -63,6 +63,10 @@ export default {
         let options = {};
 
         for (const [, field] of Object.entries(fields)) {
+            if (field.options) {
+                optionConfig[field.column.replaceAll('_', ' ')] = field.options;
+            }
+
             options[field.column] = await this.getOptions(field.column, field.type, optionConfig, data);
         }
 

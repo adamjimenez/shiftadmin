@@ -12,9 +12,10 @@
                     <v-file-input v-model="file" @update:modelValue="uploadFile" prepend-icon="mdi-upload" hide-details class="hide-input mx-3"></v-file-input>
                     <v-btn title="Up level" :disabled="path === '/'" icon="mdi-arrow-up" @click="upLevel"></v-btn>
                     <v-text-field v-model="path" hide-details readonly density="compact"></v-text-field>
+                    <v-text-field v-model="filter" hide-details density="compact" prepend-inner-icon="mdi-magnify" class="ml-3"></v-text-field>
                 </v-card-actions>
 
-                <v-data-table :items="items" :headers="headers" show-select v-model="selected" @click:row="rowClick" :loading="loading">
+                <v-data-table :items="filteredItems" :headers="headers" show-select v-model="selected" @click:row="rowClick" :loading="loading">
                     <template v-slot:[`item.thumb`]="{ item }">
                         <v-img v-if="item.thumb" :src="apiRoot + '?cmd=file&f=' + item.id" style="max-width: 160px; max-height: 120px;"></v-img>
                     </template>
@@ -52,6 +53,7 @@ export default {
             loading: false,
             file: [],
             error: '',
+            filter: '',
         }
     },
     methods: {
@@ -157,7 +159,23 @@ export default {
                 alert(result.data?.error);
             }
 
-            this.selectFile(result.data.file);
+            await this.fetchData();
+
+            this.selectFile(result.data.file.path);
+        }
+    },
+
+    computed: {
+        filteredItems: function () {
+            const items = [];
+
+            this.items.forEach(item => {
+                if (item.name.indexOf(this.filter) !== -1 ) {
+                    items.push(item);
+                }
+            })
+
+            return items;
         }
     },
 

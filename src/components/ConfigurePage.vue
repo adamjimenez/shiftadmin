@@ -704,9 +704,9 @@ export default {
             if (this.option.type === 'table') {
                 value = this.option.options;
             } else {
-                let lines = this.option.options.split("\n");
+                let lines = this.option.options ? this.option.options.split("\n") : [];
 
-                value = lines[0].includes('=') ? {} : [];
+                value = lines[0]?.includes('=') ? {} : [];
 
                 lines.forEach((line) => {
                     if (Array.isArray(value)) {

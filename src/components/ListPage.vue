@@ -15,7 +15,7 @@
                     </ListButtons>
                 </v-sheet>
             </template>        
-        
+
             <template v-slot:item="{ item, internalItem, isSelected, toggleSelect}">
                 <tr class="v-data-table__tr v-data-table__tr--clickable" @click="rowClick($event, item)">
                     <td class="v-data-table__td v-data-table-column--no-padding v-data-table-column--align-start border-primary" style="width: 48px;" :class="active === item.id ? 'active border-s-lg' : ''">

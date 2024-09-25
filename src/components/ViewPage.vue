@@ -180,6 +180,7 @@ export default {
             back: '../',
             buttonData: {},
             fieldHover: '',
+            isSortable: false,
         };
     },
     methods: {
@@ -373,6 +374,7 @@ export default {
         loaded: function () {            
             let data = this.$refs['listPage']?.buttonData;
             this.buttonData = data ? data : {};
+            this.isSortable = this.$refs['listPage']?.isSortable;
         },
         edit: function () {
             this.$router.push('edit' + location.search);
@@ -417,9 +419,6 @@ export default {
 
             return buttons;
         },
-        isSortable: function () {
-            return this.$refs['listPage']?.isSortable;
-        },
     },
 
     watch: {
@@ -432,8 +431,9 @@ export default {
         vars: function () {
             this.fetchData();
         },
-        tab: function () {
+        tab: async function () {
             this.selected = [];
+            this.isSortable = false;
         }
     },
 

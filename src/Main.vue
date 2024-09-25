@@ -63,8 +63,8 @@
 							:value="child.to" :to="child.target_blank ? child.to : base + child.to"
 							:target="child.target_blank ? '_blank' : ''">
 							<template v-slot:prepend>
-								<v-badge :content="parseInt(child.count).toLocaleString()" color="error"
-									v-if="child.count > 0">
+								<v-badge :content="parseInt(child?.count).toLocaleString()" color="error"
+									v-if="child?.count > 0">
 									<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" />
 								</v-badge>
 								<v-icon :icon="child.icon ? child.icon : 'mdi-minus'" v-else />
@@ -79,8 +79,8 @@
 					<v-list-item v-else :title="item.title" :value="item.to"
 						:to="item.target_blank ? item.to : base + item.to" :target="item.target_blank ? '_blank' : ''">
 						<template v-slot:prepend>
-							<v-badge :content="parseInt(child.count).toLocaleString()" color="error"
-								v-if="item.count > 0">
+							<v-badge :content="parseInt(child?.count).toLocaleString()" color="error"
+								v-if="item?.count > 0">
 								<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" />
 							</v-badge>
 							<v-icon :icon="item.icon ? item.icon : 'mdi-minus'" v-else />
@@ -209,6 +209,7 @@ export default {
 			display: {},
 			searchFocussed: false,
 			ignoreChange: false,
+			child: {},
 		};
 	},
 

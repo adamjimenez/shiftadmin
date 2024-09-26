@@ -52,6 +52,13 @@ export default {
                         });
                     }
                 });
+            } else if (type === 'combo') {
+                if (!options.find(item => {item.value == data[column]})) {
+                    options.unshift({
+                        value: data[column],
+                        title: data[column + '_label'] || data[column],
+                    });
+                }
             }
 
             return options;

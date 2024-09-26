@@ -73,7 +73,7 @@
                                 :chips="value.type === 'select_multiple'" :clearable="!value.readonly" />
                             <v-autocomplete v-else-if="value.type === 'combo'" :label="formatString(key)"
                                 v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" :items="options[key.replaceAll(' ', '_')]"
-                                @update:search="updateCombo($event, value.options || key.replaceAll(' ', '_'))" />
+                                @update:search="updateCombo($event, key.replaceAll(' ', '_'), value.options)" />
                             <!--<v-number-input v-else-if="['int', 'position', 'decimal'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"  :step="fieldStep(value.type)"></v-number-input>-->
                             <polygon-field v-else-if="['polygon'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"></polygon-field>
                             <v-text-field :label="formatString(key)" v-model="data[value.column]" :readonly="value.readonly"
@@ -298,8 +298,12 @@ export default {
 
             return '';
         },
-        updateCombo: async function (term, column) {
-            const result = await api.get('?cmd=autocomplete&field=' + column + '&term=' + term);
+        updateCombo: async function (term, column, table) {
+            if (!table) {
+                table = column;
+            }
+
+            const result = await api.get('?cmd=autocomplete&field=' + table + '&term=' + term);
             this.options[column] = result.data.options;
         },
         chooseFileUpload: function (column) {

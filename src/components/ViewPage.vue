@@ -105,7 +105,7 @@
                             <div v-html="item.details" style="white-space: pre;"></div>
                         </v-list-item-subtitle>
                         <div v-if="item.user > 0">
-                            <v-btn variant="text" :to="this.base + 'section/users/' + item.user" @click="logsDialog = false">{{ item.name ? item.name.trim() : item.user }}</v-btn>
+                            <v-btn variant="text" :to="this.base + 'section/users/' + item.user" @click="logsDialog = false">{{ item.name ? item.name.trim() : item.email }}</v-btn>
                         </div>
                     </v-list-item>
                 </v-list>

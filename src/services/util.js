@@ -5,7 +5,8 @@ import moment from 'moment';
 let edition = 'Standard';
 
 export default {
-    getSelectOptions: async function(option) {
+    getSelectOptions: async function(option, value) {
+
         let options = [];
         
         if (Array.isArray(option)) {
@@ -17,7 +18,9 @@ export default {
             });
         } else if (option) {
             if (typeof option === 'string') {
-                const result = await api.get('?cmd=options&table=' + option);
+                const result = await api.post('?cmd=options&table=' + option, {
+                    values: value
+                });
                 option = result.data.options;
             }
 
@@ -39,7 +42,7 @@ export default {
         // get options
         if (['combo', 'select', 'select_parent', 'select_multiple'].includes(type)) {
             let option = optionConfig[column.replaceAll('_', ' ')];
-            options = await this.getSelectOptions(option);
+            options = await this.getSelectOptions(option, data[column]);
 
             // prepend selected value
             if (type === 'select_multiple' && Array.isArray(data)) {

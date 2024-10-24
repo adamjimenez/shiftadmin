@@ -222,7 +222,7 @@
                     <v-text-field label="Name" v-model="field.name" autofocus></v-text-field>
                     <v-select label="Field" v-model="field.type" :items="fieldTypes"></v-select>
                     <v-text-field label="Label" v-model="field.label"></v-text-field>
-                    <v-select label="Options" v-model="field.options" v-if="field.type === 'combo'" :items="Object.keys(filteredTables)"></v-select>
+                    <v-select label="Options" v-model="field.options" v-if="['combo', 'select_multiple'].includes(field.type)" :items="Object.keys(filteredTables)"></v-select>
                     <v-checkbox label="Required" v-model="field.required"></v-checkbox>
                 </v-card-text>
                 <v-card-actions>

@@ -55,7 +55,7 @@
                                 :href="'https://www.google.com/maps/search/?api=1&query=' + data[value.column]" target="_blank">{{
                                     data[value.column] }}</a>
                             <v-btn v-else-if="['select', 'select_parent', 'combo'].includes(value.type)" 
-                                :to="getSelectLink(key, data[value.column])" variant="text">{{ data[value.column + '_label'] ? data[value.column + '_label'] : getOption(options[value.column], data[value.column])?.title  }}</v-btn>
+                                :to="getSelectLink(key, data[value.column])" variant="text">{{ data[value.column + '_label'] || getOption(options[value.column], data[value.column])?.title  }}</v-btn>
                             <div v-else-if="value.type === 'select_multiple'" class="mx-5">
                                 <v-btn v-for="(v, k, index) in data[value.column]" :key="index" :to="getSelectLink(key, v)" variant="text">
                                     {{ getOption(options[value.column], v)?.title }}
@@ -204,7 +204,7 @@ export default {
             if (result.data.data) {
                 let data = result.data.data;
 
-                this.options = await util.getAllOptions(fields, this.vars.options, this.section, data);
+                this.options = await util.getAllOptions(fields, this.vars.options, data);
 
                 for (const [, field] of Object.entries(fields)) {
                     if (field.type === 'password') {
@@ -359,7 +359,7 @@ export default {
             let option = options.find(item => item.value === value);
             return option ? option : {
                 value: value,
-                title: 'Not found'
+                title: value
             }
         },
         formatData: function (value, fieldType) {

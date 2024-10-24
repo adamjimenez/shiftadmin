@@ -67,12 +67,12 @@
                                 <v-rating v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" hover :length="5"
                                     :size="32" />
                             </div>
-                            <v-select v-else-if="['select', 'select_parent', 'select_multiple'].includes(value.type)"
+                            <v-select v-else-if="['select', 'select_parent'].includes(value.type)"
                                 :label="formatString(key)" v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]"
                                 :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'"
                                 :chips="value.type === 'select_multiple'" :clearable="!value.readonly" />
-                            <v-autocomplete v-else-if="value.type === 'combo'" :label="formatString(key)"
-                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" :items="options[key.replaceAll(' ', '_')]"
+                            <v-autocomplete v-else-if="['combo', 'select_multiple'].includes(value.type)" :label="formatString(key)"
+                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'"
                                 @update:search="updateCombo($event, key.replaceAll(' ', '_'), value.options)" />
                             <!--<v-number-input v-else-if="['int', 'position', 'decimal'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"  :step="fieldStep(value.type)"></v-number-input>-->
                             <polygon-field v-else-if="['polygon'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"></polygon-field>

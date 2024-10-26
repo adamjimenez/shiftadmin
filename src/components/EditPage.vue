@@ -73,7 +73,11 @@
                                 :chips="value.type === 'select_multiple'" :clearable="!value.readonly" />
                             <v-autocomplete v-else-if="['combo', 'select_multiple'].includes(value.type)" :label="formatString(key)"
                                 v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'"
-                                @update:search="updateCombo($event, key.replaceAll(' ', '_'), value.options)" />
+                                @update:search="updateCombo($event, key.replaceAll(' ', '_'), value.options)">                            
+                                <template v-slot:append-item>
+                                    <div @click="loadMore(key.replaceAll(' ', '_'), value.options)">Load more</div>
+                                </template>
+                            </v-autocomplete>
                             <!--<v-number-input v-else-if="['int', 'position', 'decimal'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"  :step="fieldStep(value.type)"></v-number-input>-->
                             <polygon-field v-else-if="['polygon'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"></polygon-field>
                             <v-text-field :label="formatString(key)" v-model="data[value.column]" :readonly="value.readonly"
@@ -118,6 +122,7 @@ export default {
             error: '',
             errors: {},
             options: {},
+            terms: {},
             files: {},
             rules: {
                 required: value => !!value || 'Required',
@@ -303,8 +308,21 @@ export default {
                 table = column;
             }
 
+            this.terms[column] = term;
             const result = await api.get('?cmd=autocomplete&field=' + table + '&term=' + term);
             this.options[column] = result.data.options;
+        },
+        loadMore: async function (column, table) {
+
+            if (!table) {
+                table = column;
+            }
+
+            const result = await api.get('?cmd=autocomplete&field=' + table + '&term=' + (this.terms[column] ? this.terms[column] : '') + '&offset=' + this.options[column].length);
+
+            result.data.options?.forEach(item => {
+                this.options[column].push(item);
+            })
         },
         chooseFileUpload: function (column) {
             this.$emit('chooseFileUpload', column);
@@ -317,7 +335,7 @@ export default {
         },
         goBack: function () {
             this.$router.push(this.back);
-        }
+        },
     },
     watch: {
         fileSelected: function (data) {

@@ -4,42 +4,42 @@
             <v-text-field v-model="dateRangeText" :label="label" readonly v-bind="props"></v-text-field>
         </template>
         <v-card v-bind="$attrs">
-                <v-container>
-                    <v-row>
-                        <v-col>
-                            <v-list v-model:selected="special">
-                                <v-list-item value="custom">
-                                    Custom
-                                </v-list-item>
-                                <v-list-item value="last7d">
-                                    Last 7 days
-                                </v-list-item>
-                                <v-list-item value="last28d">
-                                    Last 28 days
-                                </v-list-item>
-                                <v-list-item value="today">
-                                    Today
-                                </v-list-item>
-                                <v-list-item value="yesterday">
-                                    Yesterday
-                                </v-list-item>
-                                <v-list-item value="thismonth">
-                                    This month
-                                </v-list-item>
-                                <v-list-item value="lastmonth">
-                                    Last month
-                                </v-list-item>
-                                <v-list-item value="thisyear">
-                                    This year
-                                </v-list-item>
-                                <v-list-item value="lastyear">
-                                    Last year
-                                </v-list-item>
-                            </v-list>
-                        </v-col>
-                        <v-date-picker v-model="value" no-title multiple="range"></v-date-picker>
-                    </v-row>
-                </v-container>
+            <v-container>
+                <v-row>
+                    <v-col>
+                        <v-list v-model:selected="special">
+                            <v-list-item value="custom">
+                                Custom
+                            </v-list-item>
+                            <v-list-item value="last7d">
+                                Last 7 days
+                            </v-list-item>
+                            <v-list-item value="last28d">
+                                Last 28 days
+                            </v-list-item>
+                            <v-list-item value="today">
+                                Today
+                            </v-list-item>
+                            <v-list-item value="yesterday">
+                                Yesterday
+                            </v-list-item>
+                            <v-list-item value="thismonth">
+                                This month
+                            </v-list-item>
+                            <v-list-item value="lastmonth">
+                                Last month
+                            </v-list-item>
+                            <v-list-item value="thisyear">
+                                This year
+                            </v-list-item>
+                            <v-list-item value="lastyear">
+                                Last year
+                            </v-list-item>
+                        </v-list>
+                    </v-col>
+                    <v-date-picker v-model="value" no-title multiple="range"></v-date-picker>
+                </v-row>
+            </v-container>
         </v-card>
     </v-menu>
 </template>
@@ -131,7 +131,10 @@ export default {
             }
 
             this.specialPressed = true;
-            this.value = days;
+
+            if (this.special[0] !== 'custom') {
+                this.value = days;
+            }
             
             await this.$nextTick();
             this.specialPressed = false;

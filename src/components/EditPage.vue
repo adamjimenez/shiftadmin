@@ -313,7 +313,6 @@ export default {
             this.options[column] = result.data.options;
         },
         loadMore: async function (column, table) {
-
             if (!table) {
                 table = column;
             }

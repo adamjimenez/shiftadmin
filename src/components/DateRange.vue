@@ -61,6 +61,7 @@ export default {
         menu: false,
         value: [],
         specialPressed: false,
+        ready: false,
     }),
     methods: {
         parseDate: function (dateString) {
@@ -124,16 +125,21 @@ export default {
             let currentDate = new Date(value[0]);
             let endDate = new Date(value[value.length-1]);
 
+            // account for daylight saving
+            endDate.setHours(currentDate.getHours());
+
             let days = [];
             while (currentDate <= endDate) {
+                console.log(currentDate)
                 days.push(new Date(currentDate));
                 currentDate.setDate(currentDate.getDate() + 1);
             }
 
             this.specialPressed = true;
 
-            if (this.special[0] !== 'custom') {
+            if (this.special[0] !== 'custom' || !this.ready) {
                 this.value = days;
+                this.ready = true;
             }
             
             await this.$nextTick();

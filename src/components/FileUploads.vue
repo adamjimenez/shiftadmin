@@ -9,7 +9,7 @@
                 <v-card-actions>
                     <v-btn title="Create folder" icon="mdi-folder-outline" @click="createFolder"></v-btn>
                     <v-btn title="Delete" icon="mdi-delete" :disabled="selected.length === 0" @click="deleteItems"></v-btn>
-                    <v-file-input v-model="file" @update:modelValue="uploadFile" prepend-icon="mdi-upload" hide-details class="hide-input mx-3"></v-file-input>
+                    <v-file-input v-model="file" @update:modelValue="uploadFile" multiple prepend-icon="mdi-upload" hide-details class="hide-input mx-3"></v-file-input>
                     <v-btn title="Up level" :disabled="path === '/'" icon="mdi-arrow-up" @click="upLevel"></v-btn>
                     <v-text-field v-model="path" hide-details readonly density="compact"></v-text-field>
                     <v-text-field v-model="filter" hide-details density="compact" prepend-inner-icon="mdi-magnify" class="ml-3"></v-text-field>

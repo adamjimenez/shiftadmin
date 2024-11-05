@@ -41,7 +41,12 @@ export default {
             }
             
             if (message.data.url) {
-                let to = util.base() + message.data.url.substr((this.webUrl + 'admin/') . length)
+		let to = message.data.url;
+
+		if (!to.includes('://')) {
+                    to = util.base() + to.substr((this.webUrl + 'admin/').length);
+		}
+		    
                 this.$router.push(to);
             }
             

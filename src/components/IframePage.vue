@@ -43,7 +43,10 @@ export default {
             if (message.data.url) {
                 let to = message.data.url;
 
-                if (!to.includes('://')) {
+                if (to.includes('://')) {                    
+                    location.href = to;
+                    return;
+                } else {
                     to = util.base() + to.substr((this.webUrl + 'admin/').length);
                 }
 

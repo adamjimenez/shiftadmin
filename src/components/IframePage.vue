@@ -13,12 +13,12 @@ import util from "../services/util";
 import qs from 'qs';
 
 export default {
-	data: function () {
-		return {
+    data: function () {
+        return {
             webUrl: '',
             isLoading: false,
-		};
-	},
+        };
+    },
     beforeRouteUpdate () {
         this.loading = true;
     },
@@ -41,7 +41,15 @@ export default {
             }
             
             if (message.data.url) {
-                let to = util.base() + message.data.url.substr((this.webUrl + 'admin/') . length)
+                let to = message.data.url;
+
+                if (to.includes('://')) {                    
+                    location.href = to;
+                    return;
+                } else {
+                    to = util.base() + to.substr((this.webUrl + 'admin/').length);
+                }
+
                 this.$router.push(to);
             }
             
@@ -59,7 +67,7 @@ export default {
             this.isLoading = true;
         }
     },
-	async mounted() {
+    async mounted() {
         if (!['Pro', 'Business', 'Trial'].includes(util.getEdition())) {
             this.$router.push(util.base() + 'upgrade');
             return;

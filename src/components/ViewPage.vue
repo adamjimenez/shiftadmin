@@ -37,7 +37,7 @@
                 </template>
             </v-tabs>
 
-            <v-card v-if="tab === 'summary'" min-width="600" class="pa-5" style="overflow: auto;">
+            <v-card v-if="tab === 'summary'" min-width="600" class="pa-5" style="overflow: auto;" :loading="loading">
                 <template v-for="(value, key, index) in fields" :key="index">
                     <div v-if="data[value.column] && !['password'].includes(value.type) && (!['file', 'select', 'select_parent', 'combo'].includes(value.type) || (data[value.column] && data[value.column] != 0))">
                         <v-card-title @mouseenter="fieldHover = key" @mouseleave="fieldHover = ''">
@@ -164,6 +164,7 @@ export default {
             section: '',
             id: 0,
             tab: 'summary',
+            loading: false,
             logsDialog: false,
             loadingLogs: false,
             logs: [],
@@ -185,14 +186,18 @@ export default {
     },
     methods: {
         fetchData: async function () {
+
             let data = {
                 cmd: 'get',
                 section: this.section,
                 id: this.id
             };
+
+            this.loading = true;
             const result = await api.post('?section=' + this.section, data);
 
             if (!result) {
+                this.loading = false;
                 return false;
             }
 
@@ -248,6 +253,8 @@ export default {
                     targetElement.scrollIntoView();
                 }
             }
+
+            this.loading = false;
         },
         openLogs: async function () {
             this.logsDialog = true;

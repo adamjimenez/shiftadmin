@@ -496,24 +496,18 @@ export default {
     },
     watch: {
         internalSection: function (newVal) {
-            if (localStorage['fields_' + newVal]) {
-                this.selectedHeaders = JSON.parse(localStorage['fields_' + newVal]);
-            } else {
-                this.selectedHeaders = [];
-            }
-
-            if (localStorage['sortBy_' + newVal]) {
-                this.sortBy = JSON.parse(localStorage['sortBy_' + newVal]);
-            } else {
-                this.sortBy = [];
-            }
+            this.selectedHeaders = localStorage['fields_' + newVal] ? JSON.parse(localStorage['fields_' + newVal]) : [];
+            this.sortBy = localStorage['sortBy_' + newVal] ? JSON.parse(localStorage['sortBy_' + newVal]) : [];
 
             this.page = 0;
             this.reload();
         },
         $route(route) {
-            this.internalSection = route.params.section;
-            this.reload();
+            if (this.internalSection !== route.params.section) {
+                this.internalSection = route.params.section;
+            } else {
+                this.reload();
+            }
         },
         section: function (section) {
             this.internalSection = section;

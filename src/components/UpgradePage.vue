@@ -80,7 +80,7 @@
                                 </p>
                             </div>
                             <v-btn v-else color="primary" variant="flat" target="_blank"
-                                :href="'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick-subscriptions&business=adam%40shiftcreate%2ecom&item_name=GenieAdmin%20' + edition.name + (monthly ? '' : '%20(year)') + ' &item_number=' + data.id + '&no_shipping=1&no_note=1&currency_code=GBP&lc=GB&bn=PP%2dSubscriptionsBF&ap1=1&a3=' + (monthly ? edition.monthlyPricing : edition.annualPricing * 12) + '&p3=1&t3=Y&src=1&sra=1&notify_url=https:%2F%2Fgenieadmin.com%2Fpaypal'">Choose</v-btn>
+                                :href="'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick-subscriptions&business=adam%40shiftcreate%2ecom&item_name=GenieAdmin%20' + edition.name + (monthly ? '' : '%20(year)') + ' &item_number=' + data.id + '&no_shipping=1&no_note=1&currency_code=GBP&lc=GB&bn=PP%2dSubscriptionsBF&ap1=1&a3=' + (monthly ? edition.monthlyPricing : edition.annualPricing * 12) + '&p3=1&t3=' + (monthly ? 'M' : 'Y') + '&src=1&sra=1&notify_url=https:%2F%2Fgenieadmin.com%2Fpaypal'">Choose</v-btn>
                         </v-card-actions>
 
                     </v-card>

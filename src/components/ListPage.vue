@@ -307,7 +307,7 @@ export default {
                 link += '?parentsection=' + this.parentsection + '&parentid=' + this.parentid;
             }
 
-            this.$router.push(link);
+            this.$router.push({ path: link, query: this.searchparams });
         },
         actionHandler: async function (button) {
             let data = {};

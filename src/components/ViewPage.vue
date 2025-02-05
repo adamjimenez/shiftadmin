@@ -403,7 +403,7 @@ export default {
             return false;
         },
         goBack: function () {
-            this.$router.push(this.back);
+            this.$router.push({ path: this.back, query: this.$route.query });
         },
         changeSelected: function (items) {
             this.selected = items;

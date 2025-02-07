@@ -78,7 +78,7 @@ export default {
           backgroundColor: this.color,
           borderColor: this.color,
         }]
-      };
+      }
     }
   }
 }

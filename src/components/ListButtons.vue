@@ -81,7 +81,6 @@ export default {
             this.$emit('action', 'nextPage');
         },
     },
-
     watch: {
         section: function (section) {
             this.internalSection = section;
@@ -90,7 +89,6 @@ export default {
             this.$emit('action', 'filter', value);
         }
     },
-
     computed: {
         buttons: function () {
             let buttons = [];
@@ -113,10 +111,8 @@ export default {
             return base;
         },
     },
-
     created() {
         this.internalSection = this.section ? this.section : this.$route.params.section;
     },
-
-};
+}
 </script>

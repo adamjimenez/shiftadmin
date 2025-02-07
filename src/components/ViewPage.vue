@@ -186,7 +186,6 @@ export default {
     },
     methods: {
         fetchData: async function () {
-
             let data = {
                 cmd: 'get',
                 section: this.section,
@@ -453,5 +452,5 @@ export default {
             this.fetchData();
         }
     }
-};
+}
 </script>

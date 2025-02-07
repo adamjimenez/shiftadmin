@@ -75,9 +75,7 @@ export default {
         },
         rowClick: function (e, item) {
             if (item.item.leaf) {
-                let filepath = item.item.id;
-
-                this.selectFile(filepath);
+                this.selectFile(item.item.id);
             } else {
                 this.path = item.item.id + '/';
                 this.fetchData();
@@ -164,7 +162,6 @@ export default {
             this.selectFile(result.data.file.path);
         }
     },
-
     computed: {
         filteredItems: function () {
             const items = [];
@@ -178,10 +175,8 @@ export default {
             return items;
         }
     },
-
     async mounted() {
         this.apiRoot = api.getApiRoot()
     }
 }
-
 </script>

@@ -242,7 +242,6 @@ export default {
 
             this.errors = {};
             this.error = '';
-
             this.loading = true;
 
             const result = await api.post('?cmd=save&section=' + this.section + '&id=' + this.id, formData, {
@@ -378,5 +377,5 @@ export default {
 
         this.apiRoot = api.getApiRoot()
     }
-};
+}
 </script>

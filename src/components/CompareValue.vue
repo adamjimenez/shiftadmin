@@ -22,8 +22,7 @@ export default {
         format: null,
     },
     data: function () {
-        return {
-        }
+        return {}
     },
     methods: {
         formatValue: function (value) {

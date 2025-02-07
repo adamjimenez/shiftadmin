@@ -87,28 +87,35 @@ export default {
             const month = today.getMonth();
 
             if (typeof modelValue === 'string') {
-                if (modelValue === 'today') {
-                    value = [today];
-                } else if (modelValue === 'yesterday') {
-                    value = [new Date(Date.now() - 1 * 86400000)];
-                } else if (modelValue === 'thismonth') {
-                    value = [new Date(year, month, 1), new Date(year, month + 1, 0)];
-                } else if (modelValue === 'lastmonth') {
-                    value = [new Date(year, month - 1, 1), new Date(year, month, 0)];
-                } else if (modelValue === 'thisyear') {
-                    value = [new Date(year, 0, 1), new Date(year, 11, 31)];
-                } else if (modelValue === 'lastyear') {
-                    value = [new Date(year-1, 0, 1), new Date(year-1, 11, 31)];
-                } else {
+                switch (modelValue) {
+                    case 'today':
+                        value = [today];
+                    break;
+                    case 'yesterday':
+                        value = [new Date(Date.now() - 1 * 86400000)];
+                    break;
+                    case 'thismonth':
+                        value = [new Date(year, month, 1), new Date(year, month + 1, 0)];
+                    break;
+                    case 'lastmonth':
+                        value = [new Date(year, month - 1, 1), new Date(year, month, 0)];
+                    break;
+                    case 'thisyear':
+                        value = [new Date(year, 0, 1), new Date(year, 11, 31)];
+                    break;
+                    case 'lastyear':
+                        value = [new Date(year-1, 0, 1), new Date(year-1, 11, 31)];
+                    break;
+                }
+
+                if (!value) {
                     const match = modelValue.match(/^last([0-9]+)d$/);
 
                     if (match) {
                         const daysAgo = parseInt(match[1]) - 1;
                         value = [new Date(Date.now() - daysAgo * 86400000), today];
                     }
-                }
 
-                if (!value) {
                     value = [modelValue];
                 } else {
                     this.special = [modelValue];

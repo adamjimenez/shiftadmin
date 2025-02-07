@@ -58,7 +58,6 @@ export default {
     methods: {
         open: async function () {
             this.options = await util.getAllOptions(this.fields, this.vars.options, {});
-            console.log(this.defaultData)
             this.params = this.defaultData;
             this.dialog = true;
         },
@@ -78,6 +77,6 @@ export default {
         hasChanges: function () {
             return Object.values(this.enabled).filter(item => item === true).length > 0;
         }
-    },
+    }
 }
 </script>

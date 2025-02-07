@@ -903,6 +903,5 @@ export default {
         await this.fetchConfig();
         this.loadReport();
     }
-
 }
 </script>

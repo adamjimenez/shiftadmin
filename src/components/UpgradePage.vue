@@ -2,35 +2,34 @@
     <v-container>
         <v-card class="d-flex flex-column">
             <v-card-text>
-
                 <div class="text-h2 mb-5">
                     Effortless admin
                 </div>
 
                 <v-container>
-                <v-row>
-                    <v-col>
-                        <p>
-                            Current license:
-                            {{ data.edition }}
-                        </p>
-                        <p v-if="data.edition !== 'Trial' && data.subscription_end != '0000-00-00'">
-                            License end:
-                            {{ formatDate(data.subscription_end) }}
-                        </p>
-                    </v-col>
-                    <v-col class="text-right">
-                        <v-btn color="primary" @click="beginTrial" v-if="data.edition === 'Unlicensed' && data.trial_end === '0000-00-00'">
-                            Begin 30-day free trial
-                        </v-btn>
-                        <span v-else-if="['Trial', 'Unlicensed'].includes(data.edition)">
-                            Trial end:
-                            {{ formatDate(data.trial_end) }}
-                        </span>
-                    </v-col>
-                </v-row>
+                    <v-row>
+                        <v-col>
+                            <p>
+                                Current license:
+                                {{ data.edition }}
+                            </p>
+                            <p v-if="data.edition !== 'Trial' && data.subscription_end != '0000-00-00'">
+                                License end:
+                                {{ formatDate(data.subscription_end) }}
+                            </p>
+                        </v-col>
+                        <v-col class="text-right">
+                            <v-btn color="primary" @click="beginTrial"
+                                v-if="data.edition === 'Unlicensed' && data.trial_end === '0000-00-00'">
+                                Begin 30-day free trial
+                            </v-btn>
+                            <span v-else-if="['Trial', 'Unlicensed'].includes(data.edition)">
+                                Trial end:
+                                {{ formatDate(data.trial_end) }}
+                            </span>
+                        </v-col>
+                    </v-row>
                 </v-container>
-
             </v-card-text>
         </v-card>
 
@@ -66,8 +65,7 @@
 
                             <div>
                                 Save {{ Math.round(100 * ((edition.monthlyPricing - edition.annualPricing) /
-                                    edition.monthlyPricing))
-                                }}% annually
+                                edition.monthlyPricing)) }}% annually
                             </div>
                         </v-card-text>
 
@@ -75,7 +73,7 @@
                             <div v-if="edition.name === data.edition">
                                 Your current version
 
-                                <p v-if="edition.hosted" style="font-size: small; font-weight: bold;" class="mt-1">
+                                <p v-if="edition.hosted" style="font-size: small;" class="mt-1 font-weight-bold">
                                     Hosting discount applied
                                 </p>
                             </div>
@@ -164,7 +162,7 @@ export default {
                 body: params,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded' // For POST requests
-                }            
+                }
             });
 
             this.fetchData();
@@ -174,10 +172,10 @@ export default {
     mounted: async function () {
         await this.fetchData();
         let edition = this.editions.find(edition => edition.name === this.data.edition)
-        
+
         if (edition) {
             edition.hosted = this.data.hosted;
         }
     }
-};
+}
 </script>

@@ -6,7 +6,6 @@ let edition = 'Standard';
 
 export default {
     getSelectOptions: async function(option, value) {
-
         let options = [];
         
         if (Array.isArray(option)) {

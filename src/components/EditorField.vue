@@ -41,6 +41,5 @@ export default {
     components: {
         'editor': Editor
     },
-
 }
 </script>

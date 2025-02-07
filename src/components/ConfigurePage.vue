@@ -190,22 +190,21 @@
                         <v-tab value="form">Form</v-tab>
                     </v-tabs>
 
-                    <div v-if="snippetView === 'form'">
+                    <div>
                         <VCodeBlock
+                            v-if="snippetView === 'form'"
                             :code="formCode"
                             highlightjs
                             lang="php"
                         />
-                    </div>
-                    <div v-else-if="snippetView === 'list'">
                         <VCodeBlock
+                            v-else-if="snippetView === 'list'"
                             :code="listCode"
                             highlightjs
                             lang="php"
                         />
-                    </div>
-                    <div v-else>
                         <VCodeBlock
+                            v-else
                             :code="viewCode"
                             highlightjs
                             lang="php"
@@ -658,8 +657,7 @@ export default {
             const newObj = keys.reduce((acc, val) => {
                 if (val === oldKey) {
                     acc[newKey] = oldObj[oldKey];
-                }
-                else {
+                } else {
                     acc[val] = oldObj[val];
                 }
                 return acc;

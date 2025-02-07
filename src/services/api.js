@@ -41,8 +41,8 @@ api.interceptors.response.use((response) => {
     return Promise.reject(error);
 })
 
-var webUrl = '';
-var apiRoot = '';
+let webUrl = '';
+let apiRoot = '';
 
 export default {
     getWebUrl() {
@@ -59,18 +59,18 @@ export default {
         return api;
     },
     get(path) {
-        var url = (path.substr(0, 4) === 'http') ? path : apiRoot + path
+        let url = (path.substr(0, 4) === 'http') ? path : apiRoot + path
         return api.get(url);
     },
     post(path, payload, headers) {
-        var url = (path.substr(0, 4) === 'http') ? path : apiRoot + path
+        let url = (path.substr(0, 4) === 'http') ? path : apiRoot + path
         return api.post(url, payload, headers)
     },
     event(path, callback, errorCallback, completeCallback) {
-        var source = new EventSource(apiRoot + path, { withCredentials: true })
+        let source = new EventSource(apiRoot + path, { withCredentials: true })
 
         source.addEventListener('message', (event) => {
-            var result = JSON.parse(event.data)
+            let result = JSON.parse(event.data)
             console.log(result);
             
             if (result.error) {

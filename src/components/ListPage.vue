@@ -498,7 +498,6 @@ export default {
         internalSection: function (newVal) {
             this.selectedHeaders = localStorage['fields_' + newVal] ? JSON.parse(localStorage['fields_' + newVal]) : [];
             this.sortBy = localStorage['sortBy_' + newVal] ? JSON.parse(localStorage['sortBy_' + newVal]) : [];
-
             this.page = 0;
             this.reload();
         },
@@ -594,5 +593,5 @@ export default {
     unmounted() {
         document.removeEventListener( "keydown", this.onKeydown );
     }
-};
+}
 </script>

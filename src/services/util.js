@@ -44,22 +44,24 @@ export default {
             options = await this.getSelectOptions(option, data[column]);
 
             // prepend selected value
-            if (type === 'select_multiple' && Array.isArray(data)) {
-                data.reverse().forEach((item) => {
-                    // check if already exists
-                    if (!options.some(option => option.value === item)) {
+            if (data[column]) {                    
+                if (type === 'select_multiple' && Array.isArray(data)) {
+                    data.reverse().forEach((item) => {
+                        // check if already exists
+                        if (!options.some(option => option.value === item)) {
+                            options.unshift({
+                                value: item,
+                                title: item,
+                            });
+                        }
+                    });
+                } else if (type === 'combo') {
+                    if (!options.find(item => {item.value == data[column]})) {
                         options.unshift({
-                            value: item,
-                            title: item,
+                            value: data[column],
+                            title: data[column + '_label'] || data[column],
                         });
                     }
-                });
-            } else if (type === 'combo') {
-                if (!options.find(item => {item.value == data[column]})) {
-                    options.unshift({
-                        value: data[column],
-                        title: data[column + '_label'] || data[column],
-                    });
                 }
             }
 

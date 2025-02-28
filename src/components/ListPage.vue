@@ -505,6 +505,7 @@ export default {
             if (this.internalSection !== route.params.section) {
                 this.internalSection = route.params.section;
             } else {
+                this.page = 1;
                 this.reload();
             }
         },

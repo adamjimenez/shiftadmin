@@ -167,7 +167,7 @@ export default {
             const items = [];
 
             this.items.forEach(item => {
-                if (item.name.indexOf(this.filter) !== -1 ) {
+                if (item.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1 ) {
                     items.push(item);
                 }
             })

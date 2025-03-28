@@ -65,7 +65,15 @@ export default {
             return util.formatString(string);
         },
         save: function () {
-            this.$emit('action', 'bulkedit', { data: this.params });
+            let data = {};
+
+            for (const [key, values] of Object.entries(this.params)) {
+                if (this.enabled[key]) {
+                    data[key] = values;
+                }
+            }
+
+            this.$emit('action', 'bulkedit', { data: data });
             this.dialog = false;
         },
         updateCombo: async function (term, column) {

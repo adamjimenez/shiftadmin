@@ -45,8 +45,6 @@
 </template>
 
 <script>
-import moment from 'moment';
-
 export default {
     name: "DateRange",
     props: {
@@ -114,9 +112,9 @@ export default {
                     if (match) {
                         const daysAgo = parseInt(match[1]) - 1;
                         value = [new Date(Date.now() - daysAgo * 86400000), today];
+                    } else {
+                        value = [modelValue];
                     }
-
-                    value = [modelValue];
                 } else {
                     this.special = [modelValue];
                 }
@@ -137,7 +135,6 @@ export default {
 
             let days = [];
             while (currentDate <= endDate) {
-                console.log(currentDate)
                 days.push(new Date(currentDate));
                 currentDate.setDate(currentDate.getDate() + 1);
             }
@@ -152,13 +149,24 @@ export default {
             await this.$nextTick();
             this.specialPressed = false;
         },
-        formatDate: function(value) {
-            return moment(value).format('DD-MMM-YYYY')
+        formatDate: function(dateString) {            
+            const date = new Date(dateString);
+
+            return date.toLocaleDateString('en-GB', {
+                weekday: 'short', // "Tue"
+                month: 'short',   // "Apr"
+                day: 'numeric',   // "2"
+                year: 'numeric'   // "2024"
+            }).replace(',', '');
         }
     },
     watch: {
         special: function (newVal) {
             if (newVal[0] === 'custom') {
+                if (!Array.isArray(this.modelValue)) {
+                    this.$emit('update:modelValue', [this.value[0], this.value[this.value.length - 1]]);
+                }
+
                 return;
             }
             
@@ -185,12 +193,29 @@ export default {
         },
         modelValue: function () {
             // convert to full date array
+            this.ready = false;
             this.createDateRange();
         }
     },
     computed: {
         dateRangeText() {
-            return this.value?.[0] ? this.formatDate(this.value[0]) + ' - ' + this.formatDate(this.value[this.value.length - 1]) : '-';
+            let label = '';
+            
+            if (!this.modelValue?.[0]) {
+                return '-';
+            }
+
+            if (this.special[0] !== 'custom') {
+                return this.special[0];
+            }
+            
+            label += this.formatDate(this.modelValue[0]);
+            
+            if (this.modelValue[0] !== this.modelValue[this.modelValue.length-1]) {
+                label += ' - ' + this.formatDate(this.modelValue[this.modelValue.length-1]);
+            }
+            
+            return label;
         },
     },
     mounted: function () {

@@ -1,7 +1,7 @@
 <template>
     <v-menu ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y>
         <template v-slot:activator="{ props }">
-            <v-text-field v-model="dateRangeText" :label="label" readonly v-bind="props"></v-text-field>
+            <v-text-field v-model="dateRangeText" :label="label" readonly v-bind="props" hide-details></v-text-field>
         </template>
         <v-card v-bind="$attrs">
             <v-container>
@@ -37,7 +37,7 @@
                             </v-list-item>
                         </v-list>
                     </v-col>
-                    <v-date-picker v-model="value" no-title multiple="range"></v-date-picker>
+                    <v-date-picker v-model="value" no-title multiple="range" :first-day-of-week="1"></v-date-picker>
                 </v-row>
             </v-container>
         </v-card>

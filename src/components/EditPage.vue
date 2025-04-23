@@ -14,7 +14,7 @@
                     <template v-for="(value, key, index) in fields" :key="index">
                         <v-list-item v-if="!['id', 'timestamp', 'deleted'].includes(value.type)">
                             <v-checkbox v-if="value.type === 'checkbox'" :label="formatString(key)"
-                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" :true-value="'1'" :false-value="'0'"  />
+                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[key]" :true-value="'1'" :false-value="'0'"  />
                             <div v-else-if="['file', 'files'].includes(value.type)">
                                 <div v-if="data[value.column]?.length > 0" class="mb-3">
                                     <div class="mb-3">{{ formatString(key) }}</div>
@@ -27,7 +27,7 @@
                                     </v-chip>
                                 </div>
                                 <v-file-input v-if="value.type === 'files' || data[value.column]?.length === 0"
-                                    :label="formatString(key)" v-model="files[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]"
+                                    :label="formatString(key)" v-model="files[value.column]" :readonly="value.readonly" :error-messages="errors[key]"
                                     :multiple="value.type === 'files'" />
                             </div>
                             <div v-else-if="['upload', 'uploads'].includes(value.type)">
@@ -45,10 +45,10 @@
                                 <v-btn v-if="value.type === 'uploads' || data[value.column].length === 0"
                                     @click="chooseFileUpload(value.column)">Choose</v-btn>
 
-                                <div v-if="errors[value.column]" class="text-red-lighten-1">{{ errors[value.column] }}</div>
+                                <div v-if="errors[key]" class="text-red-lighten-1">{{ errors[key] }}</div>
                             </div>
                             <v-textarea v-else-if="['json', 'textarea'].includes(value.type)" :label="formatString(key)"
-                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" />
+                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[key]" />
                             <div v-else-if="value.type === 'editor'">
                                 <div class="ma-3">{{ formatString(key) }}</div>
                                 <editor-field v-model="data[value.column]" :readonly="value.readonly" :init="{
@@ -64,15 +64,15 @@
                             </div>
                             <div v-else-if="value.type === 'rating'">
                                 <div class="px-3">{{ formatString(key) }}</div>
-                                <v-rating v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" hover :length="5"
+                                <v-rating v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[key]" hover :length="5"
                                     :size="32" />
                             </div>
                             <v-select v-else-if="['select', 'select_parent'].includes(value.type)"
-                                :label="formatString(key)" v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]"
+                                :label="formatString(key)" v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[key]"
                                 :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'"
                                 :chips="value.type === 'select_multiple'" :clearable="!value.readonly" />
                             <v-autocomplete v-else-if="['combo', 'select_multiple'].includes(value.type)" :label="formatString(key)"
-                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[value.column]" :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'"
+                                v-model="data[value.column]" :readonly="value.readonly" :error-messages="errors[key]" :items="options[key.replaceAll(' ', '_')]" :multiple="value.type === 'select_multiple'"
                                 @update:search="updateCombo($event, key.replaceAll(' ', '_'), value.options)">                            
                                 <template v-slot:append-item>
                                     <div @click="loadMore(key.replaceAll(' ', '_'), value.options)">Load more</div>
@@ -81,7 +81,7 @@
                             <!--<v-number-input v-else-if="['int', 'position', 'decimal'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"  :step="fieldStep(value.type)"></v-number-input>-->
                             <polygon-field v-else-if="['polygon'].includes(value.type)" :label="formatString(key)" v-model="data[value.column]"></polygon-field>
                             <v-text-field :label="formatString(key)" v-model="data[value.column]" :readonly="value.readonly"
-                                :error-messages="errors[value.column]" :rules="rules[value.type] ? [rules[value.type]] : []"
+                                :error-messages="errors[key]" :rules="rules[value.type] ? [rules[value.type]] : []"
                                 :type="fieldType(value.type)" autocomplete="new-password"
                                 v-else-if="key !== 'id'" />
                         </v-list-item>

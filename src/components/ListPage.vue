@@ -526,6 +526,9 @@ export default {
                 this.selected.push(item.id);
             }
         },
+        selectNone() {
+            this.selected = [];
+        }
     },
     watch: {
         internalSection: function (newVal) {

@@ -8,11 +8,19 @@
 				{{ vars?.branding?.title ? vars.branding.title : 'Admin' }}
 			</v-btn>
 
-			<div class="text-align-center w-100 d-flex flex-row justify-center" v-if="showSearch">
-				<v-combobox v-if="section && fields.length" v-model="search" :items="searchItems"
+			<div class="text-align-center w-100 d-flex flex-row justify-center align-center" if="showSearch">
+
+				<div v-if="mobile && selected.length" class="flex-grow-1">
+					<v-btn variant="text" @click="selectNone">
+						<v-icon icon="mdi-arrow-left" />
+					</v-btn>
+					{{ selected.length }}
+				</div>
+
+				<v-combobox v-else-if="section && fields.length" v-model="search" :items="searchItems"
 					@update:search="updateSearch" @update:model-value="afterSelection" @keydown.enter="quickSearch"
 					ref="autocomplete" hide-details hide-no-data single-line rounded variant="solo-filled" no-filter
-					class="mx-5" style="max-width: 800px;" :label="'Search ' + section"
+					class="mx-1" style="max-width: 800px;" :label="'Search ' + section"
 					:placeholder="'Search ' + section" @focus="onSearchFocus">
 					<template v-slot:prepend-inner>
 						<v-icon icon="mdi:mdi-arrow-left" v-if="searchFocussed" @click.stop="searchFocussed = false"
@@ -111,10 +119,25 @@
 		</v-navigation-drawer>
 
 		<v-main class="d-flex flex-column align-center justify-center">
-			<router-view ref="main" class="w-100 flex-grow-1" :vars="vars" :searchparams="searchParams"
-				@changeFields="changeFields" @changeHeaders="changeHeaders" @chooseFileUpload="chooseFileUpload"
-				:fileSelected="fileSelected" @message="message" :class="fullScreen ? 'fullScreen' : ''" :mobile="mobile"
-				@configUpdated="fetchData" @updateCount="updateCount" />
+			<router-view 
+				ref="main"
+				class="w-100 flex-grow-1"
+				:vars="vars"
+				:searchparams="searchParams"
+				:class="fullScreen ? 'fullScreen' : ''"
+				:mobile="mobile"
+				:fileSelected="fileSelected"
+				@changeFields="changeFields"
+				@changeHeaders="changeHeaders"
+				@chooseFileUpload="chooseFileUpload"
+				@message="message"
+				@configUpdated="fetchData"
+				@updateCount="updateCount"
+				@changeSelected="changeSelected"
+				v-slot="{ Component }"
+			>
+				<component :is="Component" ref="childComponent" />
+			</router-view>
 		</v-main>
 
 		<v-dialog v-model="advancedDialog" max-width="600" scrollable>
@@ -210,6 +233,7 @@ export default {
 			searchFocussed: false,
 			ignoreChange: false,
 			child: {},
+			selected: 0
 		};
 	},
 
@@ -424,10 +448,16 @@ export default {
 				})
 			})
 		},
+		changeSelected: function (data) {
+			this.selected = data;
+		},
 		onSearchFocus: function () {
 			if (this.mobile) {
 				this.searchFocussed = true;
 			}
+		},
+		selectNone: function () {
+			this.$refs['childComponent'].selectNone();
 		}
 	},
 

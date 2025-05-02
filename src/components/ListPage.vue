@@ -1,10 +1,24 @@
 <template>
     <v-layout>
 
-        <v-data-table-server v-model="selected" :headers="activeHeaders" :items="data.data" item-value="id" show-select
-            @click:row="rowClick" :loading="loading" :items-length="totalItems"
-            v-model:items-per-page="itemsPerPage" :search="search" fixed-header fixed-footer class="data-table-server" :page="page"
-            v-model:sort-by="sortBy" @update:sortBy="updateSortBy"
+        <v-data-table-server
+            v-model="selected"
+            v-model:items-per-page="itemsPerPage"
+            v-model:sort-by="sortBy"
+            :headers="activeHeaders"
+            :items="data.data"
+            item-value="id"
+            :show-select="display.smAndUp"
+            :hide-default-header="!display.smAndUp"
+            :loading="loading" :items-length="totalItems"
+            :search="search"
+            fixed-header
+            fixed-footer
+            class="data-table-server"
+            :page="page"
+            @click:row="rowClick"
+            @update:sortBy="updateSortBy"
+            @contextmenu:row="select"
             >
 
             <template v-slot:top>
@@ -17,8 +31,8 @@
             </template>        
 
             <template v-slot:item="{ item, internalItem, isSelected, toggleSelect}">
-                <tr class="v-data-table__tr v-data-table__tr--clickable" @click="rowClick($event, item)">
-                    <td class="v-data-table__td v-data-table-column--no-padding v-data-table-column--align-start border-primary" style="width: 48px;" :class="active === item.id ? 'active border-s-lg' : ''">
+                <tr class="v-data-table__tr v-data-table__tr--clickable" :class="rowClass(item)" @click="rowClick($event, item)" @contextmenu="select($event, item)">
+                    <td v-if="display.smAndUp" class="v-data-table__td v-data-table-column--no-padding v-data-table-column--align-start border-primary" style="width: 48px;" :class="active === item.id ? 'active border-s-lg' : ''">
                         <v-checkbox-btn
                             :model-value="isSelected(internalItem)"
                             @click.stop="active = item.id; toggleSelect(internalItem, !isSelected(internalItem))"
@@ -492,13 +506,33 @@ export default {
                     //this.rowClick(event, { id: this.active });
                 break;
             }
-        }
+        },      
+        rowClass(data) {
+            return this.selected.find(item => item === data.id) ? 'bg-primary' : '';
+        },  
+        select(event, item) {
+            event.preventDefault();
+
+            let found = -1;
+            this.selected.forEach((v, index) => {
+                if (item.id == v) {
+                    found = index;
+                }
+            });
+
+            if (found > -1) {
+                this.selected.splice(found, 1);
+            } else {
+                this.selected.push(item.id);
+            }
+        },
     },
     watch: {
         internalSection: function (newVal) {
             this.selectedHeaders = localStorage['fields_' + newVal] ? JSON.parse(localStorage['fields_' + newVal]) : [];
             this.sortBy = localStorage['sortBy_' + newVal] ? JSON.parse(localStorage['sortBy_' + newVal]) : [];
             this.page = 0;
+            this.selected = [];
             this.reload();
         },
         $route(route) {
@@ -585,6 +619,7 @@ export default {
         }
     },
     created() {
+        this.display = this.$vuetify.display;
         this.internalSection = this.section ? this.section : this.$route.params.section;
         this.apiRoot = api.getApiRoot()
     },

@@ -28,6 +28,18 @@ import util from './services/util';
 const response = await fetch('https://genieadmin.com/api/?host=' + location.host);
 const data = await response.json();
 
+// Global error handler for chunk load failures
+window.addEventListener('error', (event) => {
+  if (/Loading chunk * failed/i.test(event.message)) {
+    const lastReload = localStorage.getItem('lastChunkReload');
+    const now = Date.now();
+    if (!lastReload || now - parseInt(lastReload) > 1000) {
+      localStorage.setItem('lastChunkReload', now.toString());
+      window.location.reload(); // Modern browsers handle cache bypass with proper headers
+    }
+  }
+});
+
 if (data.api_root) {
   console.log('got api root');
   api.setWebUrl(data.api_root);

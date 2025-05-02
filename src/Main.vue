@@ -10,7 +10,7 @@
 
 			<div class="text-align-center w-100 d-flex flex-row justify-center align-center" if="showSearch">
 
-				<div v-if="mobile && selected.length" class="flex-grow-1">
+				<div v-if="mobile && selected.length && $refs.childComponent.selected?.length" class="flex-grow-1">
 					<v-btn variant="text" @click="selectNone">
 						<v-icon icon="mdi-arrow-left" />
 					</v-btn>

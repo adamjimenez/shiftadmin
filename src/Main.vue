@@ -1,6 +1,6 @@
 <template>
 	<v-app :class="mobile ? 'mobile' : 'desktop'">
-		<v-app-bar color="secondary">
+		<v-app-bar color="secondary" v-if="!hideAppBar || !mobile">
 			<v-app-bar-nav-icon v-if="!mobile || !showSearch" variant="text" color="grey-lighten-1"
 				@click.stop="if (mobile) { drawer = !drawer; } else { rail = !rail }"></v-app-bar-nav-icon>
 
@@ -244,7 +244,8 @@ export default {
 			searchFocussed: false,
 			ignoreChange: false,
 			child: {},
-			selected: 0
+			selected: 0,
+			hideAppBar: false,
 		};
 	},
 
@@ -496,6 +497,10 @@ export default {
 				this.headers = [];
 			}
 		},
+		'$route.path': async function () {
+			await this.$nextTick()
+			this.hideAppBar = this.$refs.childComponent.hideAppBar;
+		},
 		searchParams: async function (searchParams) {
 			if (this.ignoreChange || !this.$route.params.section) {
 				return;
@@ -571,6 +576,8 @@ export default {
 		if (localStorage.rail === 'false') {
 			this.rail = false;
 		}
+
+		this.hideAppBar = this.$refs.childComponent.hideAppBar;
 	}
 }
 </script>

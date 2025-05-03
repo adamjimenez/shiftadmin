@@ -3,7 +3,7 @@
         <v-alert color="error" v-if="error">{{ error }}</v-alert>
 
         <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
-            <v-btn title="Back" icon="mdi-arrow-left" @click="goBack" color="grey-lighten-1" variant="text"></v-btn>
+            <v-btn title="Back" icon="mdi-arrow-left" @click="goBack" variant="text"></v-btn>
             <v-btn title="Save" icon="mdi-content-save" @click="save" variant="text" :disabled="!dirty"></v-btn>
         </v-sheet>
 
@@ -133,6 +133,7 @@ export default {
             dirty: false,
             apiRoot: '',
             back: './',
+            hideAppBar: true
         };
     },
     methods: {

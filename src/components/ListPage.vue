@@ -162,7 +162,7 @@ export default {
             defaultData: {}, // used for bulk edit
             sortBy: [],
             error: '',
-            active: 0,
+            active: 0
         };
     },
     methods: {

@@ -39,7 +39,7 @@
 
             <v-card v-if="tab === 'summary'" min-width="600" class="pa-5" style="overflow: auto;" :loading="loading">
                 <template v-for="(value, key, index) in fields" :key="index">
-                    <div v-if="data[value.column] && !['password'].includes(value.type) && (!['file', 'select', 'select_parent', 'combo'].includes(value.type) || (data[value.column] && data[value.column] != 0))">
+                    <div v-if="data[value.column] && !['password'].includes(value.type) && (!['file', 'select', 'select_parent', 'combo'].includes(value.type) || (data[value.column] && data[value.column] != 0)) && (!Array.isArray(data[value.column]) || data[value.column].length !== 0)">
                         <v-card-title @mouseenter="fieldHover = key" @mouseleave="fieldHover = ''">
                             <a :id="key.replaceAll(' ', '_')"></a>
                             <a :href="'#' + key.replaceAll(' ', '_')" v-show="fieldHover === key">
@@ -137,6 +137,7 @@
 .unclamp .v-list-item-title,
 .unclamp .v-list-item-subtitle {
     -webkit-line-clamp: unset;
+    line-clamp: unset;
 }
 </style>
 
@@ -219,6 +220,18 @@ export default {
                     } else if (field.type === 'select_multiple' && !Array.isArray(data[field.column])) {
                         // default to array
                         data[field.column] = [];
+                    } else if (['file', 'files', 'upload', 'uploads'].includes(field.type)) {
+                        try {
+                            data[field.column] = JSON.parse(data[field.column]);
+                        } catch (error) {
+                            if (typeof data[field.column] === 'string' && data[field.column] !== '0'  && data[field.column] !== '') {
+                                data[field.column] = [data[field.column]];
+                            }
+                        }
+
+                        if (!Array.isArray(data[field.column])) {
+                            data[field.column] = [];
+                        }
                     }
                 }
 

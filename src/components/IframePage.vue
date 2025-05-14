@@ -2,8 +2,7 @@
     <div style="position: relative;" class="d-flex flex-column W-100">
         <v-progress-linear indeterminate v-if="isLoading"></v-progress-linear>
 
-        <iframe v-if="webUrl" :src="frameUrl" style="border:0;"
-            class="grow w-100 h-100" @message="message"></iframe>
+        <iframe v-if="webUrl" :src="frameUrl" class="grow w-100 h-100 border-0" @message="message"></iframe>
     </div>
 </template>
 

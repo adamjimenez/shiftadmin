@@ -2,7 +2,7 @@
     <v-card :loading="loading">
         <v-alert color="error" v-if="error">{{ error }}</v-alert>
 
-        <v-sheet color="secondary" style="position: fixed; z-index: 100;" class="w-100">
+        <v-sheet color="secondary" style="z-index: 100;" class="w-100 position-fixed">
             <v-btn title="Back" icon="mdi-arrow-left" @click="goBack" variant="text"></v-btn>
             <v-btn title="Save" icon="mdi-content-save" @click="save" variant="text" :disabled="!dirty"></v-btn>
         </v-sheet>
@@ -163,11 +163,17 @@ export default {
                 } else if (field.type === 'select_multiple' && !Array.isArray(data[field.column])) {
                     // default to array
                     data[field.column] = [];
-                } else if (['file', 'upload'].includes(field.type)) {
+                } else if (['file', 'files', 'upload', 'uploads'].includes(field.type)) {
                     // default to array
-                    if (typeof data[field.column] === 'string' && data[field.column] !== '0'  && data[field.column] !== '') {
-                        data[field.column] = [data[field.column]];
-                    } else {
+                    try {
+                        data[field.column] = JSON.parse(data[field.column]);
+                    } catch (error) {
+                        if (typeof data[field.column] === 'string' && data[field.column] !== '0'  && data[field.column] !== '') {
+                            data[field.column] = [data[field.column]];
+                        }
+                    }
+
+                    if (!Array.isArray(data[field.column])) {
                         data[field.column] = [];
                     }
                 }

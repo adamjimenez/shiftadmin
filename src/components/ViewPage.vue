@@ -221,6 +221,7 @@ export default {
                         // default to array
                         data[field.column] = [];
                     } else if (['file', 'files', 'upload', 'uploads'].includes(field.type)) {
+
                         try {
                             data[field.column] = JSON.parse(data[field.column]);
                         } catch (error) {
@@ -230,7 +231,11 @@ export default {
                         }
 
                         if (!Array.isArray(data[field.column])) {
-                            data[field.column] = [];
+                            if (data[field.column]) {
+                                data[field.column] = [String(data[field.column])]
+                            } else {
+                                data[field.column] = [];
+                            }
                         }
                     }
                 }

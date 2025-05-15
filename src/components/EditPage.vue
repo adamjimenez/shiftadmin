@@ -174,7 +174,11 @@ export default {
                     }
 
                     if (!Array.isArray(data[field.column])) {
-                        data[field.column] = [];
+                        if (data[field.column]) {
+                            data[field.column] = [String(data[field.column])]
+                        } else {
+                            data[field.column] = [];
+                        }
                     }
                 }
             }

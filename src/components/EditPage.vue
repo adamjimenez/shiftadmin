@@ -155,7 +155,7 @@ export default {
 
             data = result.data.data && !Array.isArray(result.data.data) ? result.data.data : {};
 
-            this.options = await util.getAllOptions(fields, this.vars.options, data);
+            this.options = await util.getAllOptions(fields, this.vars.options, data, this.section);
 
             for (const [, field] of Object.entries(fields)) {
                 if (field.type === 'password') {

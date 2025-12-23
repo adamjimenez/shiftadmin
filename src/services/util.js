@@ -70,10 +70,14 @@ export default {
             return [];
         }
     },
-    getAllOptions: async function (fields, optionConfig, data) {
+    getAllOptions: async function (fields, optionConfig, data, section) {
         let options = {};
 
         for (const [, field] of Object.entries(fields)) {
+            if (field.type === 'select_parent') {
+                field.options = section;
+            }
+
             if (field.options) {
                 optionConfig[field.column.replaceAll('_', ' ')] = field.options;
             }
